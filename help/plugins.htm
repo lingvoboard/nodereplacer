@@ -41,6 +41,7 @@
   &nbsp;&nbsp;<a href="#op4">4.</a> rec<br>
   &nbsp;&nbsp;<a href="#op5">5.</a> im<br>
   &nbsp;&nbsp;<a href="#op6">6.</a> title<br>
+  &nbsp;&nbsp;<a href="#op7">7.</a> sdu<br>
 
 
   <p><span><a class="mark" href="#op1" id="op1" name="op1">#</a></span> 1) <b>retag</b>
@@ -401,6 +402,36 @@ out.part5
  ___ output.txt ___ 
  
  ABACA &lt;abbr title="mot ajouté dans l'édition 2005 ou 2006"&gt;Ⓜ&lt;/abbr&gt; &lt;abbr title="nom masculin"&gt;n. m.&lt;/abbr&gt; &lt;abbr title="sens ajouté dans l'édition 2005 ou 2006"&gt;◆&lt;/abbr&gt;
+
+</pre>
+  <p><span><a class="mark" href="#op7" id="op7" name="op6">#</a></span> 7) <b>sdu</b>
+
+  <pre>
+
+ НАЗНАЧЕНИЕ:
+ Извлечение из словарей в формате StarDict некоторой информации с использованием модуля <a href="https://github.com/lingvoboard/stardictUtils">stardictUtils.js</a>
+
+ ВАРИАНТЫ КОМАНДНОЙ СТРОКИ
+ 1)rep -sdu -tab1 input.idx output.txt
+ 2)rep -sdu -tab2 input.dict.dz output.txt
+
+ sdu - сокращение от StarDict Utils
+
+ 1)Первый вариант командной строки предназначен для получения информации типа:
+ lenire	4908797	122
+ lenendo	4908797	122
+ lenendola	4908797	122
+ 
+ Эта информация необходима при использовании функций getArticleBodyfromDZ1 и getArticleBodyfromDict модуля stardictUtils.js
+
+ Наличия .syn-файла в одной папке с input.idx - опционально, но если он имеется, то он будет использован плагином в этом режиме.
+
+ 2)Второй вариант командной строки  предназначен для получения информации типа:
+ lenire	[[1429391,1447508],[[0,18117]],[10337,10459]]
+ lenendo	[[1429391,1447508],[[0,18117]],[10337,10459]]
+ lenendola	[[1429391,1447508],[[0,18117]],[10337,10459]]
+
+ Эта информация необходима при использовании функции getArticleBodyfromDZ2 модуля stardictUtils.js
 
 </pre>
 
