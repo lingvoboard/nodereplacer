@@ -1,0 +1,196 @@
+body {
+	margin-right: 10%;
+	margin-left: 10%;
+	padding: 0;
+}
+
+
+span.c7 {
+	color: #7F7F7F;
+	font-style: italic
+}
+
+div.c6 {
+	padding: 0px 0px 0px 30px;
+}
+
+p.c5 {
+	display:inline;
+}
+
+span.c4 {
+	color:#FFFF00
+}
+
+div.c3 {
+	margin-top: 20px
+}
+
+a.c2 {
+	font-weight: bold
+}
+
+div.c1 {
+	text-align: center
+}
+
+pre {
+	font-family: 'Courier New', Courier, serif;
+	font-size: 96%;
+	line-height: 125%;
+
+	display: block;
+	overflow: auto;
+
+	max-height: 400px;
+	padding: 15px;
+
+	white-space: pre;
+	-moz-tab-size: 2;
+	tab-size: 2;
+
+	border: 1px dashed #787c7d;
+	background-color: #eee;
+}
+
+.comment {
+	font-family: serif;
+	font-size: 80%;
+	font-style: italic;
+	color: #7f7f7f;
+}
+
+
+.func {
+	font-weight: bold;
+	color: #a52a2a;
+}
+
+.argv {
+	font-weight: bold;
+	color: #800080;
+}
+
+.comline {
+	font-weight: bold;
+	font-style: italic;
+}
+
+.Achtung {
+	padding: 15px;
+	color: #fff;
+	border: 1px outset #4d4d4d;
+	background-color: #4d4d4d;
+	background-image: url(warning.png);
+	background-repeat: no-repeat;
+	background-position: 1% 2px;
+}
+
+.Achtung a,
+.Achtung a:link,
+.Achtung a:visited,
+.Achtung a:active,
+.Achtung a:hover {
+	text-decoration: none;
+
+	color: #ffa500;
+	outline: none;
+}
+
+.subs {
+	font-size: 1.17em;
+	font-weight: bold;
+}
+
+
+a,
+a:link,
+a:visited,
+a:active,
+a:hover {
+	text-decoration: none;
+	outline: none;
+}
+
+span>.mark:link,
+span>.mark:visited,
+span>.mark:active,
+span>.mark:focus {
+	text-decoration: none;
+	color: #bfbfbf;
+	outline: 0;
+}
+
+span>.mark:hover {
+	color: #80d6ff;
+	outline: 0;
+}
+
+/* esprima.begin */
+
+.keyword {
+	color: #204a87;
+	font-weight: bold;
+}
+
+.operator {
+	color: #ce5c00;
+	font-weight: bold;
+}
+
+.string {
+	color: #4e9a06;
+}
+
+.numeric {
+	color: #0000cf;
+	font-weight: bold;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.boolean {
+	color: #204a87;
+	font-weight: bold;
+}
+
+.control-flow {
+	color: #204a87;
+	font-weight: bold;
+}
+
+.line-comment {
+	color: #8f5902;
+	font-style: italic;
+}
+
+.template {
+	color: #FFA500;
+	font-style: italic;
+}
+
+
+.block-comment {
+	color: #A52A2A;
+	font-style: italic;
+
+}
+
+.regularexpression {
+	color: #4e9a06;
+}
+
+.null {
+	color: #204a87;
+	font-weight: bold;
+}
+
+/* esprima.end */
+
+
+ul ol {
+	margin-left: 0px;
+	padding-left: 0px;
+}

@@ -1,0 +1,409 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="files/main.css" />
+  <title>ИНСТРУКЦИЯ</title>
+</head>
+<body>
+  <div class="c1">
+    <h1>ИНСТРУКЦИЯ К СКРИПТУ nodereplacer.js</h1>
+  </div>
+
+  <p>Содержание инструкции:
+
+  <ul>
+    <li><a href="index.htm">Общий раздел</a>
+    </li>
+
+    <li><a href="replacer.htm">Замены</a>
+    </li>
+
+    <li><b>Дополнительные плагины</b>
+    </li>
+
+    <li><a href="javascript.htm">Раздел для программистов</a>
+    </li>
+  </ul>
+
+  <div class="c1">
+    ДОПОЛНИТЕЛЬНЫЕ ПЛАГИНЫ
+  </div>
+
+  <p>Этот раздел содержит инструкции для плагинов, которые скорее всего будут интересны немногим.
+
+  <p><span class="subs">Содержание раздела</span>:
+
+  <p>&nbsp;&nbsp;<a href="#op1">1.</a> retag<br>
+  &nbsp;&nbsp;<a href="#op2">2.</a> cut<br>
+  &nbsp;&nbsp;<a href="#op3">3.</a> dt<br>
+  &nbsp;&nbsp;<a href="#op4">4.</a> rec<br>
+  &nbsp;&nbsp;<a href="#op5">5.</a> im<br>
+  &nbsp;&nbsp;<a href="#op6">6.</a> title<br>
+
+
+  <p><span><a class="mark" href="#op1" id="op1" name="op1">#</a></span> 1) <b>retag</b>
+
+  <pre>
+ НАЗНАЧЕНИЕ
+ Исправление неправильных сочетаний DSL тегов с помощью <a href="https://github.com/inikulin/parse5">parse5</a>.
+ 
+ ВАРИАНТЫ КОМАНДНОЙ СТРОКИ
+ 1)node nodereplacer.js -retag input.txt output.txt
+ 2)node nodereplacer.js -retag -gls input.txt output.txt
+ 3)node nodereplacer.js -retag -e input.txt output.txt
+ 4)node nodereplacer.js -retag -rt input.txt output.txt
+
+ 1)Вариант с одним ключом предназначен для обработки DSL файлов.
+ 2)Со вторым ключом -gls - для обработки файлов в формате GLS<a href="index.htm#gls"><sup>2</sup></a>. 
+ 3)-e - для обработки любых HTML файлов. Файл читается целиком в оперативную память.
+ 4)-rt - для обработки файлов с HTML-кодом в построчном режиме.
+
+ 
+ ПРИМЕР
+ 
+ До)
+ test
+   [b]болд [i]болд-курсив [/b]курсив [u]курсив-подчёркивание [/i]подчёркивание[/u]
+ 
+ После)
+ test
+   [b]болд [i]болд-курсив [/i][/b][i]курсив [u]курсив-подчёркивание [/u][/i][u]подчёркивание[/u]
+
+ Внимание!
+ Обработка GLS статей с ключом -gls удаляет из них &lt;head&gt;&lt;/head&gt;, &lt;html&gt;&lt;/html&gt;, &lt;body&gt;&lt;/body&gt;.
+ А символы &amp;&lt;&gt;, если они не являются частью тегов и HTML-сущностей, кодируются в &amp;amp;&amp;lt;&amp;gt;
+
+ CREDITS
+ <a class="c2" href="https://gist.github.com/vsemozhetbyt">vsemozhetbyt</a>
+ Для написания плагина использовался <a href="https://gist.github.com/vsemozhetbyt/99132f861d8ab9505d7a9c1988e7b544">retag_misnested_dsl.js</a>
+
+</pre>
+
+<p><span><a class="mark" href="#op2" id="op2" name="op2">#</a></span> 2) <span class="comline">node nodereplacer.js -cut ...</span>
+
+<pre>
+        
+НАЗЕАЧЕНИЕ
+Плагин предназначен для экстракции из входного файла фрагментов или разделение его на несколько частей.
+
+ВАРИАНТЫ КОМАНДНОЙ СТРОКИ
+rep -cut -t10 input.txt out.txt
+rep -cut -d10 input.dsl out.dsl
+rep -cut -g10 input.gls out.gls
+
+rep -cut -t10% input.txt out.txt
+rep -cut -d10% input.dsl out.dsl
+rep -cut -g10% input.gls out.gls
+
+rep -cut -b1000000 input.txt out.txt
+rep -cut -b5000000 input.gls out.gls
+...
+
+rep -cut -t10%,20% input.txt out.txt.part1
+rep -cut -d50%,50% input.dsl out.dsl.part1
+rep -cut -g10%,20%,30% input.gls out.gls.part1
+
+rep -cut -g20%,20%,20%,20% test.gls out.part1
+
+rep -cut -t10%5 input.txt out.txt.part1
+rep -cut -d10%5 input.dsl out.dsl.part1
+rep -cut -g10%5 input.gls out.gls.part1
+
+ПОЯСНЕНИЕ
+-t10 - записать в выходной файл 10 строк из входного файла.
+-d10 - записать в выходной файл 10 DSL статей из входного файла.
+-g10 - записать в выходной файл 10 GLS статей из входного файла.
+
+-b1000000 - записать в выходной файл примерно 1000000 байт из входного файла.
+Примерно - поэтому, что скорее всего будет записано немно больше или меньше чем указано.
+Ибо файл в этом режиме читается построчно и строки пишутся полностью, а, к примеру, 1000000-ый байт может находится где-нибудь в середине строки.
+
+-t10%, -d10%, -g10% - записать в выходной файл 10 процентов строк или статей из входного файла.
+
+-t10%,20%, -d50%,50%... - записать в один выходной файл 10%, а во второй 20% строк или статей.
+
+ВНИМАНИЕ!
+В сумме части не должны превышать 100% 
+Пример невалидного параметра: -d50%,50%,10% (Ибо 50% + 50% + 10% = 110%)
+
+Сокращённый формат:
+-t10%5 = -t10%,10%,10%,10%,10%
+-d10%5 = -d10%,10%,10%,10%,10%
+-g10%5 = -g10%,10%,10%,10%,10%
+
+После % можно использовать число от 2 до 10.
+
+Недопустимые значения: -t10%1, -t10%11 и т. п.
+
+ПРИМЕР
+
+До)
+
+dog
+translation
+
+dog
+translation
+
+dog
+translation
+
+... и ещё 16 GLS статей.
+
+Команда:
+rep -cut -g20%4 test.gls out.part1
+
+На выходе:
+out.part1
+out.part2
+out.part3
+out.part4
+
+В каждом файле по 3 статьи.
+
+Потому что Math.floor((20 / 100) * 16) = 3.
+
+Команда:
+rep -cut -g20%5 test.gls out.part1
+
+На выходе:
+out.part1
+out.part2
+out.part3
+out.part4
+out.part5
+
+В 4 файлах по 3 статьи, в 5-том 4.
+
+Потому что 3+3+3+3+4 = 16.
+
+</pre>
+  <p><span><a class="mark" href="#op3" id="op3" name="op3">#</a></span> 3) <b>dt</b>
+
+  <pre>
+ НАЗНАЧЕНИЕ
+ Получение списка DSL тэгов.
+ 
+ КОМАНДНАЯ СТРОКА
+ node nodereplacer.js -dt input.txt output.txt
+ 
+ Входной файл должен иметь словарную структуру (DSL). 
+ 
+ ПРИМЕР
+ 
+ После)
+
+ //ТЕГИ В КАРТОЧКАХ:
+ 
+ [/b]
+ [b]
+ [/c]
+ [c]
+ [/i]
+ [i]
+ [/lang]
+ [lang id=20]
+ [lang name="Russian"]
+ [/m]
+ [m1]
+ [/p]
+ [p]
+ [/ref]
+ [ref]
+ [/trn]
+ [trn]
+ 
+ 
+ //Теги с ошибками:
+ [c xxx] - Неизвестное имя цвета.
+ [lang id=000] - Неподдерживаемый идентификатор языка
+ [lang name="XXXX"] - Неподдерживаемый язык.
+ [lang name=Russian] - Имя языка без кавычек.
+ [lang] - Отсутствие значения у атрибута тега [lang].
+ [ref dict="Dicti"onary"] - Значение параметра dict содержит недопустимый символ.
+ [ref dict="Словарь"] - Имя словаря содержит символы, не входящие в набор ASCII.
+ [ref dict=Dictionary] - Значение параметра dict должно быть заключено в кавычки.
+ 
+ 
+ //ТЕГИ В ЗАГОЛОВКАХ:
+ 
+ [/b]
+ [b]
+ [/i]
+ [i]
+ {[/i]}
+ {[i]}
+ [/sub]
+ [sub]
+ {[/sub]}
+ {[sub]}
+ 
+ 
+ //Теги с ошибками:
+ [lang name=Russian] - Имя языка без кавычек.
+
+</pre>
+
+  <p><span><a class="mark" href="#op4" id="op4" name="op4">#</a></span> 4) <b>rec</b>
+
+  <pre>
+ НАЗНАЧЕНИЕ:
+ Предназначен для рекурсивного слияния HTML-файлов находящихся в указанной папке.
+ Страницы пишутся одной строкой в выходной файл.
+
+ ВАРИАНТЫ КОМАНДНОЙ СТРОКИ
+ rep -recc "C:\Temp\Site" output
+ В качестве парсера используется модуль cheerio*.
+
+ rep -rec2 "C:\Temp\Site" output
+ В качестве парсера используется модуль sanitize-html (htmlparser2*).
+
+ rep -rec5 "C:\Temp\Site" output
+ В качестве парсера используется модуль parse5*.
+
+ --------------------
+
+ Пояснение:
+
+ * Различные парсеры могут работать по-разному,
+   как в плане скорости, так и конечного результата.
+ * Наиболее строгим в плане следования стандартам является parse5.
+   Но он же и самый медленный.
+ * Модули cheerio (текущая версия) и sanitize-html используют htmlparser2.
+   Он работает быстрее, чем parse5 и отлично справляется с валидным HTML.
+   С плохим, НЕвалидным кодом надёжнее использовать parse5.
+ * cheerio предоставляет широчайшие возможности по манипулированию
+   элементами DOM, используя синтаксис JQuery. Смотрите документацию на
+   https://github.com/cheeriojs/cheerio
+ * sanitize-html тоже предлагает функционал по "очистке" HTML-исходника.
+   Документация - 
+   https://github.com/punkave/sanitize-html
+
+</pre>
+
+  <p><span><a class="mark" href="#op5" id="op5" name="op5">#</a></span> 5) <b>im</b>
+
+  <pre>
+ НАЗНАЧЕНИЕ
+ Импорт морфологии в GLS файлы.
+ 
+ КОМАНДНАЯ СТРОКА
+ node nodereplacer.js -im morpholist.txt input.gls output.gls
+
+ Входные файлы (morpholist.txt и input.gls) должны иметь кодировку UTF-8.
+ input.gls должен быть в формате GLS<a href="index.htm#gls"><sup>2</sup></a>. 
+
+ morpholist.txt - должен содержать данные в таком формате:
+ словоформа[табулятор]начальная форма
+ словоформа[табулятор]начальная форма
+ кошками        кошка
+ коты   кошка
+ котами кошка
+ кошаки кошка
+
+ Пример:
+ 
+ Имеется morpholist.txt с таким содержанием:
+ кошками        кошка
+ коты   кошка
+ котами кошка
+ кошаки кошка
+ псина  собака
+ кошаки кошка
+ 
+ ДО)
+
+ ### Glossary title: Имя словаря
+ ### Author: Имя автора
+ ### Description: описание
+ ### Source language: Russian
+ ### Target language: Russian
+ ### Glossary section:
+ 
+ кошка|кошка|кот
+ перевод
+
+ собака
+ перевод 
+
+ ПОСЛЕ)
+
+ ### Glossary title: Имя словаря
+ ### Author: Имя автора
+ ### Description: описание
+ ### Source language: Russian
+ ### Target language: Russian
+ ### Glossary section:
+ 
+ кошка|кот|кошками|коты|котами|кошаки
+ перевод
+
+ собака|псина
+ перевод
+  
+ --------------------
+
+ Пояснение к примеру:
+
+ * Дубликаты из списка заголовков удаляются.
+   При этом сохраняются заголовки, которые находятся в начале строки.
+   Пример: до) кот|котами|кот =&gt; после) кот|котами (а не котами|кот)
+ * Если статья из input.gls содержит список заголовков,
+   то для импорта используется только первый заголовок.
+   Скрипт считает этот заголовок основным, который является начальной формой слова.
+   Импорт будет произведен только если в morpholist.txt содержит запись
+   у которой правая часть совпадает с ПЕРВЫМ заголовком некой статьи в input.gls
+
+   А например при таком варианте импорта не произойдёт:
+
+   morpholist.txt)
+   кот  кошка
+
+   input.gls)
+   кот|кошка
+   перевод
+
+   Нужно "кошка|кот"
+  
+</pre>
+  <p><span><a class="mark" href="#op6" id="op6" name="op6">#</a></span> 6) <b>title</b>
+
+  <pre>
+ НАЗНАЧЕНИЕ
+ Перенос данных из файла аббревиатур в HTML теги.
+
+ КОМАНДНАЯ СТРОКА
+ node nodereplacer.js -title input_abrv.dsl input.txt output.txt
+
+ Файл аббревиатур читается постатейно и следовательно должен иметь словарную структуру.
+ input.txt - построчно.
+ 
+ ПРИМЕР
+ 
+ ___ input_abrv.dsl ___ 
+ 
+ #CONTENTS_LANGUAGE "French"
+ #INDEX_LANGUAGE "French"
+ #NAME "Le Nouveau Littré. 2008"
+ Ⓜ
+        mot ajouté dans l'édition 2005 ou 2006
+ ◆
+        sens ajouté dans l'édition 2005 ou 2006
+ n. m.
+        nom masculin
+ 
+ ___ input.txt ___ 
+ 
+ ABACA &lt;abbr&gt;Ⓜ&lt;/abbr&gt; &lt;abbr&gt;n. m.&lt;/abbr&gt; &lt;abbr&gt;◆&lt;/abbr&gt;
+ 
+ ___ output.txt ___ 
+ 
+ ABACA &lt;abbr title="mot ajouté dans l'édition 2005 ou 2006"&gt;Ⓜ&lt;/abbr&gt; &lt;abbr title="nom masculin"&gt;n. m.&lt;/abbr&gt; &lt;abbr title="sens ajouté dans l'édition 2005 ou 2006"&gt;◆&lt;/abbr&gt;
+
+</pre>
+
+  <hr />
+</body>
+</html>

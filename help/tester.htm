@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="files/main.css" />
+<title>ИНСТРУКЦИЯ</title>
+</head>
+<body>
+<div class="c1">
+<h1>ИНСТРУКЦИЯ К СКРИПТУ nodereplacer.js</h1>
+</div>
+
+<p>Содержание инструкции:
+
+<ul>
+<li><a href="index.htm">Общий раздел</a>
+</li>
+
+<li><a href="replacer.htm">Замены</a>
+</li>
+
+<li><a href="plugins.htm">Дополнительные плагины</a>
+</li>
+
+<li><a href="javascript.htm">Раздел для программистов</a>
+</li>
+
+<li><b>Тестирование</b>
+</li>
+</ul>
+
+<div class="c1">
+ТЕСТИРОВАНИЕ
+</div>
+
+<p>Пример №1:
+
+<p>Командная строка: <span class="comline">rep test.js</span>
+
+<p>Содержание <span class="comline">test.js</span>:
+
+<pre>
+<span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">String</span><span class="bold">.</span><span class="identifier">raw</span><span class="template">`
+заголовок
+   [b]болд [i]болд-курсив [/b]курсив [u]курсив-подчёркивание [/i]подчёркивание[/u]
+
+`</span><span class="bold">;
+
+
+</span><span class="identifier">fs</span><span class="bold">.</span><span class="identifier">writeFileSync</span><span class="bold">(</span><span class="string">'/tmp/u/temp_in.txt'</span><span class="bold">, </span><span class="identifier">s</span><span class="bold">, {</span><span class="identifier">encoding</span><span class="bold"><span class="operator">: </span></span><span class="string">'utf8'</span><span class="bold">, </span><span class="identifier">flag</span><span class="bold"><span class="operator">: </span></span><span class="string">"w"</span><span class="bold">});
+
+
+</span><span class="keyword">const</span> <span class="identifier">exec</span> <span class="operator">=</span> <span class="identifier">require</span><span class="bold">(</span><span class="string">'child_process'</span><span class="bold">).</span><span class="identifier">execSync</span><span class="bold">;
+</span><span class="identifier">exec</span><span class="bold">(</span><span class="string">'node --harmony_regexp_lookbehind /home/andrey/u/tools/scripts/js/nodereplacer/nodereplacer.js -retag /tmp/u/temp_in.txt /tmp/u/temp_out.txt'</span><span class="bold">, (</span><span class="param">error</span><span class="bold">, </span><span class="param">stdout</span><span class="bold">, </span><span class="param">stderr</span><span class="bold">) </span><span class="operator">=&gt;</span><span class="bold"> {
+
+  </span><span class="control-flow">if</span><span class="bold"> (</span><span class="identifier">error</span><span class="bold">) {
+    </span><span class="identifier">console</span><span class="bold">.</span><span class="identifier">error</span><span class="bold">(</span><span class="template">`exec error: ${</span><span class="identifier">error</span><span class="template">}`</span><span class="bold">);
+    </span><span class="control-flow">return</span><span class="bold">;
+  }
+
+});
+
+
+</span><span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">fs</span><span class="bold">.</span><span class="identifier">readFileSync</span><span class="bold">(</span><span class="string">'/tmp/u/temp_out.txt'</span><span class="bold">, </span><span class="string">'utf8'</span><span class="bold">).</span><span class="identifier">toString</span><span class="bold">();
+
+</span><span class="identifier">console</span><span class="bold">.</span><span class="identifier">log</span><span class="bold">(</span><span class="identifier">s</span><span class="bold">);
+
+</span><span class="line-comment">//Подчищаем</span>
+<span class="identifier">fs</span><span class="bold">.</span><span class="identifier">unlinkSync</span><span class="bold">(</span><span class="string">'/tmp/u/temp_in.txt'</span><span class="bold">)
+</span><span class="identifier">fs</span><span class="bold">.</span><span class="identifier">unlinkSync</span><span class="bold">(</span><span class="string">'/tmp/u/temp_out.txt'</span><span class="bold">)</span>
+</pre>
+
+<p>Результат:
+
+<p><img src="files/tester_example01.png" />
+
+
+<p>Пример №2:
+
+<p>Командная строка: <span class="comline">rep test.js</span>
+
+<p>Содержание <span class="comline">test.js</span>:
+
+<pre>
+<span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">String</span><span class="bold">.</span><span class="identifier">raw</span><span class="template">`
+
+поговорка
+&lt;h4 L=0 title="поговорка" id=поговорка&gt;&lt;/h4&gt;
+&lt;pos=S&gt;
+&lt;p&gt;&lt;b&gt;ПОГОВО'РКА&lt;/b&gt;, и, &lt;i&gt;ж.&lt;/i&gt;
+&lt;b&gt;1.&lt;/b&gt;
+&lt;span class=sem&gt;Принятое, ходячее выражение, обычно образное, иносказательное, не являющееся цельной фразой, предложением (чем отличается от пословицы, напр. ни пава ни ворона).&lt;/span&gt;
+&lt;b&gt;2.&lt;/b&gt;
+&lt;span class=sem&gt;То же, что &lt;a href="../16/us363012.htm"&gt;пословица&lt;/a&gt; (неточно).&lt;/span&gt;
+&lt;b&gt;3.&lt;/b&gt;
+&lt;i&gt;только ед.&lt;/i&gt;
+&lt;span class=sem&gt;Разговоры, толки (обл.).&lt;/span&gt;
+&lt;span class=sample&gt;&lt;i&gt;Была об этом п.&lt;/i&gt;&lt;/span&gt;
+&lt;b&gt;4.&lt;/b&gt;
+&lt;span class=sem&gt;Говор, произношение (обл.).&lt;/span&gt;
+&lt;span class=sample&gt;&lt;i&gt;Ардатовца всегда по поговорке узнаешь.&lt;/i&gt; Даль.&lt;/span&gt;
+&lt;b&gt;5.&lt;/b&gt;
+&lt;span class=sem&gt;Слово, часто вставляемое в речь кстати и некстати, напр. знаешь, значит, того и т. п. (простореч.).&lt;/span&gt;
+
+`</span><span class="bold">;</span>
+
+
+\s*&lt;h4 L=0 title="поговорка" id=поговорка&gt;&lt;/h4&gt;     ||      
+\s*&lt;pos=S&gt;        ||      
+<span class="keyword">let</span> <span class="identifier">$</span> <span class="operator">=</span> <span class="identifier">init_cheerio</span><span class="bold">(</span><span class="identifier">s</span><span class="bold">, {</span><span class="identifier">decodeEntities</span><span class="bold"><span class="operator">: </span></span><span class="boolean">false</span><span class="bold">, </span><span class="identifier">normalizeWhitespace</span><span class="bold"><span class="operator">: </span></span><span class="boolean">false</span><span class="bold">});
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'p'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">''</span><span class="bold">, </span><span class="string">''</span><span class="bold">);
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'b'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">'[b]'</span><span class="bold">, </span><span class="string">'[/b]'</span><span class="bold">);
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'i'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">'[i]'</span><span class="bold">, </span><span class="string">'[/i]'</span><span class="bold">);
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'a'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">'[ref]'</span><span class="bold">, </span><span class="string">'[/ref]'</span><span class="bold">);
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'span.sem'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">'[c darkslategray]'</span><span class="bold">, </span><span class="string">'[/c]'</span><span class="bold">);
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'span.sample'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">'[*][ex]'</span><span class="bold">, </span><span class="string">'[/ex][/*]'</span><span class="bold">);
+</span><span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">$</span><span class="bold">.</span><span class="identifier">html</span><span class="bold">();</span>
+^([\t\x20]+)([^\t\x20].*)$ || $1[m1]$2[/m]
+<span class="identifier">console</span><span class="bold">.</span><span class="identifier">log</span><span class="bold">(</span><span class="identifier">s</span><span class="bold">);</span>
+</pre>
+
+<p>Результат:
+
+<pre>
+поговорка
+	[m1][b]ПОГОВО'РКА[/b], и, [i]ж.[/i][/m]
+	[m1][b]1.[/b][/m]
+	[m1][c darkslategray]Принятое, ходячее выражение, обычно образное, иносказательное, не являющееся цельной фразой, предложением (чем отличается от пословицы, напр. ни пава ни ворона).[/c][/m]
+	[m1][b]2.[/b][/m]
+	[m1][c darkslategray]То же, что [ref]пословица[/ref] (неточно).[/c][/m]
+	[m1][b]3.[/b][/m]
+	[m1][i]только ед.[/i][/m]
+	[m1][c darkslategray]Разговоры, толки (обл.).[/c][/m]
+	[m1][*][ex][i]Была об этом п.[/i][/ex][/*][/m]
+	[m1][b]4.[/b][/m]
+	[m1][c darkslategray]Говор, произношение (обл.).[/c][/m]
+	[m1][*][ex][i]Ардатовца всегда по поговорке узнаешь.[/i] Даль.[/ex][/*][/m]
+	[m1][b]5.[/b][/m]
+	[m1][c darkslategray]Слово, часто вставляемое в речь кстати и некстати, напр. знаешь, значит, того и т. п. (простореч.).[/c][/m]
+</pre>
+
+<hr />
+</body>
+</html>

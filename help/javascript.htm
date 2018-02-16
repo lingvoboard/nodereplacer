@@ -1,0 +1,869 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="files/main.css" />
+  <title>ИНСТРУКЦИЯ</title>
+  <style type="text/css">
+  /*<![CDATA[*/
+  ul.c1 {list-style-type:decimal}
+  /*]]>*/
+  </style>
+</head>
+<body>
+  <div class="c1">
+    <h1>ИНСТРУКЦИЯ К СКРИПТУ nodereplacer.js</h1>
+  </div>
+
+  <p>Содержание инструкции:</p>
+
+  <ul>
+    <li><a href="index.htm">Общий раздел</a>
+    </li>
+
+    <li><a href="replacer.htm">Замены</a>
+    </li>
+
+    <li><a href="plugins.htm">Дополнительные плагины</a>
+    </li>
+
+    <li><b>Раздел для программистов</b>
+    </li>
+  </ul>
+
+  <div class="c1">
+    ИСПОЛЬЗОВАНИЕ JAVASCRIPT КОДА В СПИСКЕ ЗАМЕН
+  </div>
+
+  <div class="Achtung">
+    <br />
+    Чтобы скрипт не испортил javascript код в списке замен:
+    <p>Не следует использовать логический оператор || с табуляторами до и после, иначе скрипт примет его за часть разделителя в макросе (см. раздел <a href="replacer.htm">"Замены"</a>).</p>
+  </div>
+
+  <p><span class="subs">Содержание раздела</span>:</p>
+
+  <ul class="c1">
+    <li><a href="#objo">Содержание объекта o</a>
+    </li>
+
+    <li><a href="#null">Использование null</a>
+    </li>
+
+    <li><a href="#res">Массив o.res, функция onexit и onstart</a>
+    </li>
+
+    <li><a href="#outils">Методы объекта o.utils</a>
+    </li>
+
+    <li><a href="#htmlcl">Модуль htmlclean</a>
+    </li>
+
+    <li><a href="#plug">Плагины</a>
+    </li>
+
+    <li><a href="#test">Тестирование</a>
+    </li>
+
+    <li><a href="#exam">Примеры и сниппеты</a>
+    </li>
+
+    <li><a href="#npmjs">Внешние модули (npmjs.com)</a>
+    </li>
+
+    <li><a href="#other">Разное</a>
+    </li>
+  </ul>
+
+  <hr />
+
+  <p><span class="func">s</span> - локальная переменная, которая содержит прочитанную скриптом строку или статью.</p>
+
+  <p><span><a class="mark" href="#objo" id="objo" name="objo">#</a></span> <span class="subs">Содержание объекта o</span></p>
+
+  <p>ПОЛНЫЙ СПИСОК СВОЙСТВ</p>
+
+  <ul>
+    <li><a href="#oarr">o.arr</a>
+    </li>
+
+    <li><a href="#obom">o.bom</a>
+    </li>
+
+    <li><a href="#obyline">o.byline</a>
+    </li>
+
+    <li><a href="#obygls">o.by_gls_article</a>
+    </li>
+
+    <li><a href="#obydsl">o.by_dsl_article</a>
+    </li>
+
+    <li><a href="#ocount">o.count</a>
+    </li>
+
+    <li><a href="#odsl">o.dsl</a>
+    </li>
+
+    <li><a href="#oeol">o.eol</a>
+    </li>
+
+    <li><a href="#oeolmode">o.eol_mode</a>
+    </li>
+
+    <li><a href="#oentire">o.entirefile</a>
+    </li>
+
+    <li><a href="#oelog">o.error_log_path</a>
+    </li>
+
+    <li><a href="#oeta">o.et_auto</a>
+    </li>
+
+    <li><a href="#oetsh">o.et_show</a>
+    </li>
+
+    <li><a href="#ogls">o.gls</a>
+    </li>
+
+    <li><a href="#oinen">o.in_encoding</a>
+    </li>
+
+    <li><a href="#oinf">o.inputfile</a>
+    </li>
+
+    <li><a href="#olog">o.log</a>
+    </li>
+
+    <li><a href="#oloop">o.loop</a>
+    </li>
+
+    <li><a href="#omode">o.mode</a>
+    </li>
+
+    <li><a href="#ooutf">o.outputfile</a>
+    </li>
+
+    <li><a href="#oouten">o.out_encoding</a>
+    </li>
+
+    <li><a href="#oprb">o.progress_bar</a>
+    </li>
+
+    <li><a href="#oprbt">o.progress_bar_title</a>
+    </li>
+
+    <li><a href="#opath">o.path</a>
+    </li>
+
+    <li><a href="#orep">o.repeat</a>
+    </li>
+
+    <li><a href="#ores">o.res</a>
+    </li>
+
+    <li><a href="#ostop">o.stop</a>
+    </li>
+
+    <li><a href="#otab">o.tab</a>
+    </li>
+
+    <li><a href="#outl">o.utils</a>
+    </li>
+
+    <li><a href="#outlp">o.utilspath</a>
+    </li>
+  </ul>
+
+  <p><span><a class="mark" href="#oarr" id="oarr" name="oarr">#</a></span> <span class="func">o.arr</span> - пустой массив, может использоваться для любых целей.</p>
+
+  <p><span><a class="mark" href="#obom" id="obom" name="obom">#</a></span> <span class="func">o.bom</span> - BOM (изначально эта переменная содержит '\uFEFF').</p>
+
+  <p><span><a class="mark" href="#obyline" id="obyline" name="obyline">#</a></span> <span class="func">o.byline</span> - функция <span class="comline">byline</span> из nodereplacer.js</p>
+
+  <p><span><a class="mark" href="#obygls" id="obygls" name="obygls">#</a></span> <span class="func">o.by_gls_article</span> - функция <span class="comline">by_gls_article</span> из nodereplacer.js</p>
+
+  <p><span><a class="mark" href="#obydsl" id="obydsl" name="obydsl">#</a></span> <span class="func">o.by_dsl_article</span> - функция <span class="comline">by_dsl_article</span> из nodereplacer.js</p>
+
+  <p><span><a class="mark" href="#ocount" id="ocount" name="ocount">#</a></span> <span class="func">o.count</span> - содержит номер прочитанной строки или статьи.</p>
+
+  <p><span><a class="mark" href="#odsl" id="odsl" name="odsl">#</a></span> <span class="func">o.dsl</span> - в режиме постатейного чтения файлов в формате DSL эта переменная содержит массив со статьёй.<br />
+  1. Первый элемент (<b>o.dsl[0]</b>) - массив с заголовками (вся заголовочная часть статьи).<br />
+  2. Второй (<b>o.dsl[1]</b>) - тело статьи (одной строкой).<br />
+  3. Третий (<b>o.dsl[2]</b>) - отфильтрованный массив с заголовками (без комментариев и пустых строк).<br />
+  4. Четвёртый (<b>o.dsl[3]</b>) - массив со строками тела. Многострочные комментарии одной строкой.</p>
+
+  <p><span><a class="mark" href="#oeol" id="oeol" name="oeol">#</a></span> <span class="func">o.eol</span> - управляющие символ(ы), который будут добавляться при записи в конец строки или статьи (по умолчанию \n).</p>
+
+  <p><span><a class="mark" href="#oeolmode" id="oeolmode" name="oeolmode">#</a></span> <span class="func">o.eol_mode</span> - если эта переменная имеет значение <b>1</b>, то <span class="highlight">в построчном режиме</span> чтения входного файла в выходной файл будут писаться оригинальные разделители строк (<a href="#eol1">подробнее</a>)<br />
+  Если <b>2</b>, то создаётся карта смещений всех строк входного файла. (<a href="#eol2">подробнее</a>)</p>
+
+  <p><span><a class="mark" href="#oentire" id="oentire" name="oentire">#</a></span> <span class="func">o.entirefile</span> - функция <span class="comline">entirefile</span> из nodereplacer.js</p>
+
+  <p><span><a class="mark" href="#oelog" id="oelog" name="oelog">#</a></span> <span class="func">o.error_log_path</span> - cодержит полный путь к файлу <span class="comline">error.log</span>. По умолчанию этот файл создаётся в одной папке с выходным файлом, но <span class="comline">error.log</span> и выходной файл могут оказаться в разных местах если в списке замен или плагине будет изменено значение <span class="comline">o.outputfile</span>.</p>
+
+  <p><span><a class="mark" href="#oeta" id="oeta" name="oeta">#</a></span> <span class="func">o.et_auto</span> - управляющая переменная, в случае если имеет значение <span class="func">true</span> (значение по умолчание), то время работы скрипта выводится автоматически.</p>
+
+  <p>Если <span class="comline">false</span>, то время работы скрипта не выводится.</p>
+
+  <p><span><a class="mark" href="#oetsh" id="oetsh" name="oetsh">#</a></span> <span class="func">o.et_show</span> - функция для вывода времени работы скрипта.</p>
+
+  <p><span><a class="mark" href="#ogls" id="ogls" name="ogls">#</a></span> <span class="func">o.gls</span> - в режиме постатейного чтения файлов в формате GLS эта переменная содержит массив со статьёй. Первый элемент - строка с заголовком или заголовками разделёнными символом "|". Второй - тело статьи. Третий - номер строки на которой находится заголовок статьи.</p>
+
+  <p><span><a class="mark" href="#oinen" id="oinen" name="oinen">#</a></span> <span class="func">o.in_encoding</span> - кодировка входного файла (по умолчанию utf8).</p>
+
+  <p><span><a class="mark" href="#oinf" id="oinf" name="oinf">#</a></span> <span class="func">o.inputfile</span> - имя входного файла.</p>
+
+  <p><span><a class="mark" href="#olog" id="olog" name="olog">#</a></span> <span class="func">o.log</span> - массив для сообщений.</p>
+
+  <p><span><a class="mark" href="#oloop" id="oloop" name="oloop">#</a></span> <span class="func">o.loop</span> - счетчик, значение увеличивается на единицу после каждого запуска функций <span class="comline">byline</span>, <span class="comline">by_dsl_article</span>, <span class="comline">entirefile</span> или <span class="comline">by_gls_article</span></p>
+
+  <p><span><a class="mark" href="#omode" id="omode" name="omode">#</a></span> <span class="func">o.mode</span> - возможные значения: '<span class="comline">byline</span>', '<span class="comline">by_dsl_article</span>', '<span class="comline">by_gls_article</span>', '<span class="comline">entirefile</span>'<br />
+  <i>Используется в nodereplacer.js (Изменять значения этой переменной в списках замен или плагинах нет смысла.)</i></p>
+
+  <p><span><a class="mark" href="#ooutf" id="ooutf" name="ooutf">#</a></span> <span class="func">o.outputfile</span> - имя выходного файла.</p>
+
+  <p><span><a class="mark" href="#oouten" id="oouten" name="oouten">#</a></span> <span class="func">o.out_encoding</span> - кодировка выходного файла (по умолчанию utf8).</p>
+
+  <p><span><a class="mark" href="#oprb" id="oprb" name="oprb">#</a></span> <span class="func">o.progress_bar</span> - переменная, которая может использоваться для отключения индикации прогресса (progressbar).<br />
+  По умолчанию имеет значение <span class="comline">true</span><br />
+  Отключение: <i>o.progress_bar = false;</i></p>
+
+  <p><span><a class="mark" href="#oprbt" id="oprbt" name="oprbt">#</a></span> <span class="func">o.progress_bar_title</span> - переменная, которая может использоваться для вывода заголовка над индикатором прогресса.<br />
+  Пример: <i>o.progress_bar_title = 'Reading file:\n';</i></p>
+
+  <p><span><a class="mark" href="#opath" id="opath" name="opath">#</a></span> <span class="func">o.path</span> - путь к папке в которой находится скрипт.</p>
+
+  <p><span><a class="mark" href="#orep" id="orep" name="orep">#</a></span> <span class="func">o.repeat</span> - переменная, которая может использоваться для перезапуска функций <span class="comline">byline</span>, <span class="comline">by_dsl_article</span>, <span class="comline">entirefile</span> или <span class="comline">by_gls_article</span></p>
+
+  <p><span><a class="mark" href="#ores" id="ores" name="ores">#</a></span> <span class="func">o.res</span> - массив, содержимое которого в конце работы скрипта пишется в выходной файл (если не пустой).</p>
+
+  <p><span><a class="mark" href="#ostop" id="ostop" name="ostop">#</a></span> <span class="func">o.stop</span> - изначально ничего не содержит, но если в нее что-то поместить, то скрипт немедленно остановит работу и выведет содержимое этой переменной на экран.</p>
+
+  <p><span><a class="mark" href="#otab" id="otab" name="otab">#</a></span> <span class="func">o.tab</span> - пустой объект (<i>o.tab = Object.create(null)</i>), может использоваться для любых целей.</p>
+
+  <p><span><a class="mark" href="#outl" id="outl" name="outl">#</a></span> <span class="func">o.utils</span> - объект, который предоставляет для использования ряд полезных методов (<a href="#outils">подробнее</a>)</p>
+
+  <p><span><a class="mark" href="#outlp" id="outlp" name="outlp">#</a></span> <span class="func">o.utilspath</span> - переменная содержит путь к <i>/nodereplacer/files/rep_modules/utils</i></p>
+
+  <p>Если для работы требуются глобальные переменные (которые будут существовать на протяжении всей работы скрипта), то следует использовать объект <span class="comline">o</span>.</p>
+
+  <p><span><a class="mark" href="#null" id="null" name="null">#</a></span> <span class="subs">Использование null</span></p>
+
+  <p>Если функция создаваемая скриптом из списка замен вернет пустую строку (<span class="func">s</span> = ''), то в выходной файл будет добавлено только содержимое переменной <span class="func">o.eol</span>.<br />
+  Если <span class="func">o.eol</span> не пустая (по умолчанию содержит \n), то появится пустая строка.<br />
+  Если пустая строка нежелательна, то следует либо очистить <span class="func">o.eol</span> или сделать так чтобы функция replace вернула null (<span class="func">s</span> = null).</p>
+
+  <p><span><a class="mark" href="#res" id="res" name="res">#</a></span> <span class="subs">Массив o.res, функция onexit и onstart</span></p>
+
+  <p>В конце работы (после прочтения и обработки всех строк или статей) скрипт записывает содержимое массива <span class="func">o.res</span> в выходной файл (если он не пустой).</p>
+
+  <p>В конце работы скрипт также вызывает один раз функцию <span class="func">onexit</span>, если такая имеется в списке замен.<br />
+  При этом остальной код списка замен игнорируется.<br />
+  Эту функцию можно, к примеру, использовать для подготовки данных в массиве <span class="func">o.res</span> перед записью (сортировка и т.п.).</p>
+
+  <p>Функция <span class="func">o.onstart</span> запускается прежде чем скрипт начнет работать с входным файлом.</p>
+
+  <p><span><a class="mark" href="#outils" id="outils" name="outils">#</a></span> <span class="subs">Методы объекта o.utils</span><br />
+  <i>Код всех методов можно найти в файле /nodereplacer/files/rep_modules/utils/index.js</i></p>
+
+  <p>ПОЛНЫЙ СПИСОК МЕТОДОВ</p>
+
+  <ul class="c1">
+    <li><a href="#init">init_cheerio</a>
+    </li>
+
+    <li><a href="#nhtml">normalizeHTML</a> - <span class="comment">меняет [\f\n\r\t\v ]+ на пробел</span></li>
+
+    <li><a href="#dehtml">decodeHTML</a> - <span class="comment">декодирует HTML сущности (<a href="https://www.npmjs.com/package/entities">entities</a>)</span></li>
+
+    <li><a href="#enhtml">encodeHTML</a> - <span class="comment">кодирует некоторые символы в HTML сущности (<a href="https://www.npmjs.com/package/entities">entities</a>)</span></li>
+
+    <li><a href="#dechst">decode</a> - <span class="comment">меняет кодировку текста (<a href="https://github.com/ashtuchkin/iconv-lite">iconv-lite</a>)</span></li>
+
+    <li><a href="#removeodd">remove_odd_slash</a> - <span class="comment">удаляет неэкранированные обратные слеши</span></li>
+
+    <li><a href="#removecom">remove_comments</a> - <span class="comment">удаляет {{комментарий}}</span></li>
+
+    <li><a href="#removescb">remove_scb</a> - <span class="comment">удаляет {текст} (scb = single curly brackets)</span></li>
+
+    <li><a href="#guess">guessEncoding</a> - <span class="comment">пытается определить кодировку файла (utf8 или utf16le)</span></li>
+
+    <li><a href="#fileexi">fileExists</a>
+    </li>
+
+    <li><a href="#openround">openroundbrackets</a> - <span class="comment">кошка(ми) =&gt; кошка и кошками</span></li>
+
+    <li><a href="#filtergls">filter_gls_hw_list</a> - <span class="comment">кот|котами|кот =&gt; кот|котами (hw = headword)</span></li>
+
+    <li><a href="#spinner_start">spinner_start</a>
+    </li>
+
+    <li><a href="#spinner_stop">spinner_stop</a>
+    </li>
+  </ul>
+
+  <p>ПОДРОБНОСТИ</p>
+
+  <p><span><a class="mark" href="#init" id="init" name="init">#</a></span> <span class="comline">init_cheerio(html, options)</span><br />
+  <span><a class="mark" href="#init" id="init_old" name="init_old">#</a></span> <span class="comline">init_cheerio_old(html, options)</span><br />
+  <span><a class="mark" href="#init" id="init_new" name="init_new">#</a></span> <span class="comline">init_cheerio_new(html, options, isDocument)</span></p>
+  <p>С недавних пор оригинальный модуль <a href="https://github.com/cheeriojs/cheerio" target="_blank">cheerio</a> притерпел <a href="https://github.com/cheeriojs/cheerio/blob/1.0.0-rc.2/History.md#100-rc2--2017-07-02" target="_blank">существенные изменения</a>, повлекшие за собой частичную обратную <strong>не</strong>совместимость.<br />
+  В частности это заключается в использовании нового парсера <a href="https://github.com/inikulin/parse5" target="_blank">parse5</a> и, в связи с этим, <strong>не</strong>пониманием некоторых опций ранее испольуемого парсера <a href="https://github.com/fb55/htmlparser2" target="_blank">htmlparser2</a>.<br />
+  Указанные выше методы инициализации решают проблему этой несовместимости и позволяют контролировать как используемый парсер, так и соответствующие опции.</p>
+
+  <p>Использование:</p>
+
+  <pre>
+/*
+  стандартная инициализация, соответствующая старой версии cheerio
+  при этом опции по умолчанию принимают следующие значения:
+  { decodeEntities: false,
+    normalizeWhitespace: true,
+    withDomLvl1: true,
+    xml: false }
+  используемый парсер - htmlparser2
+*/
+//let $ = o.utils.init_cheerio(s);
+
+/*
+  инициализация, идентичная init_cheerio
+  при этом передаются опции, отличные от дефлотных:
+  { decodeEntities: true,
+    normalizeWhitespace: false }
+  используется htmlparser2
+*/
+//let $ = o.utils.init_cheerio_old(s, {decodeEntities: true, normalizeWhitespace: false});
+
+/*
+  инициализация с новым парсером parse5
+  дефолтные опции прежние
+  выполняется проверка на наличие структуры документа
+  в зависимости от результатов контент обрабатывается либо как Document, либо как DocumentFragment
+*/
+//let $ = o.utils.init_cheerio_new(s);
+
+/*
+  инициализация с новым парсером parse5
+  и отличной от дефолтной опцией
+  выполняется проверка на наличие структуры документа
+*/
+//let $ = o.utils.init_cheerio_new(s, {normalizeWhitespace: false});
+
+/*
+  инициализация с новым парсером parse5,
+  отличной от дефолтной опцией
+  и принудительным включением режима документа.
+  в случае передачи третьим параметром false
+  включается режим DocumentFragment, независимо от наличия структуры документа
+*/
+//let $ = o.utils.init_cheerio_new(s, {normalizeWhitespace: false}, true);
+
+/*
+  инициализация с новым парсером parse5,
+  дефолтными опциями
+  и принудительным включением режима DocumentFragment
+*/
+//let $ = o.utils.init_cheerio_new(s, {}, false);
+let $ = o.utils.init_cheerio_new(s, null, false);
+
+
+//$('.foo').reptag('[test]', '[/test]');
+//$('.foo').changeTag('test');
+//$('.foo').unwrap();
+$('.foo').wrapAll('<test><inner></inner></test>');
+s = $.html();
+</pre>
+  <p>Инициализатор, также, добавляет четыре метода, которых нет в cheerio:</p>
+
+  <p><span class="comline">unwrap,<br />
+  wrapAll,<br />
+  reptag,<br />
+  changeTag</span>
+  </p>
+
+  <p>Первые два метода делают то же, что и одноимённые методы JQuery.<br />
+  Третий (<span class="comline">reptag</span>) аналогов в JQuery не имеет и может быть использован для замены тегов.</p>
+
+  <p>Пример:</p>
+
+  <pre>
+<span class="line-comment">//Содержание входного файла:</span>
+<span class="line-comment">//&lt;span class="italic"&gt;aaa&lt;/span&gt;&lt;span class="italic"&gt;bbb&lt;/span&gt;</span>
+<span class="line-comment">//Командная строка: rep -rt list input.txt output.txt</span>
+
+<span class="keyword">let</span> <span class="identifier">$</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">init_cheerio</span><span class="bold">(</span><span class="identifier">s</span><span class="bold">);
+
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'.italic'</span><span class="bold">).</span><span class="identifier">reptag</span><span class="bold">(</span><span class="string">'[i]'</span><span class="bold">, </span><span class="string">'[/i]'</span><span class="bold">);
+
+</span><span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">$</span><span class="bold">.</span><span class="identifier">html</span><span class="bold">();
+
+</span><span class="line-comment">//Результат:</span>
+<span class="line-comment">//[i]aaa[/i][i]bbb[/i]</span>
+</pre>
+
+  <p>Метод <span class="comline">changeTag</span> предназначен для быстрой замены имени тега с сохранением атрибутов.</p>
+
+  <p>Пример:</p>
+
+  <pre>
+<span class="line-comment">//Содержание входного файла:</span>
+<span class="line-comment">//&lt;span class="italic"&gt;aaa&lt;/span&gt;&lt;span class="italic"&gt;bbb&lt;/span&gt;</span>
+<span class="line-comment">//Командная строка: rep -rt list input.txt output.txt</span>
+
+<span class="keyword">let</span> <span class="identifier">$</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">init_cheerio</span><span class="bold">(</span><span class="identifier">s</span><span class="bold">);
+
+</span><span class="identifier">$</span><span class="bold">(</span><span class="string">'.italic'</span><span class="bold">).</span><span class="identifier">changeTag</span><span class="bold">(</span><span class="string">'test'</span><span class="bold">);
+
+</span><span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">$</span><span class="bold">.</span><span class="identifier">html</span><span class="bold">();
+
+</span><span class="line-comment">//Результат:</span>
+<span class="line-comment">//&lt;test class="italic"&gt;aaa&lt;/test&gt;&lt;test class="italic"&gt;bbb&lt;/test&gt;</span>
+</pre>
+
+  <p><span><a class="mark" href="#nhtml" id="nhtml" name="nhtml">#</a></span> <span class="comline">normalizeHTML(str)</span></p>
+
+  <p>Код метода:</p>
+
+  <pre>
+<span class="identifier">normalizeHTML</span><span class="bold">(</span><span class="param">str</span><span class="bold">) {
+        </span><span class="keyword">const</span> <span class="identifier">pattern1</span> <span class="operator">=</span> <span class="regularexpression">/[\f\n\r\t\v ]+/g</span><span class="bold">;
+        </span><span class="identifier">str</span> <span class="operator">=</span> <span class="identifier">str</span><span class="bold">.</span><span class="identifier">replace</span><span class="bold">(</span><span class="identifier">pattern1</span><span class="bold">, </span><span class="string">' '</span><span class="bold">);
+        </span><span class="control-flow">return</span> <span class="identifier">str</span><span class="bold">;
+}</span>
+</pre>
+  <p><span><a class="mark" href="#dehtml" id="dehtml" name="dehtml">#</a></span> <span class="comline">decodeHTML(str)</span></p>
+
+  <p>Код метода:</p>
+
+  <pre>
+<span class="identifier">decodeHTML</span><span class="bold">(</span><span class="param">str</span><span class="bold">) {
+        </span><span class="control-flow">return</span> <span class="identifier">require</span><span class="bold">(</span><span class="string">'entities'</span><span class="bold">).</span><span class="identifier">decodeHTML</span><span class="bold">(</span><span class="identifier">str</span><span class="bold">);
+}</span>
+</pre>
+  <p><span><a class="mark" href="#enhtml" id="enhtml" name="enhtml">#</a></span> <span class="comline">encodeHTML(str)</span></p>
+
+  <p>Код метода:</p>
+
+  <pre>
+<span class="identifier">encodeHTML</span><span class="bold">(</span><span class="param">str</span><span class="bold">) {
+        </span><span class="control-flow">return</span> <span class="identifier">require</span><span class="bold">(</span><span class="string">'entities'</span><span class="bold">).</span><span class="identifier">encodeHTML</span><span class="bold">(</span><span class="identifier">str</span><span class="bold">);
+}</span>
+</pre>
+  <p><span><a class="mark" href="#dechst" id="dechst" name="dechst">#</a></span> <span class="comline">decode(str, charset)</span></p>
+
+  <p>Код метода:</p>
+
+  <pre>
+<span class="identifier">decode</span><span class="bold">(</span><span class="param">str</span><span class="bold">, </span><span class="param">charset</span><span class="bold">) {
+        </span><span class="control-flow">return</span> <span class="identifier">require</span><span class="bold">(</span><span class="string">'iconv-lite'</span><span class="bold">).</span><span class="identifier">decode</span><span class="bold">(</span><span class="identifier">str</span><span class="bold">, </span><span class="identifier">charset</span><span class="bold">);
+}</span>
+</pre>
+  <p><span><a class="mark" href="#removeodd" id="removeodd" name="removeodd">#</a></span> <span class="comline">remove_odd_slash(str, a)</span></p>
+
+  <p>Удаление неэкранированных обратных слешей (с проверкой на чётность)</p>
+
+  <p>Если второй аргумент "a" имеет значение <span class="comline">true</span>, то:</p>
+
+  <pre>
+        <span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">s</span><span class="bold">.</span><span class="identifier">replace</span><span class="bold">(</span><span class="regularexpression">/(\\*)/g</span><span class="bold">, </span><span class="keyword">function</span><span class="bold">(</span><span class="param">a</span><span class="bold">, </span><span class="param">m1</span><span class="bold">) { </span><span class="control-flow">if</span><span class="bold"> ((</span><span class="identifier">m1</span><span class="bold">.</span><span class="identifier">length</span> <span class="operator">%</span> <span class="numeric">2</span><span class="bold">) </span><span class="operator">===</span> <span class="numeric">1</span><span class="bold">) </span><span class="identifier">m1</span> <span class="operator">=</span> <span class="identifier">m1</span><span class="bold">.</span><span class="identifier">slice</span><span class="bold">(</span><span class="numeric">0</span><span class="bold">, </span><span class="operator">-</span><span class="numeric">1</span><span class="bold">); </span><span class="control-flow">return</span> <span class="identifier">m1</span><span class="bold">; });</span>
+</pre>
+  <p>Если второй аргумент отсутствует, то</p>
+
+  <pre>
+        <span class="identifier">s</span> <span class="operator">=</span> <span class="identifier">s</span><span class="bold">.</span><span class="identifier">replace</span><span class="bold">(</span><span class="regularexpression">/(\\*)([@#\^~\[\]\{\}\(\)])/g</span><span class="bold">,  </span><span class="keyword">function</span><span class="bold">(</span><span class="param">a</span><span class="bold">, </span><span class="param">m1</span><span class="bold">, </span><span class="param">m2</span><span class="bold">){</span><span class="control-flow">if</span><span class="bold"> ((</span><span class="identifier">m1</span><span class="bold">.</span><span class="identifier">length</span> <span class="operator">%</span> <span class="numeric">2</span><span class="bold">) </span><span class="operator">===</span> <span class="numeric">1</span><span class="bold">) </span><span class="identifier">m1</span> <span class="operator">=</span> <span class="identifier">m1</span><span class="bold">.</span><span class="identifier">slice</span><span class="bold">(</span><span class="numeric">0</span><span class="bold">, </span><span class="operator">-</span><span class="numeric">1</span><span class="bold">); </span><span class="control-flow">return</span> <span class="identifier">m1</span> <span class="operator">+</span> <span class="identifier">m2</span><span class="bold">; });</span>
+</pre>
+  <p><span><a class="mark" href="#removecom" id="removecom" name="removecom">#</a></span> <span class="comline">remove_comments(str)</span></p>
+
+  <p>Удаляет закомментированные части - {{комментарий}}</p>
+
+  <p><span><a class="mark" href="#removescb" id="removescb" name="removescb">#</a></span> <span class="comline">remove_scb(str)</span> (<i>scb - сокращение от single curly braces</i>)</p>
+
+  <p>Удаляет {текст}</p>
+
+  <p><span><a class="mark" href="#guess" id="guess" name="guess">#</a></span> <span class="comline">guessEncoding(path)</span></p>
+
+  <p>Пытается определить кодировку укажанного в <span class="comline">path</span> файла (UTF-16LE или UTF-8).</p>
+
+  <p>В случае отсутствия в файле BOM метод вернёт <span class="comline">utf8</span></p>
+
+  <p><span><a class="mark" href="#openround" id="openround" name="openround">#</a></span> <span class="comline">openroundbrackets(h, cb)</span></p>
+
+  <p>Раскрывает крыглые скобоки в заголовках.</p>
+
+  <p><i>Второй аргумент опциональный, используется плагином</i> <a href="index.htm#op16">-rb</a>, <i>когда он запускается с ключом</i> <span class="comline">-dsl2</span> <i>или</i> <span class="comline">-dslm2</span></p>
+
+  <p>Формат возвращаемых данных:<br />
+  [[массив с заголовками], [массив с информацией об ошибках]]</p>
+
+  <p>Массив с информацией об ошибках:<br />
+  [0] - ( без )<br />
+  [1] - ) без (<br />
+  [2] - { без }<br />
+  [3] - } без {<br />
+  [4] - ошибка: альтернативных частей больше 6<br />
+  [5] - неэкранированный @<br />
+  [6] - неэкранированный #<br />
+  [7] - заголовок целиком состоит из альтернативной части<br />
+  [8] - имеются ли ошибки (true/false)</p>
+
+  <p><span><a class="mark" href="#filtergls" id="filtergls" name="filtergls">#</a></span> <span class="comline">filter_gls_hw_list(str)</span></p>
+
+  <p>Для фильтрации заголовков в GLS файле.</p>
+
+  <p><i>Дубликаты из списка заголовков удаляются.</i>
+  </p>
+
+  <p><i>При этом сохраняются заголовки, которые находятся в начале строки.</i>
+  </p>
+
+  <p>Пример:</p>
+
+  <p>до)<br />
+  <i>кот</i>|<i>котами</i>|<i>кот</i></p>
+
+  <p>после)<br />
+  <i>кот</i>|<i>котами</i> (а не <i>котами</i>|<i>кот</i>)</p>
+
+  <p><span><a class="mark" href="#fileexi" id="fileexi" name="fileexi">#</a></span> <span class="comline">fileExists(filePath)</span></p>
+
+  <p>Проверка существования файла.</p>
+
+  <p><span><a class="mark" href="#spinner" id="spinner_start" name="spinner_start">#</a></span> <span class="comline">spinner_start(msg, arr, time)<br />
+  <span><a class="mark" href="#spinner" id="spinner_stop" name="spinner_stop">#</a></span> spinner_stop(id, msg)</span></p>
+
+  <p>Пример использования</p>
+
+  <pre>
+<span class="keyword">let</span> <span class="identifier">spin</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_start</span><span class="bold">(</span><span class="string">'Processing... %s'</span><span class="bold">, [</span><span class="string">'|'</span><span class="bold">, </span><span class="string">'/'</span><span class="bold">, </span><span class="string">'—'</span><span class="bold">, </span><span class="string">'\\'</span><span class="bold">,]);
+</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_stop</span><span class="bold">(</span><span class="identifier">spin</span><span class="bold">, </span><span class="string">'Processing... Done\n'</span><span class="bold">);
+
+</span><span class="keyword">let</span> <span class="identifier">spin</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_start</span><span class="bold">(</span><span class="string">'Checking... %s'</span><span class="bold">, [</span><span class="string">'◢'</span><span class="bold">, </span><span class="string">'◣'</span><span class="bold">, </span><span class="string">'◤'</span><span class="bold">, </span><span class="string">'◥'</span><span class="bold">,]);
+</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_stop</span><span class="bold">(</span><span class="identifier">spin</span><span class="bold">, </span><span class="string">'Checking... OK\n'</span><span class="bold">);
+
+</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">spin</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_start</span><span class="bold">(</span><span class="string">'Loading... %s'</span><span class="bold">, [</span><span class="string">'...'</span><span class="bold">, </span><span class="string">'..'</span><span class="bold">, </span><span class="string">'.'</span><span class="bold">, </span><span class="string">''</span><span class="bold">,], </span><span class="numeric">400</span><span class="bold">);
+</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_stop</span><span class="bold">(</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">spin</span><span class="bold">);
+
+</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">spin</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_start</span><span class="bold">(</span><span class="string">'%s Loading...'</span><span class="bold">, [</span><span class="string">'🌒'</span><span class="bold">, </span><span class="string">'🌓'</span><span class="bold">, </span><span class="string">'🌔'</span><span class="bold">, </span><span class="string">'🌕'</span><span class="bold">,]);
+</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_stop</span><span class="bold">(</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">spin</span><span class="bold">, </span><span class="string">'🌑 Loading...\n'</span><span class="bold">);</span>
+</pre>
+  <p><span><a class="mark" href="#htmlcl" id="htmlcl" name="htmlcl">#</a></span> <span class="subs">Модуль htmlclean</span></p>
+
+  <p>Этот модуль содержит только одну функцию из одноимённого модуля <a href="https://github.com/anseki/htmlclean">github.com/anseki/htmlclean</a></p>
+
+  <p><b>Назначение</b>: <i>Удаление излишних пробельных символов в HTML-исходнике</i>.</p>
+
+  <p><i>В целях улучшения производительности из модуля был удалён расширенный функционал</i>.<br />
+  <i>Для лучших результатов рекомендуется использовать в сочетании с HTML-парсерами <b>parse5</b>, <b>htmlparser2</b> или другими модулями на их основе</i>.</p>
+
+  <p>Тестовый пример:</p>
+
+  <pre>
+<span class="keyword">const</span> <span class="identifier">htmlclean</span> <span class="operator">=</span> <span class="identifier">require</span><span class="bold">(</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utilspath</span> <span class="operator">+</span> <span class="string">'htmlclean.js'</span><span class="bold">).</span><span class="identifier">htmlclean</span><span class="bold">;
+
+</span><span class="keyword">const</span> <span class="identifier">dirtyHtml</span> <span class="operator">=</span> <span class="identifier">String</span><span class="bold">.</span><span class="identifier">raw</span><span class="template">`
+    &lt;h1&gt;     
+      My First Heading&lt;/h1&gt;
+    &lt;p&gt;
+    My first    paragraph.
+        &lt;/p&gt;
+    &lt;b&gt;болд &lt;i&gt; болд-курсив &lt;/i&gt; &lt;/b&gt; &lt;i&gt; курсив &lt;u&gt; курсив-подчёркивание &lt;/u&gt; &lt;/i&gt; &lt;u&gt; подчёркивание &lt;/u&gt;
+
+`</span><span class="bold">;
+
+</span><span class="keyword">let</span> <span class="identifier">r</span> <span class="operator">=</span> <span class="identifier">htmlclean</span><span class="bold">(</span><span class="identifier">dirtyHtml</span><span class="bold">);
+</span><span class="identifier">console</span><span class="bold">.</span><span class="identifier">log</span><span class="bold">(</span><span class="identifier">r</span><span class="bold">);
+
+</span><span class="block-comment">/*
+
+Результат:
+&lt;h1&gt; My First Heading&lt;/h1&gt;&lt;p&gt; My first paragraph.&lt;/p&gt; &lt;b&gt;болд &lt;i&gt;болд-курсив&lt;/i&gt;&lt;/b&gt; &lt;i&gt;курсив &lt;u&gt;курсив-подчёркивание&lt;/u&gt;&lt;/i&gt; &lt;u&gt;подчёркивание&lt;/u&gt;
+
+*/</span>
+</pre>
+  <p><span><a class="mark" href="#plug" id="plug" name="plug">#</a></span> <span class="subs">Плагины</span></p>
+
+  <p>Для операций, кроме тех, которые запускаются с ключами <span class="comline">-rt, -re, -rd, -rg</span> и <span class="comline">-rs</span> используются отдельные файлы с javascript кодом.</p>
+
+  <p>Эти файлы находятся в папке "<span class="comline">files/plugins</span>" и их имена совпадают с используемыми в командной строке ключами без символа "-".</p>
+
+  <p>Например:<br />
+  node nodereplacer.js -<span class="comline">pile</span> input.txt output.txt - files/plugins/<span class="comline">pile.js</span><br />
+  node nodereplacer.js -<span class="comline">susp</span> input.txt output.txt - files/plugins/<span class="comline">susp.js</span><br />
+  node nodereplacer.js -<span class="comline">symb</span> input.txt output.txt - files/plugins/<span class="comline">symb.js</span></p>
+
+  <p>При создании плагинов необходимо исходя из потребностей выбрать один из трёх форматов командной строки, которые допустимы при их использовании:</p>
+
+  <p>1) node nodereplacer.js -<span class="comline">ключ1</span> -<span class="comline">ключ2</span> input.txt output.txt<br />
+  2) node nodereplacer.js -<span class="comline">ключ1</span> input.txt output.txt<br />
+  3) node nodereplacer.js -<span class="comline">ключ1</span> -<span class="comline">ключ2</span> output.txt<br />
+  4) node nodereplacer.js -<span class="comline">ключ1</span> input.txt<br />
+  5) node nodereplacer.js -<span class="comline">ключ1</span> output.txt</p>
+
+  <p>Первый ключ - имя файла с плагином без "-" и расширения.<br />
+  При именовании файлов недопустимо использовать следующие имена: <span class="comline">rt, re, rd, rg, rs</span></p>
+
+  <p>Второй ключ используется для передачи дополнительной информации.</p>
+
+  <p>При использовании плагинов по умолчанию входной файл читается постатейно (режим <span class="comline">by_dsl_article</span>).</p>
+
+  <p>Выбор режима чтения (построчный, постатейный...) через командную строку невозможен.</p>
+
+  <p>Чтобы переключиться на построчный режим (например при обработке файла, который не имеет словарной структуры) надо добавить в начале плагина следующий код:</p>
+
+  <pre>
+<span class="keyword">function</span> <span class="identifier">onstart</span><span class="bold">()
+{
+  </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">byline</span><span class="bold">();
+}</span>
+</pre>
+  <p>Пример простенького плагина:</p>
+
+  <p><b>Назначение</b>: <i>Получение списка символов</i>.</p>
+
+  <p><b>Название файла</b>: <i>slist.js</i></p>
+
+  <p>Этот файл должен находиться в папке "<span class="comline">files/plugins</span>"</p>
+
+  <p>Командная строка:<br />
+  <span class="comline">node nodereplacer.js -slist input.txt output.txt</span></p>
+
+  <p><b>Код</b>:</p>
+
+  <pre>
+<span class="line-comment">//Обработка построчная.</span>
+<span class="keyword">function</span> <span class="identifier">onstart</span><span class="bold">()
+{
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">byline</span><span class="bold">();
+}
+
+</span><span class="line-comment">//Режем строку на символы.</span>
+<span class="keyword">let</span> <span class="identifier">arr</span> <span class="operator">=</span> <span class="bold">[...</span>s<span class="bold">];</span>
+
+<span class="line-comment">//фильтруем.</span>
+<span class="control-flow">while</span><span class="bold"> (</span><span class="identifier">arr</span> <span class="operator">!==</span> <span class="null">null</span> <span class="operator">&amp;&amp;</span> <span class="identifier">arr</span><span class="bold">.</span><span class="identifier">length</span> <span class="operator">!==</span> <span class="numeric">0</span><span class="bold">)
+{
+        </span><span class="keyword">const</span> <span class="identifier">c</span> <span class="operator">=</span> <span class="identifier">arr</span><span class="bold">.</span><span class="identifier">shift</span><span class="bold">();
+        </span><span class="control-flow">if</span><span class="bold"> (</span><span class="regularexpression">/^[^\s]$/</span><span class="bold">.</span><span class="identifier">test</span><span class="bold">(</span><span class="identifier">c</span><span class="bold">))
+                </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">tab</span><span class="bold">[</span><span class="identifier">c</span><span class="bold">] </span><span class="operator">=</span> <span class="string">''</span><span class="bold">;
+}
+
+
+</span><span class="line-comment">//Чтобы прочитанная строка не была записана в выходной файл.</span>
+<span class="identifier">s</span> <span class="operator">=</span> <span class="null">null</span><span class="bold">;
+
+</span><span class="line-comment">//Переносим данные в массив o.res и сортируем.</span>
+<span class="keyword">function</span> <span class="identifier">onexit</span><span class="bold">()
+{
+        </span><span class="control-flow">for</span><span class="bold"> (</span><span class="keyword">let</span> <span class="identifier">key</span> <span class="control-flow">in</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">tab</span><span class="bold">)
+        {
+                </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">res</span><span class="bold">.</span><span class="identifier">push</span><span class="bold">(</span><span class="identifier">key</span><span class="bold">);
+        }
+
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">res</span><span class="bold">.</span><span class="identifier">sort</span><span class="bold">();
+}</span>
+</pre>
+  <p><i>Возможный результат</i>:</p>
+
+  <pre>
+b
+d
+g
+i
+o
+p
+r
+И т. д.
+</pre>
+  <p><span><a class="mark" href="#test" id="test" name="test">#</a></span> <span class="subs">Тестирование</span></p>
+
+  <p><a href="tester.htm">На отдельной странице</a>.</p>
+
+  <p><span><a class="mark" href="#exam" id="exam" name="exam">#</a></span> <span class="subs">Примеры и сниппеты</span></p>
+
+  <p>Можно посмотреть в папке <i>/nodereplacer/files/snippets</i></p>
+
+  <p><span><a class="mark" href="#npmjs" id="npmjs" name="npmjs">#</a></span> <span class="subs">Внешние модули (npmjs.com)</span></p>
+
+  <p>Внешние модули установленные напрямую (см. <i>package.json</i>):</p>
+
+  <ul>
+    <li><a href="https://www.npmjs.com/package/sanitize-html">sanitize-html</a>
+    </li>
+
+    <li><a href="https://github.com/ashtuchkin/iconv-lite">iconv-lite</a>
+    </li>
+
+    <li><a href="https://github.com/cheeriojs/cheerio">cheerio</a>
+    </li>
+
+    <li><a href="https://github.com/jquery/esprima">esprima</a>
+    </li>
+
+    <li><a href="https://www.npmjs.com/package/mime">mime</a>
+    </li>
+
+    <li><a href="https://www.npmjs.com/package/parse5-utils">parse5-utils</a>
+    </li>
+
+    <li><a href="https://www.npmjs.com/package/stringify-object">stringify-object</a>
+    </li>
+  </ul>
+
+  <p>Внешние модули, которые были установлены как зависимости:</p>
+
+  <p><a href="https://www.npmjs.com/package/@types/npm">@types</a>, <a href="https://www.npmjs.com/package/array-uniq">array-uniq</a>, <a href="https://www.npmjs.com/package/boolbase">boolbase</a>, <a href="https://www.npmjs.com/package/core-util-is">core-util-is</a>, <a href="https://www.npmjs.com/package/css-select">css-select</a>, <a href="https://www.npmjs.com/package/css-what">css-what</a>, <a href="https://www.npmjs.com/package/dom-serializer">dom-serializer</a>, <a href="https://www.npmjs.com/package/domelementtype">domelementtype</a>, <a href="https://www.npmjs.com/package/domhandler">domhandler</a>, <a href="https://www.npmjs.com/package/domutils">domutils</a>, <a href="https://www.npmjs.com/package/entities">entities</a>, <a href="https://www.npmjs.com/package/esprima">esprima</a>, <a href="https://www.npmjs.com/package/get-own-enumerable-property-symbols">get-own-enumerable-property-symbols</a>, <a href="https://www.npmjs.com/package/htmlparser2">htmlparser2</a>, <a href="https://www.npmjs.com/package/inherits">inherits</a>, <a href="https://www.npmjs.com/package/is-obj">is-obj</a>, <a href="https://www.npmjs.com/package/is-regexp">is-regexp</a>, <a href="https://www.npmjs.com/package/isarray">isarray</a>, <a href="https://www.npmjs.com/package/lodash">lodash</a>, <a href="https://www.npmjs.com/package/lodash.escaperegexp">lodash.escaperegexp</a>, <a href="https://www.npmjs.com/package/nth-check">nth-check</a>, <a href="https://www.npmjs.com/package/number-is-nan">number-is-nan</a>, <a href="https://www.npmjs.com/package/parse5">parse5</a>, <a href="https://www.npmjs.com/package/process-nextick-args">process-nextick-args</a>, <a href="https://www.npmjs.com/package/readable-stream">readable-stream</a>, <a href="https://www.npmjs.com/package/safe-buffer">safe-buffer</a>, <a href="https://www.npmjs.com/package/srcset">srcset</a>, <a href="https://www.npmjs.com/package/string_decoder">string_decoder</a>, <a href="https://www.npmjs.com/package/util-deprecate">util-deprecate</a>, <a href="https://www.npmjs.com/package/xtend">xtend</a></p>
+
+  <p><span><a class="mark" href="#other" id="other" name="other">#</a></span> <span class="subs">Разное</span></p>
+
+  <p><span><a class="mark" href="#unipb" id="unipb" name="unipb">#</a></span> УНИВЕРСАЛЬНЫЙ ИНДИКАТОР ПРОГРЕССА</p>
+
+  <p>Пример использования:</p>
+
+  <pre>
+<span class="keyword">const</span> <span class="identifier">pb</span> <span class="operator">=</span> <span class="identifier">require</span><span class="bold">(</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utilspath</span><span class="bold">).</span><span class="identifier">progressbar</span><span class="bold">(</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">arr</span><span class="bold">.</span><span class="identifier">length</span><span class="bold">, </span><span class="numeric">1</span><span class="bold">);
+</span><span class="identifier">pb</span><span class="bold">.</span><span class="identifier">start</span><span class="bold">();
+
+</span><span class="control-flow">for</span><span class="bold"> (</span><span class="keyword">let</span> <span class="identifier">i</span> <span class="operator">=</span> <span class="numeric">0</span><span class="bold">; </span><span class="identifier">i</span> <span class="operator">&lt;</span> <span class="identifier">arr</span><span class="bold">.</span><span class="identifier">length</span><span class="bold">; </span><span class="identifier">i</span><span class="operator">++</span><span class="bold">)
+{
+        </span><span class="identifier">pb</span><span class="bold">.</span><span class="identifier">stat</span> <span class="operator">=</span> <span class="identifier">i</span><span class="bold">;
+}
+
+</span><span class="identifier">pb</span><span class="bold">.</span><span class="identifier">end</span><span class="bold">();</span>
+</pre>
+  <p>Второй аргумент в <span class="comline">progressbar</span> можно опустить, в этом случае будет использовано значение по умолчанию - 0.</p>
+
+  <p>Значение этого аргумента влияет на формат индикации, 0 - полная, 1 - более компактная.</p>
+
+  <p><span><a class="mark" href="#mmem" id="mmem" name="mmem">#</a></span> МОДУЛЬ ДЛЯ ИЗМЕРЕНИЯ ПОТРЕБЛЕНИЯ ПАМЯТИ</p>
+
+  <p>Пример использования:</p>
+
+  <pre>
+<span class="keyword">function</span> <span class="identifier">onstart</span><span class="bold">()
+{
+
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">mem</span> <span class="operator">=</span> <span class="identifier">require</span><span class="bold">(</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utilspath</span> <span class="operator">+</span> <span class="string">'memory.js'</span><span class="bold">).</span><span class="identifier">mem</span><span class="bold">(</span><span class="numeric">100</span><span class="bold">);
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">mem</span><span class="bold">.</span><span class="identifier">start</span><span class="bold">();
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">byline</span><span class="bold">();
+
+}
+
+</span><span class="keyword">function</span> <span class="identifier">onexit</span><span class="bold">()
+{
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">mem</span><span class="bold">.</span><span class="identifier">stop</span><span class="bold">();
+        </span><span class="identifier">console</span><span class="bold">.</span><span class="identifier">log</span><span class="bold">(</span><span class="string">'\nMemory Usage (max rss): '</span> <span class="operator">+</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">mem</span><span class="bold">.</span><span class="identifier">get</span><span class="bold">());
+
+}</span>
+</pre>
+  <p>Интервал измерений можно изменить на другой, в примере выше - 100 миллисекунд</p>
+
+  <p>Результат - максимальный уровень в мегабайтах, который был достигнут (пойман) до окончания измерения (а не средний уровень).</p>
+
+  <p><span><a class="mark" href="#eol1" id="eol1" name="eol1">#</a></span> СОХРАНЕНИЕ ОРИГИНАЛЬНЫХ РАЗДЕЛИТЕЛЕЙ СТРОК</p>
+
+  <p><b>Внимание!</b> Это работает только в построчном режиме чтения.</p>
+
+  <p>Разделители во входном файле могут быть разные: \n, \r, \r\n</p>
+
+  <p>Но по умолчанию на Windows для записи в выходной файл всегда используется либо только \r\n или \n на Linux.</p>
+
+  <p>Чтобы сохранить разделители входного файла:</p>
+
+  <pre>
+<span class="keyword">function</span> <span class="identifier">onstart</span><span class="bold">()
+{
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">eol_mode</span> <span class="operator">=</span> <span class="numeric">1</span><span class="bold">;
+        </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">byline</span><span class="bold">();
+}</span>
+</pre>
+  <p><span><a class="mark" href="#eol2" id="eol2" name="eol2">#</a></span> ЗАПУСК АСИНХРОННОГО КОДА ПОСЛЕ ПРОЧТЕНИЯ ВХОДНОГО ФАЙЛА</p>
+
+  <p><b>Внимание!</b> Это работает только в построчном режиме чтения.</p>
+
+  <p>Пример:</p>
+
+  <pre>
+<span class="identifier">s</span> <span class="operator">=</span> <span class="null">null</span><span class="bold">;
+
+
+</span><span class="keyword">async</span> <span class="keyword">function</span> <span class="identifier">onexit_async</span><span class="bold">()
+{
+
+        </span><span class="keyword">function</span> <span class="identifier">processpage</span><span class="bold">()
+        {
+
+                </span><span class="control-flow">try</span><span class="bold">
+                {
+
+                        </span><span class="keyword">let</span> <span class="identifier">title</span> <span class="operator">=</span> <span class="identifier">document</span><span class="bold">.</span><span class="identifier">getElementsByTagName</span><span class="bold">(</span><span class="string">'title'</span><span class="bold">);
+                        </span><span class="control-flow">return</span>  <span class="identifier">title</span><span class="bold">[</span><span class="numeric">0</span><span class="bold">].</span><span class="identifier">innerHTML</span><span class="bold">;  
+
+                }
+                </span><span class="control-flow">catch</span><span class="bold">(</span><span class="identifier">e</span><span class="bold">)
+                {
+                        </span><span class="control-flow">return</span> <span class="identifier">e</span><span class="bold">.</span><span class="identifier">message</span><span class="bold">;
+                }
+
+        }
+
+        </span><span class="control-flow">try</span><span class="bold">
+        {
+
+                </span><span class="keyword">const</span> <span class="identifier">puppeteer</span> <span class="operator">=</span> <span class="identifier">require</span><span class="bold">(</span><span class="string">'puppeteer'</span><span class="bold">);
+                </span><span class="identifier">console</span><span class="bold">.</span><span class="identifier">log</span><span class="bold">(</span><span class="string">'\n'</span><span class="bold">);
+                </span><span class="keyword">let</span> <span class="identifier">spin</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_start</span><span class="bold">(</span><span class="string">'Processing... %s'</span><span class="bold">, [</span><span class="string">'|'</span><span class="bold">, </span><span class="string">'/'</span><span class="bold">, </span><span class="string">'—'</span><span class="bold">, </span><span class="string">'\\'</span><span class="bold">,]);
+                </span><span class="keyword">const</span> <span class="identifier">browser</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="identifier">puppeteer</span><span class="bold">.</span><span class="identifier">launch</span><span class="bold">({</span><span class="identifier">args</span><span class="bold"><span class="operator">:</span><span class="bold"> [</span></span><span class="string">'--no-sandbox'</span><span class="bold">, </span><span class="string">'--disable-setuid-sandbox'</span><span class="bold">]});
+                </span><span class="keyword">const</span> <span class="identifier">page</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="identifier">browser</span><span class="bold">.</span><span class="identifier">newPage</span><span class="bold">();
+
+                </span><span class="control-flow">while</span><span class="bold"> (</span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">idata</span><span class="bold">.</span><span class="identifier">next</span><span class="bold">())
+                {
+                  </span><span class="keyword">let</span> <span class="identifier">v</span> <span class="operator">=</span> <span class="identifier">o</span><span class="bold">.</span><span class="identifier">idata</span><span class="bold">.</span><span class="identifier">get</span><span class="bold">();
+                  </span><span class="keyword">await</span> <span class="identifier">page</span><span class="bold">.</span><span class="identifier">setContent</span><span class="bold">(</span><span class="identifier">v</span><span class="bold">, { </span><span class="identifier">waitUntil</span><span class="bold operator">: </span><span class="string">'domcontentloaded'</span><span class="bold"> });
+                  </span><span class="keyword">let</span> <span class="identifier">str</span> <span class="operator">=</span> <span class="keyword">await</span> <span class="identifier">page</span><span class="bold">.</span><span class="identifier">evaluate</span><span class="bold">(</span><span class="identifier">processpage</span><span class="bold">);
+                  </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">idata</span><span class="bold">.</span><span class="identifier">write</span><span class="bold">(</span><span class="identifier">str</span><span class="bold">);
+
+                }
+
+                </span><span class="identifier">browser</span><span class="bold">.</span><span class="identifier">close</span><span class="bold">();  
+                </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">utils</span><span class="bold">.</span><span class="identifier">spinner_stop</span><span class="bold">(</span><span class="identifier">spin</span><span class="bold">, </span><span class="string">'Processing... Done\n'</span><span class="bold">);
+                </span><span class="identifier">o</span><span class="bold">.</span><span class="identifier">et_show</span><span class="bold">();
+
+        }
+        </span><span class="control-flow">catch</span><span class="bold">(</span><span class="identifier">e</span><span class="bold">)
+        {
+                </span><span class="identifier">console</span><span class="bold">.</span><span class="identifier">log</span><span class="bold">(</span><span class="identifier">e</span><span class="bold">.</span><span class="identifier">message</span><span class="bold">);
+        }
+
+}</span>
+</pre>
+  <p>Пояснение к коду:</p>
+
+  <p>Перед началом чтения входного файла проверяется наличие в списке замен или плагине функции с именем <span class="comline">onexit_async</span></p>
+
+  <p>Если функция с таким именем обнаруживается, то происходит следующее:</p>
+
+  <ul>
+    <li>Переменная <span class="comline">o.eol_mode</span> получает значение <b>2</b></li>
+
+    <li>Переменная <span class="comline">o.et_auto</span> - <b>false</b></li>
+
+    <li>В самом конце, после выполнения всего кода, который содержит список замен или плагин, функция <span class="comline">onexit_async</span> автоматически запускается.</li>
+  </ul>
+
+  <p>Автоматическое переназначение переменных <span class="comline">o.eol_mode</span> и <span class="comline">o.et_auto</span> происходит до запуска функции <span class="comline">onstart</span></p>
+
+  <p>Поэтому значение их можно ещё изменить вручную, если это нужно в этой функции (смотрите пример в файле <i>nodereplacer/files/snippets/examples/pupperteer2.js</i>)</p>
+
+  <p>Если <span class="comline">o.eol_mode</span> сохранит значение <b>2</b>, как в этом примере, то будет сознана карта смещений входного файла, которая будет записана в объект <span class="comline">o.idata</span></p>
+
+  <p>После завершения чтения входного файла, не раньше, можно будет пролистать все строки входного файла используя метод <span class="comline">next</span> этого объекта.</p>
+
+  <p>Для получения более детальной информации смотрите код класса <span class="comline">offset_eol</span> в файле <i>nodereplacer.js</i></p>
+
+  <p>Функция <span class="comline">onexit_async</span> игнорируется, если перезапускается чтение входного файла через <span class="comline">o.repeat</span> в функции <span class="comline">onexit</span></p>
+
+  <hr />
+</body>
+</html>

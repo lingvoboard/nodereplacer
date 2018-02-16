@@ -1,0 +1,24 @@
+{
+  "name": "nodereplacer",
+  "version": "1.5.5",
+  "description": "dictionary conversion.",
+  "author": {
+    "name": "andreyefgs",
+    "url": "http://lingvoboard.ru/"
+  },
+  "contributors": [
+    {
+      "name": "Romul81"
+    }
+  ],
+  "private": true,
+  "dependencies": {
+    "sanitize-html": "latest",
+    "iconv-lite": "latest",
+    "cheerio": "latest",
+    "esprima": "latest",
+    "mime": "latest",
+    "parse5-utils": "latest",
+    "stringify-object": "latest"
+  }
+}
