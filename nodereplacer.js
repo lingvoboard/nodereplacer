@@ -853,6 +853,7 @@ function by_dsl_article() {
 					if (art0.length > 0) {
 						articleCount++;
 						o.count = articleCount;
+						o.art_start = art_start;
 
 						const res = ProcessDSLArticle(art0, art1, o, articleCount, art_start);
 
@@ -912,6 +913,7 @@ function by_dsl_article() {
 					if (art0.length > 0) {
 						articleCount++;
 						o.count = articleCount;
+						o.art_start = art_start;
 
 						const res = ProcessDSLArticle(art0, art1, o, articleCount, art_start);
 
@@ -948,6 +950,7 @@ function by_dsl_article() {
 			if (art0.length > 0) {
 				articleCount++;
 				o.count = articleCount;
+				o.art_start = art_start;
 
 				const res = ProcessDSLArticle(art0, art1, o, articleCount, art_start);
 
