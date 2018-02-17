@@ -62,13 +62,14 @@ class readline_eol_reader
 				len = this.fileSize - offset;
 			}
 			
+			
 			const buf = Buffer.alloc(len);
 			fs.readSync(this.ifd, buf, 0, len, offset);
 			this.disk_access_counter++;
 			let str = buf.toString(this.in_encoding);
 
-			const arr = str.replace(/\r$/, "").match(/([\r\n]+)/g);
-
+			const arr = str.replace(/\r$/, "").match(/((?:\r\n|\n|\r))/g);
+			
 			if ((arr) && (arr.length > 0))
 			{
 				this.buffer_arr = arr;
