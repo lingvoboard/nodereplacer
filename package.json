@@ -15,7 +15,7 @@
   "dependencies": {
     "sanitize-html": "latest",
     "iconv-lite": "latest",
-    "cheerio": "latest",
+    "cheerio": "1.0.0-rc.2",
     "esprima": "latest",
     "mime": "latest",
     "parse5-utils": "latest",
