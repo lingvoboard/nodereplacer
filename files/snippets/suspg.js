@@ -12,9 +12,9 @@ Modified: 09-11-2017 (21:15)
 - Ссылки у которых значение атрибута href начинается с "javascript:" игнорируются.
 
 ИСПОЛЬЗОВАНИЕ
-rep -rg suspg.js input.gls out.gls 
+rep -rg suspg.js input.gls out.gls
 Как плагин:
-rep -suspg input.gls out.gls 
+rep -suspg input.gls out.gls
 
 ПРИМЕР
 
@@ -32,8 +32,6 @@ perro
 chien
 перевод<a href="error">aaaaa</a> <a href="http://example.com">aaaaa</a>
 
-
-
 После)
 
 собака
@@ -48,84 +46,77 @@ perro
 chien
 перевод<a href="error">###aaaaa</a> <a href="http://example.com">aaaaa</a>
 
-
 */
 
-function onstart()
-{
-	o.invalidLinksCounter = 0;
-	o.suspendedLinksCounter = 0;
-	fs.writeFileSync('susp_href.log', o.bom + "Hrefs of suspended links:\n", {encoding: 'utf8', flag: "w"});
-	o.progress_bar_title = 'Reading headwords:\n';
-	o.by_gls_article();
+function onstart () {
+  o.invalidLinksCounter = 0
+  o.suspendedLinksCounter = 0
+  fs.writeFileSync('susp_href.log', o.bom + 'Hrefs of suspended links:\n', {
+    encoding: 'utf8',
+    flag: 'w'
+  })
+  o.progress_bar_title = 'Reading headwords:\n'
+  o.by_gls_article()
 }
 
+if (o.loop === 1) {
+  let arr = o.gls[0]
+    .split('|')
+    .map(el => {
+      return el.trim()
+    })
+    .filter(Boolean)
+  for (let v of arr) o.tab[v] = 0
+  s = null
+} else {
+  function removeAnchorPart (lnk) {
+    return lnk.replace(/^([^]*?)#.*$/, '$1')
+  }
 
-if (o.loop === 1)
-{
+  let $ = o.utils.init_cheerio_old(o.gls[1])
 
-	let arr = o.gls[0].split("|").map(el=>{return el.trim()}).filter(Boolean);
-	for (let v of arr) o.tab[v]  =  0;
-	s = null;
-	
-}
-else
-{
-	
-	function removeAnchorPart(lnk)
-	{
-		return lnk.replace(/^([^]*?)#.*$/, "$1");
-	}
+  $('a').each(function (i, elem) {
+    let h = $(elem).attr('href')
+    let t = $(elem).text()
 
-	
-	let $ = o.utils.init_cheerio_old(o.gls[1]);
-	
-	$('a').each(function(i, elem) {
+    if (
+      !h ||
+      !t ||
+      h.trim() === '' ||
+      t.trim() === '' ||
+      /^[^]*#\s*$/.test(h)
+    ) {
+      o.invalidLinksCounter++
+      $(elem).html('$$$' + $(elem).html())
+    } else {
+      let q = removeAnchorPart(h.trim())
 
-		let h = $(elem).attr('href');
-		let t = $(elem).text();
-		
-		if ((!h) || (!t) || (h.trim() === '') || (t.trim() === '') || (/^[^]*#\s*$/.test(h)))
-		{
-			o.invalidLinksCounter++;
-			$(elem).html('$$$' + $(elem).html());
-		} 
-		else
-		{
-			let q = removeAnchorPart(h.trim());
-			
-			if ((q) && (/^(https?|javascript):/.test(q) === false) && (o.tab[q] === undefined))
-			{
-				o.suspendedLinksCounter++;
-				$(elem).html('###' + $(elem).html());
-				fs.writeFileSync('susp_href.log', h + "\n", {encoding: 'utf8', flag: "a"});
-			}
-		
-			
-		}
+      if (
+        q &&
+        /^(https?|javascript):/.test(q) === false &&
+        o.tab[q] === undefined
+      ) {
+        o.suspendedLinksCounter++
+        $(elem).html('###' + $(elem).html())
+        fs.writeFileSync('susp_href.log', h + '\n', {
+          encoding: 'utf8',
+          flag: 'a'
+        })
+      }
+    }
+  })
 
-
-
-	});
-
-
-s = o.gls[0] + "\n" + $.html({ decodeEntities: false });	
-	
+  s = o.gls[0] + '\n' + $.html({ decodeEntities: false })
 }
 
-function onexit()
-{
-	
-	if (o.loop === 1)
-	{
-		o.progress_bar_title = 'Cheking links:\n';
-		o.repeat = 'by_gls_article';
-	}
+function onexit () {
+  if (o.loop === 1) {
+    o.progress_bar_title = 'Cheking links:\n'
+    o.repeat = 'by_gls_article'
+  }
 
-	if (o.loop === 2)
-	{
-		o.log.push("Invalid links: " + o.invalidLinksCounter);
-		o.log.push("Suspended links: " + o.suspendedLinksCounter);
-	}
-
+  if (o.loop === 2) {
+    o.log.push('Invalid links: ' + o.invalidLinksCounter)
+    o.log.push('Suspended links: ' + o.suspendedLinksCounter)
+  }
 }

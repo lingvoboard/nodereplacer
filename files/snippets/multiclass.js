@@ -6,7 +6,6 @@ rep -rd multiclass.js input.txt output.txt
 Назначение:
 <dsl class="m2"><dsl class="asterisk"><dsl class="ref"> => <span class="m2 asterisk ref">
 
-
 Пример:
 
 ДО)
@@ -26,62 +25,64 @@ overlive
 overlive
 \[<span class="t">ˌəuv(ə)ˈlɪv</span>\] <span class="p">гл.</span><span class="c">;</span> <span class="p">уст.</span> <span class="m1">1) <span class="trn">пережить <span class="i com">(кого-л.)</span></span></span> <span class="m2 asterisk ex"><span class="1033">He overlived his wife.</span> — Он пережил свою жену.</span> <span class="m1">2) <span class="trn steelblue">пережить, перенести</span></span> <span class="m2 asterisk ex"><span class="1033">to overlive much trouble</span> — пережить много горя</span> <span class="m2 asterisk b">Syn:</span> <span class="m2 asterisk ref">outlive</span>
 
-
 */
 
-
-let cheerio = require('cheerio');
+let cheerio = require('cheerio')
 
 let $ = cheerio.load(o.dsl[1], {
-	decodeEntities: false,
-	normalizeWhitespace: true
-});
+  decodeEntities: false,
+  normalizeWhitespace: true
+})
 
-function merge_tags() {
-	let dsls = $('dsl');
+function merge_tags () {
+  let dsls = $('dsl')
 
-	if (dsls.length === 0) {
-		return true;
-	}
+  if (dsls.length === 0) {
+    return true
+  }
 
-	let dsl = dsls.eq(0);
+  let dsl = dsls.eq(0)
 
-	let kids = dsl.find('dsl');
+  let kids = dsl.find('dsl')
 
-	if (kids.length === 0) {
-		dsl.replaceWith(
-			'<span class="' + dsl.attr('class') + '">' + dsl.html() + '</span>'
-		);
-		return false;
-	}
+  if (kids.length === 0) {
+    dsl.replaceWith(
+      '<span class="' + dsl.attr('class') + '">' + dsl.html() + '</span>'
+    )
+    return false
+  }
 
-	let clone = dsls.clone();
+  let clone = dsls.clone()
 
-	clone.eq(0).find('dsl').eq(0).remove();
+  clone
+    .eq(0)
+    .find('dsl')
+    .eq(0)
+    .remove()
 
-	if (clone.html().trim() === '') {
-		let kid = kids.eq(0);
+  if (clone.html().trim() === '') {
+    let kid = kids.eq(0)
 
-		dsl.attr('class', dsl.attr('class') + ' ' + kid.attr('class'));
+    dsl.attr('class', dsl.attr('class') + ' ' + kid.attr('class'))
 
-		kid.replaceWith(kid.html());
-	} else {
-		dsl.replaceWith(
-			'<span class="' + dsl.attr('class') + '">' + dsl.html() + '</span>'
-		);
-	}
+    kid.replaceWith(kid.html())
+  } else {
+    dsl.replaceWith(
+      '<span class="' + dsl.attr('class') + '">' + dsl.html() + '</span>'
+    )
+  }
 
-	return false;
+  return false
 }
 
-let count = 0;
+let count = 0
 
-let r = false;
+let r = false
 
 while (r === false && count < 500) {
-	r = merge_tags();
+  r = merge_tags()
 
-	count++;
+  count++
 }
 
-s = o.dsl[2].join('|') + '\n' + $.html().trim() + '\n\n';
+s = o.dsl[2].join('|') + '\n' + $.html().trim() + '\n\n'

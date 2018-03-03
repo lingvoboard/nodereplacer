@@ -1,9 +1,6 @@
-//Удаление BOM из файла в кодировке utf8.
+// Удаление BOM из файла в кодировке utf8.
 
-function onstart()
-{
-
-	o.bom = ''
-	o.byline();
-
+function onstart () {
+  o.bom = ''
+  o.byline()
 }

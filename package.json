@@ -13,12 +13,12 @@
   ],
   "private": true,
   "dependencies": {
-    "sanitize-html": "latest",
-    "iconv-lite": "latest",
-    "cheerio": "latest",
-    "esprima": "latest",
-    "mime": "latest",
-    "parse5-utils": "latest",
-    "stringify-object": "latest"
+    "sanitize-html": "1.18.2",
+    "iconv-lite": "0.4.19",
+    "cheerio": "1.0.0-rc.2",
+    "esprima": "4.0.0",
+    "mime": "2.2.0",
+    "parse5-utils": "2.0.0",
+    "stringify-object": "3.2.2"
   }
 }

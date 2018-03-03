@@ -7,7 +7,7 @@
 node nodereplacer.js -chktags tags.txt input.txt output.txt
 
 - Входные файлы (tags.txt и input.txt) должны иметь кодировку UTF-8.
-- input.txt должен быть в формате GLS2. 
+- input.txt должен быть в формате GLS2.
 
 - Статьи в которых нет всех указанных тегов маркируются меткой $$$
 - Регистр тегов учитывается.
@@ -55,89 +55,59 @@ $$$заголовок2
 [4]заголовок2
 <i>, </i>
 
-
 */
 
-function onstart()
-{
-
-	o.tagList = [];
-	fs.writeFileSync('result.log', "", {encoding: 'utf8', flag: "w"});
-	read_tagfile();
-	o.by_gls_article();
-
+function onstart () {
+  o.tagList = []
+  fs.writeFileSync('result.log', '', { encoding: 'utf8', flag: 'w' })
+  read_tagfile()
+  o.by_gls_article()
 }
 
+function read_tagfile () {
+  let encoding = o.utils.guessEncoding(process.argv[3])
 
-function read_tagfile()
-{
+  let s = fs.readFileSync(process.argv[3], encoding).toString()
 
+  let tab = Object.create(null)
 
-	let encoding = o.utils.guessEncoding(process.argv[3]);
+  let list = s.match(/<[^<>\n]+>/g)
 
-	let s = fs.readFileSync(process.argv[3], encoding).toString();
-
-	let tab = Object.create(null);
-
-	let list = s.match(/<[^<>\n]+>/g); 
-
-	if (list)
-	{
-
-		for (let v of list)
-		{
-
-
-			if (tab[v] === undefined)
-			{
-				tab[v] = '';
-				o.tagList.push(v);
-			}
-
-
-		}
-
-	}
-
-
+  if (list) {
+    for (let v of list) {
+      if (tab[v] === undefined) {
+        tab[v] = ''
+        o.tagList.push(v)
+      }
+    }
+  }
 }
 
+let h = o.gls[0]
+let tags = ''
 
+let tab = Object.create(null)
 
-let h = o.gls[0];
-let tags = '';
+let list = s.match(/<[^<>\n]+>/g)
 
-let tab = Object.create(null);
-
-let list = s.match(/<[^<>\n]+>/g); 
-
-if (list)
-{
-
-	for (let v of list)
-		tab[v] = '';
-
+if (list) {
+  for (let v of list) tab[v] = ''
 }
 
-for (let v of o.tagList)
-{
-	
-	if (tab[v] === undefined)
-	{
-		tags += v + ', ';
-	}
-
+for (let v of o.tagList) {
+  if (tab[v] === undefined) {
+    tags += v + ', '
+  }
 }
 
-let mark = '';
-if (tags !== '')
-{
-	fs.writeFileSync('result.log', "[" + o.gls[2] + "]" + h + "\n" + tags.replace(/, $/, "") + "\n\n", {encoding: 'utf8', flag: "a"});
-	mark = '$$$';
+let mark = ''
+if (tags !== '') {
+  fs.writeFileSync(
+    'result.log',
+    '[' + o.gls[2] + ']' + h + '\n' + tags.replace(/, $/, '') + '\n\n',
+    { encoding: 'utf8', flag: 'a' }
+  )
+  mark = '$$$'
 }
 
-
-s = mark + s;
-
-
-
+s = mark + s

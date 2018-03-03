@@ -1,28 +1,24 @@
 /*
 
-
 Командная строка:
-rep -rt sortlist.js list.txt output.txt	
+rep -rt sortlist.js list.txt output.txt
 
 Предназначение:
 Сортировка простого списка с удалением дубликатов.
 
 */
 
-function onstart()
-{
-	o.byline();
+function onstart () {
+  o.byline()
 }
 
-if (o.tab[s.trim().toLowerCase()] === undefined)
-{
-	o.tab[s.trim().toLowerCase()] = 0;
+if (o.tab[s.trim().toLowerCase()] === undefined) {
+  o.tab[s.trim().toLowerCase()] = 0
 }
 
-s = null;
+s = null
 
-function onexit()
-{
-	let arr = Object.keys(o.tab).sort();
-	for (let v of arr) o.res.push(v);
+function onexit () {
+  let arr = Object.keys(o.tab).sort()
+  for (let v of arr) o.res.push(v)
 }
