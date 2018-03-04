@@ -1,5 +1,11 @@
 nodereplacer
 ==========
+ 
+## ИНСТРУКЦИЯ К СКРИПТУ nodereplacer.js
 
-### Help
-[/help/index.htm](https://github.com/lingvoboard/nodereplacer/blob/master/help/index.htm)
+### Содержание инструкции:
+
+* [Общий раздел](/help/files/md/index.md)
+* Замены
+* Дополнительные плагины
+* Раздел для программистов
