@@ -24,48 +24,48 @@
 
 ## Содержание раздела:
 
- [1.](#1_node_nodereplacerjs_rd_listtxt_inputtxt_outputtxt_68) Замены в файле имеющем словарную структуру (DSL).
- [2.](#2_node_nodereplacerjs_rtre_listtxt_inputtxt_outputtxt_71) Замены в файле не имеющем словарную структуру.
- [3.](#3_node_nodereplacerjs_rg_listtxt_inputtxt_outputtxt_76) Замены в файле в формате GLS.
- [4.](#4_node_nodereplacerjs_rs_listtxt_AZaz110_inputtxt_outputtxt_79) Замены между указанными DSL тегами.
- [5.](#5_node_nodereplacerjs_inputglsoutputifo_90) Конвертирование словарей формате в GLS в формат StarDict и обратно.
- [6.](#6_node_nodereplacerjs_ctags_inputtxt_outputtxt_110) Исправление ошибок форматирования в DSL файле.
- [7.](#7_node_nodereplacerjs_d_inputtxt_outputtxt_182) Удаление дубликатов статей (DSL).
- [8.](#8_node_nodereplacerjs_m_aa1a2ll1l2rr1r2_inputtxt_outputtxt_247) Объединение статей с одинаковыми заголовками (DSL).
- [9.](#9_node_nodereplacerjs_pile_inputtxt_outputtxt_356) Складывание заголовков в стопы (DSL).
-[10.](#10_node_nodereplacerjs_susp_inputtxt_outputtxt_378) Маркировка подвешенных ссылок (DSL).
-[11.](#11_node_nodereplacerjs_symbsymb_f_inputtxt_outputtxt_442) Получение списка всех символов.
-[12.](#12_node_nodereplacerjs_sort_bobibieoioiebdodbdcodc_inputtxt_outputtxt_482) Сортировка (DSL).
-[13.](#13_node_nodereplacerjs_usortusort_i_inputtxt_outputtxt_715) Пользовательская сортировка (DSL).
-[14.](#14_node_nodereplacerjs_stags_inputtxt_outputtxt_762) Сортировка DSL тегов.
-[15.](#15_node_nodereplacerjs_base64_ibase64_inputtxt_outputtxt_788) Внедрение картинок в HTML файл.
-[16.](#16_node_nodereplacerjs_rb_dsl1dsl2dslm1dslm2glsglsm_inputtxt_outputtxt_835) Раскрытие круглых скобок в заголовках словарных исходников.
-[17.](#17_node_nodereplacerjs_t_inputtxt_outputtxt_985) Получение списка HTML тегов.
-[18.](#18_node_nodereplacerjs_chkdslchkdsl_t_inputtxt_outputtxt_989) Выявление ошибок в словарях в формате DSL.
-[19.](#19_node_nodereplacerjs_mgls_inputtxt_outputtxt_994) Объединение статей в словарях в формате GLS.
-[Дополнение](#add)
+1. [Замены в файле имеющем словарную структуру (DSL).](#1-node-nodereplacerjs--rd-listtxt-inputtxt-outputtxt)
+2. [Замены в файле не имеющем словарную структуру.](#2-node-nodereplacerjs--rt-re-listtxt-inputtxt-outputtxt)
+3. [Замены в файле в формате GLS.](#3-node-nodereplacerjs--rg-listtxt-inputtxt-outputtxt)
+4. [Замены между указанными DSL тегами.](#4-node-nodereplacerjs--rs-listtxt--a-za-z110-inputtxt-outputtxt)
+5. [Конвертирование словарей формате в GLS в формат StarDict и обратно.](#5-node-nodereplacerjs-inputglsoutputifo)
+6. [Исправление ошибок форматирования в DSL файле.](#6-node-nodereplacerjs--ctags-inputtxt-outputtxt)
+7. [Удаление дубликатов статей (DSL).](#7-node-nodereplacerjs--d-inputtxt-outputtxt)
+8. [Объединение статей с одинаковыми заголовками (DSL).](#8-node-nodereplacerjs--m--aa1a2ll1l2rr1r2-inputtxt-outputtxt)
+9. [Складывание заголовков в стопы (DSL).](#9-node-nodereplacerjs--pile-inputtxt-outputtxt)
+10. [Маркировка подвешенных ссылок (DSL).](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
+11. [Получение списка всех символов.](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
+12. [Сортировка (DSL).](#12-node-nodereplacerjs--sort--bobibieoioiebdodbdcodc-inputtxt-outputtxt)
+13. [Пользовательская сортировка (DSL).](#13-node-nodereplacerjs--usort-usort--i-inputtxt-outputtxt)
+14. [Сортировка DSL тегов.](#14-node-nodereplacerjs--stags-inputtxt-outputtxt)
+15. [Внедрение картинок в HTML файл.](#15-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
+16. [Раскрытие круглых скобок в заголовках словарных исходников.](#16-node-nodereplacerjs--rb--dsl1dsl2dslm1dslm2glsglsm-inputtxt-outputtxt)
+17. [Получение списка HTML тегов.](#17-node-nodereplacerjs--t-inputtxt-outputtxt)
+18. [Выявление ошибок в словарях в формате DSL.](#18-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
+19. [Объединение статей в словарях в формате GLS.](#19-node-nodereplacerjs--mgls-inputtxt-outputtxt)
+[Дополнение](#Дополнение)
 
 ## Варианты командной строки:
 
- [1.](#1_node_nodereplacerjs_rd_listtxt_inputtxt_outputtxt_68) node nodereplacer.js -rd list input.txt output.txt
- [2.](#2_node_nodereplacerjs_rtre_listtxt_inputtxt_outputtxt_71) node nodereplacer.js (-rt|-re) list input.txt output.txt
- [3.](#3_node_nodereplacerjs_rg_listtxt_inputtxt_outputtxt_76) node nodereplacer.js -rg list input.txt output.txt
- [4.](#4_node_nodereplacerjs_rs_listtxt_AZaz110_inputtxt_outputtxt_79) node nodereplacer.js -rs list -[A-Za-z]{1,10} input.txt output.txt
- [5.](#5_node_nodereplacerjs_inputglsoutputifo_90) node nodereplacer.js (input.gls|input.ifo)
- [6.](#6_node_nodereplacerjs_ctags_inputtxt_outputtxt_110) node nodereplacer.js -ctags input.txt output.txt
- [7.](#7_node_nodereplacerjs_d_inputtxt_outputtxt_182) node nodereplacer.js -d input.txt output.txt
- [8.](#8_node_nodereplacerjs_m_aa1a2ll1l2rr1r2_inputtxt_outputtxt_247) node nodereplacer.js -m -(a|a1|a2|l|l1|l2|r|r1|r2) input.txt output.txt
- [9.](#9_node_nodereplacerjs_pile_inputtxt_outputtxt_356) node nodereplacer.js -pile input.txt output.txt
-[10.](#10_node_nodereplacerjs_susp_inputtxt_outputtxt_378) node nodereplacer.js -susp input.txt output.txt
-[11.](#11_node_nodereplacerjs_symbsymb_f_inputtxt_outputtxt_442) node nodereplacer.js (-symb|-symb -f) input.txt output.txt
-[12.](#12_node_nodereplacerjs_sort_bobibieoioiebdodbdcodc_inputtxt_outputtxt_482) node nodereplacer.js -sort -(b|o|bi|bie|oi|oie|bd|od|bdc|odc) input.txt output.txt
-[13.](#13_node_nodereplacerjs_usortusort_i_inputtxt_outputtxt_715) node nodereplacer.js (-usort|-usort -i) input.txt output.txt
-[14.](#14_node_nodereplacerjs_stags_inputtxt_outputtxt_762) node nodereplacer.js -stags input.txt output.txt
-[15.](#15_node_nodereplacerjs_base64_ibase64_inputtxt_outputtxt_788) node nodereplacer.js (-base64 -i|-base64) input.txt output.txt
-[16.](#16_node_nodereplacerjs_rb_dsl1dsl2dslm1dslm2glsglsm_inputtxt_outputtxt_835) node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt
-[17.](#17_node_nodereplacerjs_t_inputtxt_outputtxt_985) node nodereplacer.js -t input.txt output.txt
-[18.](#18_node_nodereplacerjs_chkdslchkdsl_t_inputtxt_outputtxt_989) node nodereplacer.js (-chkdsl|-chkdsl -t) input.txt output.txt
-[19.](#19_node_nodereplacerjs_mgls_inputtxt_outputtxt_994) node nodereplacer.js -mgls input.txt output.txt
+1. [node nodereplacer.js -rd list input.txt output.txt](#1-node-nodereplacerjs--rd-listtxt-inputtxt-outputtxt)
+2. [node nodereplacer.js (-rt|-re) list input.txt output.txt](#2-node-nodereplacerjs--rt-re-listtxt-inputtxt-outputtxt)
+3. [node nodereplacer.js -rg list input.txt output.txt](#3-node-nodereplacerjs--rg-listtxt-inputtxt-outputtxt)
+4. [node nodereplacer.js -rs list -\[A-Za-z\]{1,10} input.txt output.txt](#4-node-nodereplacerjs--rs-listtxt--a-za-z110-inputtxt-outputtxt)
+5. [node nodereplacer.js (input.gls|input.ifo)](#5-node-nodereplacerjs-inputglsoutputifo)
+6. [node nodereplacer.js -ctags input.txt output.txt](#6-node-nodereplacerjs--ctags-inputtxt-outputtxt)
+7. [node nodereplacer.js -d input.txt output.txt](#7-node-nodereplacerjs--d-inputtxt-outputtxt)
+8. [node nodereplacer.js -m -(a|a1|a2|l|l1|l2|r|r1|r2) input.txt output.txt](#8-node-nodereplacerjs--m--aa1a2ll1l2rr1r2-inputtxt-outputtxt)
+9. [node nodereplacer.js -pile input.txt output.txt](#9-node-nodereplacerjs--pile-inputtxt-outputtxt)
+10. [node nodereplacer.js -susp input.txt output.txt](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
+11. [node nodereplacer.js (-symb|-symb -f) input.txt output.txt](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
+12. [node nodereplacer.js -sort -(b|o|bi|bie|oi|oie|bd|od|bdc|odc) input.txt output.txt](#12-node-nodereplacerjs--sort--bobibieoioiebdodbdcodc-inputtxt-outputtxt)
+13. [node nodereplacer.js (-usort|-usort -i) input.txt output.txt](#13-node-nodereplacerjs--usort-usort--i-inputtxt-outputtxt)
+14. [node nodereplacer.js -stags input.txt output.txt](#14-node-nodereplacerjs--stags-inputtxt-outputtxt)
+15. [node nodereplacer.js (-base64 -i|-base64) input.txt output.txt](#15-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
+16. [node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt](#16-node-nodereplacerjs--rb--dsl1dsl2dslm1dslm2glsglsm-inputtxt-outputtxt)
+17. [node nodereplacer.js -t input.txt output.txt](#17-node-nodereplacerjs--t-inputtxt-outputtxt)
+18. [node nodereplacer.js (-chkdsl|-chkdsl -t) input.txt output.txt](#18-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
+19. [node nodereplacer.js -mgls input.txt output.txt](#19-node-nodereplacerjs--mgls-inputtxt-outputtxt)
 
 ## Назначение и использование:
 
