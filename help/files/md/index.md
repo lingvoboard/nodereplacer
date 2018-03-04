@@ -826,7 +826,7 @@ AaBbCcÇçDdEeFfGgĞğHhIıİiJjKkLlMmNnOoÖöPpRrSsŞşTtUuÜüVvYyZz
 
 Некоторые DSL теги скрипт игнорирует:
 
-\\[(?:(?:(?:br|[stm]|m\d|url|video|preview|ref)|ref\x20[^\r\n\\]]+)|\/(?:[stm]|ref|url|video|preview))\\]
+\\[(?:(?:(?:br|[stm]|m\d|url|video|preview|ref)|ref\x20[^\r\n\\]]+)|\\/(?:[stm]|ref|url|video|preview))\\]
 
 Пример:
 
@@ -1115,7 +1115,7 @@ if "%1" == "-h" (
         pause
 )
 ```
-Этот файл нужно поместить в папку C:\Windows\System32\ и отредактировать пути если нужно.
+Этот файл нужно поместить в папку `C:\Windows\System32\` и отредактировать пути если нужно.
 
 Можно также заменить "**_firefox.exe_**" на другой браузер.
 
