@@ -132,3 +132,5 @@ _Результат будет таким_:
 * [Unicode Character Database](http://www.unicode.org/reports/tr44/)
 * [Unicode® Character Name Index](http://www.unicode.org/charts/charindex.html)
 * [Character Sets And Code Pages At The Push Of A Button](http://www.i18nguy.com/unicode/codepages.html)
+
+<hr>
