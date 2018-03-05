@@ -772,8 +772,9 @@ dog
 Потом сортирует закрывающие теги в зависимости от положения открывающих тегов.
 
 Некоторые DSL теги скрипт игнорирует:</br>
-`\[(?:(?:(?:br|[stm]|m\d|url|video|preview|ref)|ref\x20[^\r\n\]]+)|\/(?:[stm]|ref|url|video|preview))\]`
-
+```
+\[(?:(?:(?:br|[stm]|m\d|url|video|preview|ref)|ref\x20[^\r\n\]]+)|\/(?:[stm]|ref|url|video|preview))\]
+```
 Пример:
 
 _До_)
