@@ -64,7 +64,7 @@
 * o.utils
 * o.utilspath
 
-<a href="#oarr" aria-hidden="true" class="anchor" id="user-content-oar">**o.arr**</a> - пустой массив, может использоваться для любых целей.
+<a href="#oarr" aria-hidden="true" class="anchor" id="user-content-oarr">**o.arr**</a> - пустой массив, может использоваться для любых целей.
 
 <span style="color:#a52a2a;font-weight:bold">oart\_start</span> - в режиме постатейного чтения DSL-файлов содержит номер строки на которой начинается статья.
 
