@@ -14,13 +14,13 @@
 
 ### Содержание раздела:
 
-1. [retag](#link)
-2. [cut](#link)
-3. [dt](#link)
-4. [rec](#link)
-5. [im](#link)
-6. [title](#link)
-7. [sdu](#link)
+1. [retag](#1-retag)
+2. [cut](#2-node-nodereplacerjs--cut-)
+3. [dt](#3-dt)
+4. [rec](#4-rec)
+5. [im](#5-im)
+6. [title](#6-title)
+7. [sdu](#7-sdu)
 
 ###### 1) retag
 ```
@@ -52,11 +52,11 @@ test
 Внимание!
 Обработка GLS статей с ключом -gls удаляет из них <head></head>, <html></html>, <body></body>.
 А символы &<>, если они не являются частью тегов и HTML-сущностей, кодируются в &amp;&lt;&gt;
-
-CREDITS
-vsemozhetbyt
-Для написания плагина использовался retag_misnested_dsl.js
 ```
+CREDITS</br>
+[vsemozhetbyt](https://gist.github.com/vsemozhetbyt)</br>
+Для написания плагина использовался [retag_misnested_dsl.js](https://gist.github.com/vsemozhetbyt/99132f861d8ab9505d7a9c1988e7b544)
+
 ###### 2) node nodereplacer.js -cut ...
 ```      
 НАЗЕАЧЕНИЕ
