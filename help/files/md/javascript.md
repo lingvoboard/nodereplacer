@@ -26,6 +26,8 @@
 8. [Примеры и сниппеты](#Примеры-и-сниппеты)
 9. [Разное](#Разное)
 
+<hr>
+
 **s** - локальная переменная, которая содержит прочитанную скриптом строку или статью.
 
 #### Содержание объекта o
@@ -66,7 +68,7 @@
 
 <a href="#oarr" id="user-content-oarr">**o.arr**</a> - пустой массив, может использоваться для любых целей.
 
-<a href="#oart_start" id="user-content-oart_start">**oart\_start**</a> - в режиме постатейного чтения DSL-файлов содержит номер строки на которой начинается статья.
+<a href="#oart_start" id="user-content-oart_start">**o.art\_start**</a> - в режиме постатейного чтения DSL-файлов содержит номер строки на которой начинается статья.
 
 <a href="#obom" id="user-content-obom">**o.bom**</a> - BOM (изначально эта переменная содержит '`\uFEFF`').
 
@@ -161,22 +163,24 @@ _Код всех методов можно найти в файле_ `/noderepla
 
 ПОЛНЫЙ СПИСОК МЕТОДОВ
 
-1. init\_cheerio
-2. normalizeHTML - меняет [\f\n\r\t\v ]+ на пробел
-3. decodeHTML - декодирует HTML сущности (entities)
-4. encodeHTML - кодирует некоторые символы в HTML сущности (entities)
-5. decode - меняет кодировку текста (iconv-lite)
-6. remove\_odd\_slash - удаляет неэкранированные обратные слеши
-7. remove\_comments - удаляет {{комментарий}}
-8. remove\_scb - удаляет {текст} (scb = single curly brackets)
-9. guessEncoding - пытается определить кодировку файла (utf8 или utf16le)
-10. fileExists
-11. openroundbrackets - кошка(ми) => кошка и кошками
-12. filter\_gls\_hw\_list - кот|котами|кот => кот|котами (hw = headword)
-13. spinner\_start
-14. spinner\_stop
+1. [init\_cheerio](#cheerio)
+2. [normalizeHTML](#normhtml) - _меняет_ `[\f\n\r\t\v ]+` _на пробел_
+3. [decodeHTML](#dehtml) - _декодирует HTML сущности_ ([entities](https://www.npmjs.com/package/entities))
+4. [encodeHTML](#enhtml) - _кодирует некоторые символы в HTML сущности_ ([entities](https://www.npmjs.com/package/entities))
+5. [decode](#decode) - _меняет кодировку текста_ ([iconv-lite](https://github.com/ashtuchkin/iconv-lite))
+6. [remove\_odd\_slash](#rmodds) - _удаляет неэкранированные обратные слеши_
+7. [remove\_comments](#rmcom) - _удаляет_ `{{комментарий}}`
+8. [remove\_scb](#rmscb) - _удаляет_ `{текст} (scb = single curly brackets)`
+9. [guessEncoding](#guessen) - _пытается определить кодировку файла (utf8 или utf16le)_
+10. [fileExists](#fileex)
+11. [openroundbrackets](#oroundbr) - `кошка(ми) => кошка и кошками`
+12. [filter\_gls\_hw\_list](#filter) - `кот|котами|кот => кот|котами (hw = headword)`
+13. [spinner\_start](#spinner) 
+14. [spinner\_stop](#spinner)
 
 ПОДРОБНОСТИ
+
+<a href="#cheerio" id="user-content-cheerio">**init\_cheerio**</a>
 
 **_init\_cheerio(html, options)_**
 **_init\_cheerio\_old(html, options)_**
@@ -289,7 +293,8 @@ s = $.html();
 //Результат:
 //<test class="italic">aaa</test><test class="italic">bbb</test>
 ```
-**_normalizeHTML(str)_**
+
+<a href="#normhtml" id="user-content-normhtml">**normalizeHTML(str)**</a>
 
 Код метода:
 ```javascript
@@ -299,7 +304,8 @@ normalizeHTML(str) {
         return str;
 }
 ```
-**_decodeHTML(str)_**
+
+<a href="#dehtml" id="user-content-dehtml">**decodeHTML(str)**</a>
 
 Код метода:
 ```javascript
@@ -307,7 +313,8 @@ decodeHTML(str) {
         return require('entities').decodeHTML(str);
 }
 ```
-**_encodeHTML(str)_**
+
+<a href="#enhtml" id="user-content-enhtml">**encodeHTML(str)**</a>
 
 Код метода:
 ```javascript
@@ -315,7 +322,8 @@ encodeHTML(str) {
         return require('entities').encodeHTML(str);
 }
 ```
-**_decode(str, charset)_**
+
+<a href="#decode" id="user-content-decode">**decode(str, charset)**</a>
 
 Код метода:
 ```javascript
@@ -323,7 +331,8 @@ decode(str, charset) {
         return require('iconv-lite').decode(str, charset);
 }
 ```
-**_remove\_odd\_slash(str, a)_**
+
+<a href="#rmodds" id="user-content-rmodds">**remove\_odd\_slash(str, a)**</a>
 
 Удаление неэкранированных обратных слешей (с проверкой на чётность)
 
@@ -335,21 +344,22 @@ decode(str, charset) {
 ```javascript
   s = s.replace(/(\\*)([@#\^~\[\]\{\}\(\)])/g,  function(a, m1, m2){if ((m1.length % 2) === 1) m1 = m1.slice(0, -1); return m1 + m2; });
 ```
-**_remove\_comments(str)_**
 
-Удаляет закомментированные части - {{комментарий}}
+<a href="#rmcom" id="user-content-rmcom">**remove\_comments(str)**</a>
 
-**_remove\_scb(str)_** _(scb - сокращение от single curly braces)_
+Удаляет закомментированные части - `{{комментарий}}`
 
-Удаляет {текст}
+<a href="#rmscb" id="user-content-rmscb">**remove\_scb(str) - _(scb - сокращение от single curly braces)_**</a>
 
-**_guessEncoding(path)_**
+Удаляет `{текст}`
+
+<a href="#guessen" id="user-content-guessen">**guessEncoding(path)**</a>
 
 Пытается определить кодировку укажанного в **_path_** файла (UTF-16LE или UTF-8).
 
 В случае отсутствия в файле BOM метод вернёт utf8
 
-**_openroundbrackets(h, cb)_**
+<a href="#oroundbr" id="user-content-oroundbr">**openroundbrackets(h, cb)**</a>
 
 Раскрывает крыглые скобоки в заголовках.
 
@@ -371,7 +381,7 @@ _Второй аргумент опциональный, используетс�
 [8] - имеются ли ошибки (true/false)
 ```
 
-**_filter\_gls\_hw\_list(str)_**
+<a href="#filter" id="user-content-filter">**filter\_gls\_hw\_list(str)**</a>
 
 Для фильтрации заголовков в GLS файле.
 
@@ -387,9 +397,11 @@ _кот|котами|кот_
 после)</br>
 _кот|котами (а не котами|кот)_
 
-**_fileExists(filePath)_**
+<a href="#fileex" id="user-content-fileex">**fileExists(filePath)**</a>
 
 Проверка существования файла.
+
+<a href="#spinner" id="user-content-spinner">**spinner**</a>
 
 **_spinner\_start(msg, arr, time)_**</br>
 **_spinner\_stop(id, msg)_**
