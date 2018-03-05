@@ -4,7 +4,7 @@
 
 * **Общий раздел**
 * [Замены](replacer.md)
-* [Дополнительные плагины](#placeholder)
+* [Дополнительные плагины](plugins.md)
 * [Раздел для программистов](#placeholder)
 
 ОБЩИЙ РАЗДЕЛ
@@ -89,7 +89,7 @@
 [b] - _node nodereplacer.js -rs list.txt -b input.txt output.txt_</br>
 [com] - _node nodereplacer.js -rs list.txt -com input.txt output.txt_
 
-[Подробности по заменам на отдельной странице.](#placeholder)
+[Подробности по заменам на отдельной странице.](replacer.md)
 
 ###### 5) node nodereplacer.js (input.gls|output.ifo)
 Конвертирование словарей формате GLS в формат StarDict и обратно.</br>
@@ -997,7 +997,7 @@ _После_)
 Выявление ошибок в словарях в формате DSL.</br>
 Входной файл должен иметь словарную структуру.
 
-[Подробнее на отдельной странице](#placeholder).
+[Подробнее на отдельной странице](chkdsl.md).
 
 ###### 19) node nodereplacer.js -mgls input.txt output.txt
 Объединение статей в словарях в формате GLS.</br>
