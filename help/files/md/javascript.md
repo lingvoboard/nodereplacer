@@ -33,127 +33,127 @@
 ПОЛНЫЙ СПИСОК СВОЙСТВ
 
 * [o.arr](#oarr)
-* o.art\_start
-* o.bom
-* o.byline
-* o.by\_gls\_article
-* o.by\_dsl\_article
-* o.count
-* o.dsl
-* o.eol
-* o.eol\_mode
-* o.entirefile
-* o.error\_log\_path
-* o.et\_auto
-* o.et\_show
-* o.gls
-* o.in\_encoding
-* o.inputfile
-* o.log
-* o.loop
-* o.mode
-* o.outputfile
-* o.out\_encoding
-* o.progress\_bar
-* o.progress\_bar\_title
-* o.path
-* o.repeat
-* o.res
-* o.stop
-* o.tab
-* o.utils
-* o.utilspath
+* [o.art\_start](#oart_start)
+* [o.bom](#obom)
+* [o.byline](#obyline)
+* [o.by\_gls\_article](#obygls)
+* [o.by\_dsl\_article](#obydsl)
+* [o.count](#ocount)
+* [o.dsl](#odsl)
+* [o.eol](#oeol)
+* [o.eol\_mode](#oeolmode)
+* [o.entirefile](#oentire)
+* [o.error\_log\_path](#oelog)
+* [o.et\_auto](#oeta)
+* [o.et\_show](#oetsh)
+* [o.gls](#ogls)
+* [o.in\_encoding](#oinen)
+* [o.inputfile](#oinf)
+* [o.log](#olog)
+* [o.loop](#oloop)
+* [o.mode](#omode)
+* [o.outputfile](#ooutf)
+* [o.out\_encoding](#oouten)
+* [o.progress\_bar](#oprb)
+* [o.progress\_bar\_title](#oprbt)
+* [o.path](#opath)
+* [o.repeat](#orep)
+* [o.res](#ores)
+* [o.stop](#ostop)
+* [o.tab](#otab)
+* [o.utils](#outl)
+* [o.utilspath](#outlp)
 
-<a href="#oarr" aria-hidden="true" class="anchor" id="user-content-oarr">**o.arr**</a> - пустой массив, может использоваться для любых целей.
+<a href="#oarr" id="user-content-oarr">**o.arr**</a> - пустой массив, может использоваться для любых целей.
 
-<span style="color:#a52a2a;font-weight:bold">oart\_start</span> - в режиме постатейного чтения DSL-файлов содержит номер строки на которой начинается статья.
+<a href="#oart_start" id="user-content-oart_start">**oart\_start**</a> - в режиме постатейного чтения DSL-файлов содержит номер строки на которой начинается статья.
 
-<span style="color:#a52a2a;font-weight:bold">o.bom</span> - BOM (изначально эта переменная содержит '`\uFEFF`').
+<a href="#obom" id="user-content-obom">**o.bom**</a> - BOM (изначально эта переменная содержит '`\uFEFF`').
 
-<span style="color:#a52a2a;font-weight:bold">o.byline</span> - функция **_byline_** из nodereplacer.js
+<a href="#obyline" id="user-content-obyline">**o.byline**</a> - функция **_byline_** из nodereplacer.js
 
-<span style="color:#a52a2a;font-weight:bold">o.by\_gls\_article</span> - функция **_by\_gls\_article_** из nodereplacer.js
+<a href="#obygls" id="user-content-obygls">**o.by\_gls\_article**</a> - функция **_by\_gls\_article_** из nodereplacer.js
 
-<span style="color:#a52a2a;font-weight:bold">o.by\_dsl\_article</span> - функция **_by\_dsl\_article_** из nodereplacer.js
+<a href="#obydsl" id="user-content-obydsl">**o.by\_dsl\_article**</a> - функция **_by\_dsl\_article_** из nodereplacer.js
 
-<span style="color:#a52a2a;font-weight:bold">o.count</span> - содержит номер прочитанной строки или статьи.
+<a href="#ocount" id="user-content-ocount">**o.count**</a> - содержит номер прочитанной строки или статьи.
 
-<span style="color:#a52a2a;font-weight:bold">o.dsl</span> - в режиме постатейного чтения файлов в формате DSL эта переменная содержит массив со статьёй.</br>
+<a href="#odsl" id="user-content-odsl">**o.dsl**</a> - в режиме постатейного чтения файлов в формате DSL эта переменная содержит массив со статьёй.</br>
 1. Первый элемент (**o.dsl[0]**) - массив с заголовками (вся заголовочная часть статьи).</br>
 2. Второй (**o.dsl[1]**) - тело статьи (одной строкой).</br>
 3. Третий (**o.dsl[2]**) - отфильтрованный массив с заголовками (без комментариев и пустых строк).</br>
 4. Четвёртый (**o.dsl[3]**) - массив со строками тела. Многострочные комментарии одной строкой.
 
-<span style="color:#a52a2a;font-weight:bold">o.eol</span> - управляющие символ(ы), который будут добавляться при записи в конец строки или статьи (по умолчанию `\n`).
+<a href="#oeol" id="user-content-oeol">**o.eol**</a> - управляющие символ(ы), который будут добавляться при записи в конец строки или статьи (по умолчанию `\n`).
 
-<span style="color:#a52a2a;font-weight:bold">o.eol\_mode</span> - если эта переменная имеет значение **1**, то в построчном режиме чтения входного файла в выходной файл будут писаться оригинальные разделители строк ([подробнее](#link))</br>
+<a href="#oeolmode" id="user-content-oeolmode">**o.eol\_mode**</a> - если эта переменная имеет значение **1**, то в построчном режиме чтения входного файла в выходной файл будут писаться оригинальные разделители строк ([подробнее](#link))</br>
 Если **2**, то создаётся карта смещений всех строк входного файла. ([подробнее](#link))
 
-<span style="color:#a52a2a;font-weight:bold">o.entirefile</span> - функция **_entirefile_** из nodereplacer.js
+<a href="#oentire" id="user-content-oentire">**o.entirefile**</a> - функция **_entirefile_** из nodereplacer.js
 
-<span style="color:#a52a2a;font-weight:bold">o.error\_log\_path</span> - cодержит полный путь к файлу **_error.log_**. По умолчанию этот файл создаётся в одной папке с выходным файлом, но **_error.log_** и выходной файл могут оказаться в разных местах если в списке замен или плагине будет изменено значение **_o.outputfile_**.
+<a href="#oelog" id="user-content-oelog">**o.error\_log\_path**</a> - cодержит полный путь к файлу **_error.log_**. По умолчанию этот файл создаётся в одной папке с выходным файлом, но **_error.log_** и выходной файл могут оказаться в разных местах если в списке замен или плагине будет изменено значение **_o.outputfile_**.
 
-<span style="color:#a52a2a;font-weight:bold">o.et\_auto</span> - управляющая переменная, в случае если имеет значение **_true_** (значение по умолчание), то время работы скрипта выводится автоматически.
+<a href="#oeta" id="user-content-oeta">**o.et\_auto**</a> - управляющая переменная, в случае если имеет значение **_true_** (значение по умолчание), то время работы скрипта выводится автоматически.
 
 Если **_false_**, то время работы скрипта не выводится.
 
-<span style="color:#a52a2a;font-weight:bold">o.et\_show</span> - функция для вывода времени работы скрипта.
+<a href="#oetsh" id="user-content-oetsh">**o.et\_show**</a> - функция для вывода времени работы скрипта.
 
-<span style="color:#a52a2a;font-weight:bold">o.gls</span> - в режиме постатейного чтения файлов в формате GLS эта переменная содержит массив со статьёй. Первый элемент - строка с заголовком или заголовками разделёнными символом "|". Второй - тело статьи. Третий - номер строки на которой находится заголовок статьи.
+<a href="#ogls" id="user-content-ogls">**o.gls**</a> - в режиме постатейного чтения файлов в формате GLS эта переменная содержит массив со статьёй. Первый элемент - строка с заголовком или заголовками разделёнными символом "|". Второй - тело статьи. Третий - номер строки на которой находится заголовок статьи.
 
-<span style="color:#a52a2a;font-weight:bold">o.in\_encoding</span> - кодировка входного файла (по умолчанию utf8).
+<a href="#oinen" id="user-content-oinen">**o.in\_encoding**</a> - кодировка входного файла (по умолчанию utf8).
 
-<span style="color:#a52a2a;font-weight:bold">o.inputfile</span> - имя входного файла.
+<a href="#oinf" id="user-content-oinf">**o.inputfile**</a> - имя входного файла.
 
-<span style="color:#a52a2a;font-weight:bold">o.log</span> - массив для сообщений.
+<a href="#olog" id="user-content-olog">**o.log**</a> - массив для сообщений.
 
-<span style="color:#a52a2a;font-weight:bold">o.loop</span> - счетчик, значение увеличивается на единицу после каждого запуска функций **_byline_**, **_by\_dsl\_article_**, **_entirefile_** или **_by\_gls\_article_**
+<a href="#oloop" id="user-content-oloop">**o.loop**</a> - счетчик, значение увеличивается на единицу после каждого запуска функций **_byline_**, **_by\_dsl\_article_**, **_entirefile_** или **_by\_gls\_article_**
 
-<span style="color:#a52a2a;font-weight:bold">o.mode</span> - возможные значения: '**_byline_**', '**_by\_dsl\_article_**', '**_by\_gls\_article_**', '**_entirefile_**'
+<a href="#omode" id="user-content-omode">**o.mode**</a> - возможные значения: '**_byline_**', '**_by\_dsl\_article_**', '**_by\_gls\_article_**', '**_entirefile_**'
 _Используется в nodereplacer.js (Изменять значения этой переменной в списках замен или плагинах нет смысла.)_
 
-<span style="color:#a52a2a;font-weight:bold">o.outputfile</span> - имя выходного файла.
+<a href="#ooutf" id="user-content-ooutf">**o.outputfile**</a> - имя выходного файла.
 
-<span style="color:#a52a2a;font-weight:bold">o.out\_encoding</span> - кодировка выходного файла (по умолчанию utf8).
+<a href="#oouten" id="user-content-oouten">**o.out\_encoding**</a> - кодировка выходного файла (по умолчанию utf8).
 
-<span style="color:#a52a2a;font-weight:bold">o.progress\_bar</span> - переменная, которая может использоваться для отключения индикации прогресса (progressbar).</br>
+<a href="#oprb" id="user-content-oprb">**o.progress\_bar**</a> - переменная, которая может использоваться для отключения индикации прогресса (progressbar).</br>
 По умолчанию имеет значение **_true_**</br>
 Отключение: _o.progress\_bar = false_;
 
-<span style="color:#a52a2a;font-weight:bold">o.progress\_bar\_title</span> - переменная, которая может использоваться для вывода заголовка над индикатором прогресса.
+<a href="#oprbt" id="user-content-oprbt">**o.progress\_bar\_title**</a> - переменная, которая может использоваться для вывода заголовка над индикатором прогресса.
 Пример: `o.progress_bar_title = 'Reading file:\n';`
 
-<span style="color:#a52a2a;font-weight:bold">o.path</span> - путь к папке в которой находится скрипт.
+<a href="#opath" id="user-content-opath">**o.path**</a> - путь к папке в которой находится скрипт.
 
-<span style="color:#a52a2a;font-weight:bold">o.repeat</span> - переменная, которая может использоваться для перезапуска функций **_byline_**, **_by\_dsl\_article_**, **_entirefile_** или **_by\_gls\_article_**
+<a href="#orep" id="user-content-orep">**o.repeat**</a> - переменная, которая может использоваться для перезапуска функций **_byline_**, **_by\_dsl\_article_**, **_entirefile_** или **_by\_gls\_article_**
 
-<span style="color:#a52a2a;font-weight:bold">o.res</span> - массив, содержимое которого в конце работы скрипта пишется в выходной файл (если не пустой).
+<a href="#ores" id="user-content-ores">**o.res**</a> - массив, содержимое которого в конце работы скрипта пишется в выходной файл (если не пустой).
 
-<span style="color:#a52a2a;font-weight:bold">o.stop</span> - изначально ничего не содержит, но если в нее что-то поместить, то скрипт немедленно остановит работу и выведет содержимое этой переменной на экран.
+<a href="#ostop" id="user-content-ostop">**o.stop**</a> - изначально ничего не содержит, но если в нее что-то поместить, то скрипт немедленно остановит работу и выведет содержимое этой переменной на экран.
 
-<span style="color:#a52a2a;font-weight:bold">o.tab</span> - пустой объект (_o.tab = Object.create(null)_), может использоваться для любых целей.
+<a href="#otab" id="user-content-otab">**o.tab**</a> - пустой объект (_o.tab = Object.create(null)_), может использоваться для любых целей.
 
-<span style="color:#a52a2a;font-weight:bold">o.utils</span> - объект, который предоставляет для использования ряд полезных методов ([подробнее](#link))
+<a href="#outl" id="user-content-outl">**o.utils**</a> - объект, который предоставляет для использования ряд полезных методов ([подробнее](#link))
 
-<span style="color:#a52a2a;font-weight:bold">o.utilspath</span> - переменная содержит путь к _/nodereplacer/files/rep\_modules/utils_
+<a href="#outlp" id="user-content-outlp">**o.utilspath**</a> - переменная содержит путь к _/nodereplacer/files/rep\_modules/utils_
 
 Если для работы требуются глобальные переменные (которые будут существовать на протяжении всей работы скрипта), то следует использовать объект **_o_**.
 
 #### Использование null
 
-Если функция создаваемая скриптом из списка замен вернет пустую строку (<span style="color:#a52a2a;font-weight:bold">s</span> = ''), то в выходной файл будет добавлено только содержимое переменной <span style="color:#a52a2a;font-weight:bold">o.eol</span>.</br>
+Если функция создаваемая скриптом из списка замен вернет пустую строку (**s** = ''), то в выходной файл будет добавлено только содержимое переменной **o.eol**.</br>
 Если o.eol не пустая (по умолчанию содержит `\n`), то появится пустая строка.</br>
-Если пустая строка нежелательна, то следует либо очистить <span style="color:#a52a2a;font-weight:bold">o.eol</span> или сделать так чтобы функция replace вернула null (<span style="color:#a52a2a;font-weight:bold">s</span> = null).
+Если пустая строка нежелательна, то следует либо очистить **o.eol** или сделать так чтобы функция replace вернула null (**s** = null).
 
 #### Массив o.res, функция onexit и onstart
 
-В конце работы (после прочтения и обработки всех строк или статей) скрипт записывает содержимое массива <span style="color:#a52a2a;font-weight:bold">o.res</span> в выходной файл (если он не пустой).
+В конце работы (после прочтения и обработки всех строк или статей) скрипт записывает содержимое массива **o.res** в выходной файл (если он не пустой).
 
-В конце работы скрипт также вызывает один раз функцию <span style="color:#a52a2a;font-weight:bold">onexit</span>, если такая имеется в списке замен.</br>
+В конце работы скрипт также вызывает один раз функцию **onexit**, если такая имеется в списке замен.</br>
 При этом остальной код списка замен игнорируется.</br>
 Эту функцию можно, к примеру, использовать для подготовки данных в массиве o.res перед записью (сортировка и т.п.).
 
-Функция <span style="color:#a52a2a;font-weight:bold">o.onstart</span> запускается прежде чем скрипт начнет работать с входным файлом.
+Функция **o.onstart** запускается прежде чем скрипт начнет работать с входным файлом.
 
 #### Методы объекта o.utils
 
