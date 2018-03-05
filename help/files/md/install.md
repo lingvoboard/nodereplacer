@@ -12,7 +12,7 @@
 УСТАНОВКА
 
 ![warning.png](./../warning.png)
-Если nodereplacer.js прекращает работу с сообщением, которое содержит "`out of memory`", такое может произойти при обработке очень больших файлов (если обработка сопровождается чтением всего входного файла в оперативную память), то можно попробовать запуск скрипта с ключом `--max_old_space_size=4096`</br>
+Если **nodereplacer.js** прекращает работу с сообщением, которое содержит "`out of memory`", такое может произойти при обработке очень больших файлов (если обработка сопровождается чтением всего входного файла в оперативную память), то можно попробовать запуск скрипта с ключом `--max_old_space_size=4096`</br>
 Отредактируйте для этого файл rep.bat, должно быть так:</br>
 `node --max_old_space_size=4096 --harmony_regexp_lookbehind --harmony_regexp_property...`</br>
 Значение ключа может быть и другим, в приведённом примере 4096 означает 4 гигабайта.
@@ -51,10 +51,10 @@ npm install
 После этого скрипт 
 
 После этого скрипт можно будет запускать из любого места используя команды такого вида:</br>
-**_rep -rt list input.txt output.txt_**
+`rep -rt list input.txt output.txt`
 
-Вместо:
-**_node nodereplacer.js -rt list.js input.txt output.txt_**
+Вместо:</br>
+`node nodereplacer.js -rt list.js input.txt output.txt`
 
 Т.е. при использовании батника `rep` = `node nodereplacer.js`
 
@@ -64,13 +64,13 @@ npm install
 
 Он требуется для [этой операции](/help/files/md/index.md#5-node-nodereplacerjs-inputglsoutputifo)
 
-Команда для вызова справки: **_rep -h_**
+Команда для вызова справки: `rep -h`
 
 <hr>
 
 На Linux:
 
-Добавьте в **_.bashrc_** файл следующий код:
+Добавьте в **.bashrc** файл следующий код:
 
 ```bash
 function nodereplacer()

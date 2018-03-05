@@ -2,6 +2,7 @@
 
 ### Содержание инструкции:
 
+* [Установка](install.md)
 * **Общий раздел**
 * [Замены](replacer.md)
 * [Дополнительные плагины](plugins.md)
@@ -10,17 +11,7 @@
 ОБЩИЙ РАЗДЕЛ
 
 ![warning.png](./../warning.png)
-Для запуска скрипта необходимо чтобы на вашем компьютере была установлена программная платформа [Node.js](https://ru.wikipedia.org/wiki/Node.js) версии желательно не ниже **9.7.0**
-Если не установлена, то берём [здесь](https://nodejs.org/).
-
-![warning.png](./../warning.png)
 Список замен и входной файл должны иметь кодировку UTF8 (с BOM или без) или UTF16LE (обязательно с BOM).
-
-![warning.png](./../warning.png)
-Если nodereplacer.js прекращает работу с сообщением, которое содержит "`out of memory`", такое может произойти при обработке очень больших файлов (если обработка сопровождается чтением всего входного файла в оперативную память), то можно попробовать запуск скрипта с ключом `--max_old_space_size=4096`
-Отредактируйте для этого файл rep.bat, должно быть так:
-`node --max_old_space_size=4096 --harmony_regexp_lookbehind --harmony_regexp_property...`
-Значение ключа может быть и другим, в приведённом примере 4096 означает 4 гигабайта.
 
 ## Содержание раздела:
 
@@ -43,7 +34,6 @@
 17. [Получение списка HTML тегов.](#17-node-nodereplacerjs--t-inputtxt-outputtxt)
 18. [Выявление ошибок в словарях в формате DSL.](#18-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
 19. [Объединение статей в словарях в формате GLS.](#19-node-nodereplacerjs--mgls-inputtxt-outputtxt)
-20. [Дополнение](#Дополнение)
 
 ## Варианты командной строки:
 
@@ -1039,48 +1029,6 @@ _После_)
 ```
 
 Аварийная остановка - Ctrl+C
-
-## Дополнение:
-
-На **Windows** скрипт будет удобнее запускать если создать batch файл (rep.bat) с таким содержанием:
-```
-@ECHO OFF
-if "%1" == "-h" (
-        start firefox.exe C:\U\nodereplacer\help\index.htm 
-) ELSE (
-        node --harmony_regexp_lookbehind C:\U\nodereplacer\nodereplacer.js %*
-        pause
-)
-```
-Этот файл нужно поместить в папку `C:\Windows\System32\` и отредактировать пути если нужно.
-
-Можно также заменить "**_firefox.exe_**" на другой браузер.
-
-После этого скрипт можно будет запускать из любого места используя такую командную строку:
-
-_**rep -rt list input.txt output.txt**_
-
-Вызов справки: _**rep -h**_
-
-Вариант для **Linux**:
-```bash
-function nodereplacer()
-{
-clear
-if [[ $# -eq 1 ]] && [[ "$1" == "-h" ]]; then
-        (firefox полный_путь/help/index.htm >/dev/null 2>&1 &)
-else
-        node --harmony_regexp_lookbehind --harmony_regexp_property полный_путь/nodereplacer.js "$@"
-        echo ''
-        echo "$(tput sgr 0)$(tput setaf 3)Press Enter to return$(tput sgr 0)"
-        read input
-fi      
-}
-
-
-alias rep=nodereplacer
-```
-Вышеприведенный код нужно добавить в **_.bashrc_** файл.
 
 ## Сноски
 
