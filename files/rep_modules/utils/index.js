@@ -115,7 +115,7 @@ class utils_class {
   init_cheerio_old (html, options) {
     options = _flatten_options(options)
     if (options.normalizeWhitespace && typeof html === 'string') {
-      html = this.utils.normalizeHTML(html)
+      html = this.normalizeHTML(html)
       options.normalizeWhitespace = false
     }
 
@@ -125,7 +125,7 @@ class utils_class {
   init_cheerio_new (html, options, isDocument) {
     options = _flatten_options(options)
     if (options.normalizeWhitespace && typeof html === 'string') {
-      html = this.utils.normalizeHTML(html)
+      html = this.normalizeHTML(html)
       options.normalizeWhitespace = false
     }
 
@@ -137,7 +137,7 @@ class utils_class {
   }
 
   init_cheerio (html, options) {
-    return this.utils.init_cheerio_old(html, options)
+    return this.init_cheerio_old(html, options)
   }
 
   normalizeHTML (str) {
