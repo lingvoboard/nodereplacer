@@ -49,13 +49,7 @@ function onstart () {
 
     fs.writeFileSync(process.argv[5], '', {encoding: 'utf8', flag: 'w'})
     for (let v of tab2) {
-      let [arr1, arr2, arr3] = JSON.parse(v[1])
-
-      if ((arr2.length === 1) && (arr2[0][0] === 0) && (arr1[1] - arr1[0] === arr2[0][1])) {
-        fs.writeFileSync(process.argv[5], `${v[0].replace(/\t+/g, ' ')}\t${JSON.stringify([arr1, arr3])}\n`, {encoding: 'utf8', flag: 'a'})
-      } else {
         fs.writeFileSync(process.argv[5], `${v[0].replace(/\t+/g, ' ')}\t${v[1]}\n`, {encoding: 'utf8', flag: 'a'})
-      }
     }
 
     process.stdout.write('\rCreating table...Done')
@@ -167,13 +161,7 @@ function onexit () {
       const tab2 = stardict.getSliceChunksTable(dzfile, tab1)
 
       for (let v of tab2) {
-        let [arr1, arr2, arr3] = JSON.parse(v[1])
-
-        if ((arr2.length === 1) && (arr2[0][0] === 0) && (arr1[1] - arr1[0] === arr2[0][1])) {
-          fs.writeFileSync(process.argv[5], `${v[0].replace(/\t+/g, ' ')}\t${JSON.stringify([arr1, arr3])}\n`, {encoding: 'utf8', flag: 'a'})
-        } else {
-          fs.writeFileSync(process.argv[5], `${v[0].replace(/\t+/g, ' ')}\t${v[1]}\n`, {encoding: 'utf8', flag: 'a'})
-        }
+        fs.writeFileSync(process.argv[5], `${v[0].replace(/\t+/g, ' ')}\t${v[1]}\n`, {encoding: 'utf8', flag: 'a'})
       }
     }
 
