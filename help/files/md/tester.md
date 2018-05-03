@@ -29,7 +29,7 @@ fs.writeFileSync('/tmp/u/temp_in.txt', s, {encoding: 'utf8', flag: "w"});
 
 
 const exec = require('child_process').execSync;
-exec('node --harmony_regexp_lookbehind /home/andrey/u/tools/scripts/js/nodereplacer/nodereplacer.js -retag /tmp/u/temp_in.txt /tmp/u/temp_out.txt', (error, stdout, stderr) => {
+exec('node /home/andrey/u/tools/scripts/js/nodereplacer/nodereplacer.js -retag /tmp/u/temp_in.txt /tmp/u/temp_out.txt', (error, stdout, stderr) => {
 
   if (error) {
     console.error(`exec error: ${error}`);
