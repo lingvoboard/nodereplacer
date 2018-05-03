@@ -77,7 +77,7 @@ function nodereplacer()
   if [[ $# -eq 1 ]] && [[ "$1" == "-h" ]]; then
           (firefox https://github.com/lingvoboard/nodereplacer/blob/master/help/files/md/index.md >/dev/null 2>&1 &)
   else
-          node --harmony_regexp_lookbehind --harmony_regexp_property полный_путь/nodereplacer.js "$@"
+          node полный_путь/nodereplacer.js "$@"
           echo ''
           echo "$(tput sgr 0)$(tput setaf 3)Press Enter to return$(tput sgr 0)"
           read input
