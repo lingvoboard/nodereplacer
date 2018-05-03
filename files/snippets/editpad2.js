@@ -64,7 +64,7 @@ fs.writeFileSync(output, '', {
     const count = await readstdin()
 
     let { stdout, stderr } = await exec(
-      `node  --harmony_regexp_lookbehind --harmony_regexp_property C:\\nodereplacer\\nodereplacer.js ${input}`
+      `node  C:\\nodereplacer\\nodereplacer.js ${input}`
     )
 
     if (stderr) stderr = `\n${stderr}`
