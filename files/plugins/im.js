@@ -1,8 +1,26 @@
 // Этот плагин предназначен для импорта морфологии в GLS файл.
 
 function onstart () {
-  o.inputfile = process.argv[3]
-  o.byline()
+  if (
+    process.argv.length === 6 &&
+    o.utils.fileExists(process.argv[3]) &&
+    o.utils.fileExists(process.argv[4])
+  ) {
+    // node nodereplacer.js -im morpholist.txt input.gls output.gls
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    o.byline()
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
 }
 
 if (o.loop === 1 && o.count === 1) {

@@ -584,9 +584,17 @@ function onstart () {
 
   o.CommentMap.count = 0
 
-  // node script list -c in out
-
   if (process.argv.length === 5 && o.utils.fileExists(process.argv[3])) {
+    // node nodereplacer.js -chkdsl in out
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     process.stdout.write('\nMapping multiline comments...')
     makeCommentMap()
   } else if (
@@ -594,6 +602,16 @@ function onstart () {
     process.argv[3] === '-t' &&
     o.utils.fileExists(process.argv[4])
   ) {
+    // node nodereplacer.js -chkdsl -t in out
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.trs = true
 
     process.stdout.write('\nMapping multiline comments...')
@@ -603,6 +621,16 @@ function onstart () {
     process.argv[3] === '-c' &&
     o.utils.fileExists(process.argv[4])
   ) {
+    // node nodereplacer.js -chkdsl -c in out
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.cyr = true
 
     process.stdout.write('\nMapping multiline comments...')
@@ -612,6 +640,16 @@ function onstart () {
     /^-[tc]{2}$/.test(process.argv[3]) &&
     o.utils.fileExists(process.argv[4])
   ) {
+    // node nodereplacer.js -chkdsl -tc in out
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.trs = true
     o.cyr = true
 
@@ -2358,7 +2396,9 @@ function by_dls_article () {
         if (o.Messages[k][2] > 0) {
           if (o.Messages[k][0] === 'Ошибка') errors += o.Messages[k][2]
 
-          if (o.Messages[k][0] === 'Предупреждение') { warnings += o.Messages[k][2] }
+          if (o.Messages[k][0] === 'Предупреждение') {
+            warnings += o.Messages[k][2]
+          }
         }
       }
 
@@ -2637,7 +2677,9 @@ function ExtractHeadwords (art) {
                     subs.length > 0 &&
                     subs[subs.length - 1][0] &&
                     subs[subs.length - 1][3] === 0
-                  ) { subs[subs.length - 1][3] = 1 }
+                  ) {
+                    subs[subs.length - 1][3] = 1
+                  }
 
                   subs.push([true, hw2, 0, 0, i])
                 }

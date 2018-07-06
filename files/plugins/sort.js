@@ -1,6 +1,24 @@
 // Расширенная сортировка статей в DSL файле.
 
 function onstart () {
+
+
+  if (process.argv.length === 6 && o.utils.fileExists(process.argv[4])) {
+    //node nodereplacer.js -sort -(b|o|bi|bie|oi|oie|bd|od|bdc|odc) input.txt output.txt
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+    
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
+
   o.latin_map = {
     Á: 'A',
     Ă: 'A',

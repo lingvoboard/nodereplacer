@@ -11,6 +11,25 @@ rep -rec5 "C:\Temp\Site" output
 */
 
 function onstart () {
+  const mime = require('mime')
+  const parse5Utils = require('parse5-utils')
+  const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
+
+  if (process.argv.length === 5 && o.utils.dirExists(process.argv[3])) {
+    // node nodereplacer.js -rec5 "C:\Temp\Site" output
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
+
   function identify_filetype (path) {
     // thanks to https://github.com/pfrazee/identify-filetype
 
@@ -151,12 +170,6 @@ function onstart () {
       }
     }
   }
-
-  const fs = require('fs')
-  const path = require('path')
-  const mime = require('mime')
-  const parse5Utils = require('parse5-utils')
-  const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
 
   const walkSync = (dir, filelist = []) => {
     fs.readdirSync(dir).forEach(file => {

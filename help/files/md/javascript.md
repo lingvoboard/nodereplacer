@@ -172,10 +172,11 @@ _Код всех методов можно найти в файле_ `/noderepla
 8. [remove\_scb](#rmscb) - _удаляет_ `{текст} (scb = single curly brackets)`
 9. [guessEncoding](#guessen) - _пытается определить кодировку файла (utf8 или utf16le)_
 10. [fileExists](#fileex)
-11. [openroundbrackets](#oroundbr) - `кошка(ми) => кошка и кошками`
-12. [filter\_gls\_hw\_list](#filter) - `кот|котами|кот => кот|котами (hw = headword)`
-13. [spinner\_start](#spinner) 
-14. [spinner\_stop](#spinner)
+11. [dirExists](#direx)
+12. [openroundbrackets](#oroundbr) - `кошка(ми) => кошка и кошками`
+13. [filter\_gls\_hw\_list](#filter) - `кот|котами|кот => кот|котами (hw = headword)`
+14. [spinner\_start](#spinner) 
+15. [spinner\_stop](#spinner)
 
 ПОДРОБНОСТИ
 
@@ -404,6 +405,12 @@ _кот|котами (а не котами|кот)_
 
 Метод синхронный.
 
+<a href="#direx" id="user-content-direx">**dirExists(dirPath)**</a>
+
+Проверка существования директории.
+
+Метод синхронный.
+
 <a href="#spinner" id="user-content-spinner">**spinner**</a>
 
 **_spinner\_start(msg, arr, time)_**</br>
@@ -457,98 +464,25 @@ console.log(r);
 
 */
 ```
-
 #### Плагины
 
-Для операций, кроме тех, которые запускаются с ключами _**-rt, -re, -rd, -rg**_ и _**-rs**_ используются отдельные файлы с javascript кодом.
+Для операций, кроме тех, которые запускаются с ключами _**-rt, -re, -rd, -rg**_ и _**-rs**_ на первой позиции в командной строке, используются файлы с кодом из директории **plugins** (_/nodereplacer/files/plugins_).
 
-Эти файлы находятся в папке "**_files/plugins_**" и их имена совпадают с используемыми в командной строке ключами без символа "-".
-
-Например:</br>
-node nodereplacer.js **_-pile_** input.txt output.txt - files/plugins/**_pile.js_**</br>
-node nodereplacer.js **_-susp_** input.txt output.txt - files/plugins/**_susp.js_**</br>
-node nodereplacer.js **_-symb_** input.txt output.txt - files/plugins/**_symb.js_**
-
-При создании плагинов необходимо исходя из потребностей выбрать один из трёх форматов командной строки, которые допустимы при их использовании:
-
-1) node nodereplacer.js **_-ключ1_** **_-ключ2_** input.txt output.txt</br>
-2) node nodereplacer.js **_-ключ1_** input.txt output.txt</br>
-3) node nodereplacer.js **_-ключ1_** **_-ключ2_** output.txt</br>
-4) node nodereplacer.js **_-ключ1_** input.txt</br>
-5) node nodereplacer.js **_-ключ1_** output.txt
-
-Первый ключ - имя файла с плагином без "-" и расширения.
-При именовании файлов недопустимо использовать следующие имена: **_rt, re, rd, rg, rs_**
-
-Второй ключ используется для передачи дополнительной информации.
-
-При использовании плагинов по умолчанию входной файл читается постатейно (режим _**by\_dsl\_article_**).
-
-Выбор режима чтения (построчный, постатейный...) через командную строку невозможен.
-
-Чтобы переключиться на построчный режим (например при обработке файла, который не имеет словарной структуры) надо добавить в начале плагина следующий код:
-```javascript
-function onstart()
-{
-  o.byline();
-}
-```
-Пример простенького плагина:
-
-**Назначение**: _Получение списка символов_.
-
-**Название файла**: _slist.js_
-
-Этот файл должен находиться в папке "_**files/plugins_**"
-
-Командная строка:</br>
-_**node nodereplacer.js -slist input.txt output.txt_**
-
-Код:
-```javascript
-//Обработка построчная.
-function onstart()
-{
-        o.byline();
-}
-
-//Режем строку на символы.
-let arr = [...s];
-
-//фильтруем.
-while (arr !== null && arr.length !== 0)
-{
-        const c = arr.shift();
-        if (/^[^\s]$/.test(c))
-                o.tab[c] = '';
-}
+Имя первого ключа - это имя плагина без расширения и "-". 
 
 
-//Чтобы прочитанная строка не была записана в выходной файл.
-s = null;
+Пример:</br>
+node nodereplacer.js **_-pile_** input.txt output.txt - **_pile.js_**</br>
+node nodereplacer.js **_-susp_** input.txt output.txt - **_susp.js_**</br>
+node nodereplacer.js **_-symb_** input.txt output.txt - **_symb.js_**
 
-//Переносим данные в массив o.res и сортируем.
-function onexit()
-{
-        for (let key in o.tab)
-        {
-                o.res.push(key);
-        }
+Формат командной строки для плагинов:</br>
+node nodereplacer.js **_-ключ1_** ...
 
-        o.res.sort();
-}
-```
-Возможный результат:
-```
-b
-d
-g
-i
-o
-p
-r
-И т. д.
-```
+**nodereplacer.js** проверяет только валидность первого ключа, остальная часть командной строки проверяется уже внутри плагина.
+
+При именовании плагинов недопустимо использовать следующие зарезервированные слова: **_rt, re, rd, rg, rs_**
+
 #### Тестирование
 
 [На отдельной странице](tester.md).

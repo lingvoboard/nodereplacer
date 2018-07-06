@@ -14,7 +14,23 @@ function onstart () {
 
   o.retagged = 0
 
-  if (process.argv.length === 5) {
+
+
+
+
+
+  if (process.argv.length === 5 && o.utils.fileExists(process.argv[3])) {
+    // node nodereplacer.js -retag input.txt output.txt
+
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     const r = String.raw
     o.startOfString = '^'
     o.notEscapeSymbol = r`[^\x5c]`
@@ -61,11 +77,41 @@ function onstart () {
     )
 
     o.by_dsl_article()
-  } else if (process.argv.length === 6 && process.argv[3] === '-gls') {
+  } else if (process.argv.length === 6 && process.argv[3] === '-gls' && o.utils.fileExists(process.argv[4])) {
+
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.by_gls_article()
-  } else if (process.argv.length === 6 && process.argv[3] === '-e') {
+  } else if (process.argv.length === 6 && process.argv[3] === '-e' && o.utils.fileExists(process.argv[4])) {
+
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.entirefile()
-  } else if (process.argv.length === 6 && process.argv[3] === '-rt') {
+  } else if (process.argv.length === 6 && process.argv[3] === '-rt' && o.utils.fileExists(process.argv[4])) {
+
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.byline()
   } else {
     console.log('Invalid command line.')

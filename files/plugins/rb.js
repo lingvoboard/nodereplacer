@@ -1,6 +1,21 @@
 // Раскрытие круглых скобок в заголовках словарных исходников.
 
 function onstart () {
+  if (process.argv.length === 6 && o.utils.fileExists(process.argv[4])) {
+    // node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
+
   if (/^-(dsl1|dsl2|dslm1|dslm2)$/i.test(process.argv[3])) {
     o.eol = ''
     o.by_dsl_article()
@@ -12,7 +27,9 @@ function onstart () {
 }
 
 let mark = ''
-if (/^-(dslm1|dslm2)$/.test(process.argv[3]) || process.argv[3] === '-glsm') { mark = '$$$' }
+if (/^-(dslm1|dslm2)$/.test(process.argv[3]) || process.argv[3] === '-glsm') {
+  mark = '$$$'
+}
 
 if (/^-(dsl1|dsl2|dslm1|dslm2)$/i.test(process.argv[3])) {
   let hw = []

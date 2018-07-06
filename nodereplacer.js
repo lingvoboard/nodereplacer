@@ -68,7 +68,7 @@ o.progress_bar = true
 o.progress_bar_title = ''
 
 o.et_auto = true
-o.et_show = function () {
+o.et_show = () => {
   const hrend = process.hrtime(hrstart)
   console.log(
     `\n\nExecution time: ${hrend[0]}.${Math.floor(hrend[1] / 1000000)}\n`
@@ -100,7 +100,7 @@ class offset_eol {
     this.writer_disk_access_counter = 0
     this.reader_disk_access_counter = 0
     this.writer_buffering_size = writer_buffering_size
-    this.trim_endings = function (hex) {
+    this.trim_endings = hex => {
       return hex
         .match(/([\w]{2})/g)
         .filter(val => {
@@ -296,7 +296,7 @@ function updateProgressBar () {
 }
 
 function removecommentedpart (s) {
-  s = s.replace(/(\\*)(\{\{[^]*?\}\})/g, function (a, m1, m2) {
+  s = s.replace(/(\\*)(\{\{[^]*?\}\})/g, (a, m1, m2) => {
     if (m1.length % 2 === 0) m2 = ''
     return m1 + m2
   })
@@ -475,9 +475,11 @@ function entirefile () {
 }
 
 function byline () {
+
   fileSize = fs.statSync(o.inputfile)['size']
 
   o.loop++
+
 
   if (o.repeat !== undefined) delete o.repeat
 
@@ -487,6 +489,7 @@ function byline () {
 
   let lineCount = 0
   byteCount = 0
+
 
   o.in_encoding = guessEncoding(o.inputfile)
   o.out_encoding = o.in_encoding
@@ -508,6 +511,7 @@ function byline () {
       16384
     )
   }
+
 
   const fd = fs.openSync(o.inputfile, 'r')
 
@@ -533,6 +537,7 @@ function byline () {
       fs.unlinkSync(o.error_log_path)
     } catch (e) {}
   }
+
 
   reader
     .on('line', line => {
@@ -1049,7 +1054,9 @@ function by_dsl_article () {
         if (o.progress_bar) console.log('\n\n')
       }
 
-      if (errorCount > 0) { console.log('Number of Errors: ' + errorCount + ' (Check error.log)') }
+      if (errorCount > 0) {
+        console.log('Number of Errors: ' + errorCount + ' (Check error.log)')
+      }
 
       if (o.repeat === 'entirefile') {
         o.entirefile()
@@ -1176,7 +1183,9 @@ function by_gls_article () {
               fs.writeSync(Output, `${v}\n`, null, o.out_encoding)
             }
 
-            if (writeEmptylines) { fs.writeSync(Output, '\n', null, o.out_encoding) }
+            if (writeEmptylines) {
+              fs.writeSync(Output, '\n', null, o.out_encoding)
+            }
 
             // ~ fs.writeSync(Output, '\n', null, o.out_encoding);
 
@@ -1258,7 +1267,9 @@ function by_gls_article () {
         if (o.progress_bar) console.log('\n\n')
       }
 
-      if (errorCount > 0) { console.log('Number of Errors: ' + errorCount + ' (Check error.log)') }
+      if (errorCount > 0) {
+        console.log('Number of Errors: ' + errorCount + ' (Check error.log)')
+      }
 
       if (o.repeat === 'entirefile') {
         o.entirefile()
@@ -1326,19 +1337,19 @@ function prepare (InputFileName, OutputFileName) {
   o.path = __dirname
   o.eol = '\n'
 
-  o.byline = function () {
+  o.byline = () => {
     byline()
   }
 
-  o.by_gls_article = function () {
+  o.by_gls_article = () => {
     by_gls_article()
   }
 
-  o.by_dsl_article = function () {
+  o.by_dsl_article = () => {
     by_dsl_article()
   }
 
-  o.entirefile = function () {
+  o.entirefile = () => {
     entirefile()
   }
 
@@ -1407,144 +1418,76 @@ function prepare (InputFileName, OutputFileName) {
   }
 }
 
-function goHome () {
+let pluginPath
+
+if (
+  process.argv.length === 7 &&
+  process.argv[2] === '-rs' &&
+  fileExists(process.argv[3]) &&
+  /^-[A-Za-z]{1,10}$/.test(process.argv[4]) &&
+  fileExists(process.argv[5])
+) {
+  // node nodereplacer.js -rs list -[A-Za-z]{1,10} input.txt output.txt
+  buildfunctionbody(process.argv[3], () => {
+    prepare(process.argv[5], process.argv[6])
+  })
+} else if (
+  process.argv.length === 6 &&
+  /^-r[dt]$/.test(process.argv[2]) &&
+  fileExists(process.argv[3]) &&
+  fileExists(process.argv[4])
+) {
+  // node nodereplacer.js (-rt|-rd) list input.txt output.txt
+  o.mode = process.argv[2] === '-rt' ? 'byline' : o.mode
+  buildfunctionbody(process.argv[3], () => {
+    prepare(process.argv[4], process.argv[5])
+  })
+} else if (
+  process.argv.length === 6 &&
+  process.argv[2] === '-rg' &&
+  fileExists(process.argv[3]) &&
+  fileExists(process.argv[4])
+) {
+  // node nodereplacer.js -rg list input.txt output.txt
+  o.mode = 'by_gls_article'
+  buildfunctionbody(process.argv[3], () => {
+    prepare(process.argv[4], process.argv[5])
+  })
+} else if (
+  process.argv.length === 6 &&
+  process.argv[2] === '-re' &&
+  fileExists(process.argv[3]) &&
+  fileExists(process.argv[4])
+) {
+  // node nodereplacer.js -re list input.txt output.txt
+  o.mode = 'entirefile'
+  buildfunctionbody(process.argv[3], () => {
+    prepare(process.argv[4], process.argv[5])
+  })
+} else if (
+  /^-(?!r[tdsge]$)\w+$/i.test(process.argv[2]) &&
+  (pluginPath =
+    __dirname + '/files/plugins/' + process.argv[2].substring(1) + '.js') &&
+  fileExists(pluginPath)
+) {
+  // node nodereplacer.js -ключ1 ...
+  buildfunctionbody(pluginPath, () => {
+    prepare(null, null)
+  })
+} else if (
+  /^.+\.(?:gls|ifo)$/i.test(process.argv[2]) &&
+  fileExists(process.argv[2])
+) {
+  // stardict.js
+  buildfunctionbody(__dirname + '/files/' + 'stardict.js', () => {
+    prepare(process.argv[2], null)
+  })
+} else if (/^.+\.js$/i.test(process.argv[2]) && fileExists(process.argv[2])) {
+  // node nodereplacer.js test.js
+  buildfunctionbody(process.argv[2], () => {
+    prepare(null, null)
+  })
+} else {
   console.log('Invalid command line.')
   process.exit()
 }
-
-let pluginPath
-
-switch (process.argv.length) {
-  case 7:
-    if (
-      process.argv[2] === '-rs' &&
-      fileExists(process.argv[3]) &&
-      /^-[A-Za-z]{1,10}$/.test(process.argv[4]) &&
-      fileExists(process.argv[5])
-    ) {
-      // node nodereplacer.js -rs list -[A-Za-z]{1,10} input.txt output.txt
-      buildfunctionbody(process.argv[3], function () {
-        prepare(process.argv[5], process.argv[6])
-      })
-      break
-    }
-    goHome()
-
-  case 6:
-    // node nodereplacer.js (-rt|-rd) list input.txt output.txt
-    if (
-      /^-r[dt]$/.test(process.argv[2]) &&
-      fileExists(process.argv[3]) &&
-      fileExists(process.argv[4])
-    ) {
-      o.mode = process.argv[2] === '-rt' ? 'byline' : o.mode
-      buildfunctionbody(process.argv[3], function () {
-        prepare(process.argv[4], process.argv[5])
-      })
-      break
-    } else if (
-      process.argv[2] === '-rg' &&
-      fileExists(process.argv[3]) &&
-      fileExists(process.argv[4])
-    ) {
-      // node nodereplacer.js -rg list input.txt output.txt
-      o.mode = 'by_gls_article'
-      buildfunctionbody(process.argv[3], function () {
-        prepare(process.argv[4], process.argv[5])
-      })
-      break
-    } else if (
-      process.argv[2] === '-re' &&
-      fileExists(process.argv[3]) &&
-      fileExists(process.argv[4])
-    ) {
-      // node nodereplacer.js -re list input.txt output.txt
-      o.mode = 'entirefile'
-      buildfunctionbody(process.argv[3], function () {
-        prepare(process.argv[4], process.argv[5])
-      })
-      break
-    } else if (
-      /^-(?!r[tdsge]$)\w+$/i.test(process.argv[2]) &&
-      (pluginPath =
-        __dirname + '/files/plugins/' + process.argv[2].substring(1) + '.js') &&
-      fileExists(pluginPath) &&
-      fileExists(process.argv[4])
-    ) {
-      // node nodereplacer.js -ключ1 -ключ2 input.txt output.txt
-      buildfunctionbody(pluginPath, function () {
-        prepare(process.argv[4], process.argv[5])
-      })
-      break
-    }
-    goHome()
-
-  case 5:
-    if (
-      /^-(?!r[tdsge]$)\w+$/i.test(process.argv[2]) &&
-      (pluginPath =
-        __dirname + '/files/plugins/' + process.argv[2].substring(1) + '.js') &&
-      fileExists(pluginPath)
-    ) {
-      if (fileExists(process.argv[3])) {
-        // node nodereplacer.js -ключ1 input.txt output.txt
-        buildfunctionbody(pluginPath, function () {
-          prepare(process.argv[3], process.argv[4])
-        })
-      } else {
-        // node nodereplacer.js -ключ1 -ключ2 output.txt
-        buildfunctionbody(pluginPath, function () {
-          prepare(null, process.argv[4])
-        })
-      }
-      break
-    }
-    goHome()
-
-  case 4:
-    if (
-      /^-(?!r[tdsge]$)\w+$/i.test(process.argv[2]) &&
-      (pluginPath =
-        __dirname + '/files/plugins/' + process.argv[2].substring(1) + '.js') &&
-      fileExists(pluginPath)
-    ) {
-      if (fileExists(process.argv[3])) {
-        // node nodereplacer.js -ключ1 input.txt
-        buildfunctionbody(pluginPath, function () {
-          prepare(process.argv[3], null)
-        })
-      } else {
-        // node nodereplacer.js -ключ1 output.txt
-        buildfunctionbody(pluginPath, function () {
-          prepare(null, process.argv[3])
-        })
-      }
-      break
-    }
-    goHome()
-
-  case 3:
-    if (
-      /^.+\.(?:gls|ifo)$/i.test(process.argv[2]) &&
-      fileExists(process.argv[2])
-    ) {
-      // stardict.js
-      buildfunctionbody(__dirname + '/files/' + 'stardict.js', function () {
-        prepare(process.argv[2], null)
-      })
-      break
-    } else if (
-      /^.+\.js$/i.test(process.argv[2]) &&
-      fileExists(process.argv[2])
-    ) {
-      // node nodereplacer.js test.js
-      buildfunctionbody(process.argv[2], function () {
-        prepare(null, null)
-      })
-      break
-    }
-
-  default:
-    goHome()
-}
-

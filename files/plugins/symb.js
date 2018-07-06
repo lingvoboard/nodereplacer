@@ -1,12 +1,32 @@
 // Получение списка всех символов в указанном текстовом файле и некоторой информации об этих символах.
 function onstart () {
   if (process.argv.length === 5 && o.utils.fileExists(process.argv[3])) {
+
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.byline()
   } else if (
     process.argv.length === 6 &&
     process.argv[3] === '-f' &&
     o.utils.fileExists(process.argv[4])
   ) {
+
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.byline()
   } else {
     console.log('Invalid command line.')

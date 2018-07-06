@@ -1,5 +1,41 @@
 // Пользовательская сортировка.
 
+function onstart () {
+  if (process.argv.length === 5 && o.utils.fileExists(process.argv[3])) {
+    // node nodereplacer.js -usort input.txt output.txt
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    o.by_dsl_article()
+  } else if (
+    process.argv.length === 6 &&
+    process.argv[3] === '-i' &&
+    o.utils.fileExists(process.argv[4])
+  ) {
+    // node nodereplacer.js -usort -i input.txt output.txt
+
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    o.by_dsl_article()
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
+}
+
 if (o.sortRulesTab === undefined) {
   o.sortRulesTab = Object.create(null)
   o.bigArr = []
@@ -17,7 +53,9 @@ function read_sort_rules () {
     let sortRulesArr = [...sortRulesStr]
 
     for (let i = 0; i < sortRulesArr.length; i++) {
-      if (o.sortRulesTab[sortRulesArr[i]] === undefined) { o.sortRulesTab[sortRulesArr[i]] = i }
+      if (o.sortRulesTab[sortRulesArr[i]] === undefined) {
+        o.sortRulesTab[sortRulesArr[i]] = i
+      }
     }
   }
 }

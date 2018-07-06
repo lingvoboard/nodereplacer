@@ -121,6 +121,20 @@ function onstart () {
 
   o.items = 0
 
+  if (process.argv.length === 6 && o.utils.fileExists(process.argv[4])) {
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
+
   if (process.argv[3] && /^-[tdg]\d+%([2-9]|10)$/.test(process.argv[3])) {
     let r = process.argv[3].match(/^(-[tdg])(\d+%)([2-9]|10)$/)
 
@@ -136,9 +150,10 @@ function onstart () {
   }
 
   if (/^-[b]\d+$/.test(process.argv[3])) {
+    // node nodereplacer.js -cut -b100 input.txt output.txt
     o.byline()
   } else if (
-    process.argv.length === 6 &&
+    // node nodereplacer.js -cut -t100 input.txt output.txt
     /^-t/.test(process.argv[3]) &&
     (/^-t\d+$/.test(process.argv[3]) || checkparam(process.argv[3])[0])
   ) {
@@ -147,14 +162,13 @@ function onstart () {
       o.arr = checkparam(process.argv[3])[1]
       o.parts = o.arr.length
     }
-
     o.mode = 'byline'
     o.byline()
   } else if (
-    process.argv.length === 6 &&
     /^-d/.test(process.argv[3]) &&
     (/^-d\d+$/.test(process.argv[3]) || checkparam(process.argv[3])[0])
   ) {
+    // node nodereplacer.js -cut -d100 input.txt output.txt
     if (/%/.test(process.argv[3])) {
       o.progress_bar_title = 'Counting articles:\n'
       o.arr = checkparam(process.argv[3])[1]
@@ -164,10 +178,10 @@ function onstart () {
     o.mode = 'by_dsl_article'
     o.by_dsl_article()
   } else if (
-    process.argv.length === 6 &&
     /^-g/.test(process.argv[3]) &&
     (/^-g\d+$/.test(process.argv[3]) || checkparam(process.argv[3])[0])
   ) {
+    // node nodereplacer.js -cut -g100 input.txt output.txt
     if (/%/.test(process.argv[3])) {
       o.progress_bar_title = 'Counting articles:\n'
       o.arr = checkparam(process.argv[3])[1]

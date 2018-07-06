@@ -1,11 +1,35 @@
 // Конвертирует изображения в base64
 
 function onstart () {
-  if (process.argv.length === 6 && process.argv[3] === '-i') {
+  if (
+    process.argv.length === 6 &&
+    process.argv[3] === '-i' &&
+    o.utils.fileExists(process.argv[4])
+  ) {
+    // node nodereplacer.js -base64 -i input.txt output.txt
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
     o.byline()
     fs.writeFileSync(o.error_log_path, '', { encoding: 'utf8', flag: 'w' })
-  } else {
+  } else if (process.argv.length === 5 && o.utils.fileExists(process.argv[3])) {
+    // node nodereplacer.js -base64 input.txt output.txt
     const hrstart = process.hrtime()
+
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
 
     try {
       let encoding = o.utils.guessEncoding(o.inputfile)
@@ -29,6 +53,9 @@ function onstart () {
     } catch (err) {
       console.log('\nTypeError: ' + err.message)
     }
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
   }
 }
 
@@ -49,11 +76,6 @@ function imgtobase64 (b, img, e) {
   }
 }
 
-s = s.replace(/(<IMG[^>]*src=\")([^\">]+)(\"[^>]*>)/gi, function (
-  u,
-  m1,
-  m2,
-  m3
-) {
+s = s.replace(/(<IMG[^>]*src=\")([^\">]+)(\"[^>]*>)/gi, (u, m1, m2, m3) => {
   return imgtobase64(m1, m2, m3)
 })

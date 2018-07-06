@@ -1,7 +1,22 @@
 // Объединение в словаре статей с одинаковыми заголовками с предварительным удалением дубликатов статей.
 
 function onstart () {
-  o.by_dsl_article()
+  if (process.argv.length === 6 && o.utils.fileExists(process.argv[4])) {
+    // node nodereplacer.js -m -(a|a1|a2|l|l1|l2|r|r1|r2) input.txt output.txt
+    o.inputfile = process.argv[4]
+    o.outputfile = process.argv[5]
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    o.by_dsl_article()
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
 }
 
 function clear_hw (s) {

@@ -226,6 +226,14 @@ class utils_class {
     }
   }
 
+  dirExists (filePath) {
+    try {
+      return fs.statSync(filePath).isDirectory()
+    } catch (err) {
+      return false
+    }
+  }
+
   openroundbrackets (h, cb) {
     let bak = h
 
