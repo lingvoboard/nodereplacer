@@ -201,7 +201,7 @@ _Код всех методов можно найти в файле_ `/noderepla
     xml: false }
   используемый парсер - htmlparser2
 */
-//let $ = o.utils.init_cheerio(s);
+//let $ = o.utils.init_cheerio(s)
 
 /*
   инициализация, идентичная init_cheerio
@@ -210,7 +210,7 @@ _Код всех методов можно найти в файле_ `/noderepla
     normalizeWhitespace: false }
   используется htmlparser2
 */
-//let $ = o.utils.init_cheerio_old(s, {decodeEntities: true, normalizeWhitespace: false});
+//let $ = o.utils.init_cheerio_old(s, {decodeEntities: true, normalizeWhitespace: false})
 
 /*
   инициализация с новым парсером parse5
@@ -218,14 +218,14 @@ _Код всех методов можно найти в файле_ `/noderepla
   выполняется проверка на наличие структуры документа
   в зависимости от результатов контент обрабатывается либо как Document, либо как DocumentFragment
 */
-//let $ = o.utils.init_cheerio_new(s);
+//let $ = o.utils.init_cheerio_new(s)
 
 /*
   инициализация с новым парсером parse5
   и отличной от дефолтной опцией
   выполняется проверка на наличие структуры документа
 */
-//let $ = o.utils.init_cheerio_new(s, {normalizeWhitespace: false});
+//let $ = o.utils.init_cheerio_new(s, {normalizeWhitespace: false})
 
 /*
   инициализация с новым парсером parse5,
@@ -234,22 +234,22 @@ _Код всех методов можно найти в файле_ `/noderepla
   в случае передачи третьим параметром false
   включается режим DocumentFragment, независимо от наличия структуры документа
 */
-//let $ = o.utils.init_cheerio_new(s, {normalizeWhitespace: false}, true);
+//let $ = o.utils.init_cheerio_new(s, {normalizeWhitespace: false}, true)
 
 /*
   инициализация с новым парсером parse5,
   дефолтными опциями
   и принудительным включением режима DocumentFragment
 */
-//let $ = o.utils.init_cheerio_new(s, {}, false);
-let $ = o.utils.init_cheerio_new(s, null, false);
+//let $ = o.utils.init_cheerio_new(s, {}, false)
+let $ = o.utils.init_cheerio_new(s, null, false)
 
 
-//$('.foo').reptag('[test]', '[/test]');
-//$('.foo').changeTag('test');
-//$('.foo').unwrap();
-$('.foo').wrapAll('');
-s = $.html();
+//$('.foo').reptag('[test]', '[/test]')
+//$('.foo').changeTag('test')
+//$('.foo').unwrap()
+$('.foo').wrapAll('')
+s = $.html()
 ```
 Инициализатор, также, добавляет четыре метода, которых нет в cheerio:
 
@@ -267,11 +267,11 @@ s = $.html();
 //<span class="italic">aaa</span><span class="italic">bbb</span>
 //Командная строка: rep -rt list input.txt output.txt
 
-let $ = o.utils.init_cheerio(s);
+let $ = o.utils.init_cheerio(s)
 
-$('.italic').reptag('[i]', '[/i]');
+$('.italic').reptag('[i]', '[/i]')
 
-s = $.html();
+s = $.html()
 
 //Результат:
 //[i]aaa[/i][i]bbb[/i]
@@ -284,11 +284,11 @@ s = $.html();
 //<span class="italic">aaa</span><span class="italic">bbb</span>
 //Командная строка: rep -rt list input.txt output.txt
 
-let $ = o.utils.init_cheerio(s);
+let $ = o.utils.init_cheerio(s)
 
-$('.italic').changeTag('test');
+$('.italic').changeTag('test')
 
-s = $.html();
+s = $.html()
 
 //Результат:
 //<test class="italic">aaa</test><test class="italic">bbb</test>
@@ -299,9 +299,9 @@ s = $.html();
 Код метода:
 ```javascript
 normalizeHTML(str) {
-        const pattern1 = /[\f\n\r\t\v ]+/g;
-        str = str.replace(pattern1, ' ');
-        return str;
+  const pattern1 = /[\f\n\r\t\v ]+/g
+  str = str.replace(pattern1, ' ')
+  return str
 }
 ```
 
@@ -310,7 +310,7 @@ normalizeHTML(str) {
 Код метода:
 ```javascript
 decodeHTML(str) {
-        return require('entities').decodeHTML(str);
+  return require('entities').decodeHTML(str)
 }
 ```
 
@@ -319,7 +319,7 @@ decodeHTML(str) {
 Код метода:
 ```javascript
 encodeHTML(str) {
-        return require('entities').encodeHTML(str);
+  return require('entities').encodeHTML(str)
 }
 ```
 
@@ -328,7 +328,7 @@ encodeHTML(str) {
 Код метода:
 ```javascript
 decode(str, charset) {
-        return require('iconv-lite').decode(str, charset);
+  return require('iconv-lite').decode(str, charset)
 }
 ```
 
@@ -338,11 +338,11 @@ decode(str, charset) {
 
 Если второй аргумент "a" имеет значение **_true_**, то:
 ```javascript
-  s = s.replace(/(\\*)/g, function(a, m1) { if ((m1.length % 2) === 1) m1 = m1.slice(0, -1); return m1; });
+  s = s.replace(/(\\*)/g, function(a, m1) { if ((m1.length % 2) === 1) m1 = m1.slice(0, -1); return m1; })
 ```
 Если второй аргумент отсутствует, то
 ```javascript
-  s = s.replace(/(\\*)([@#\^~\[\]\{\}\(\)])/g,  function(a, m1, m2){if ((m1.length % 2) === 1) m1 = m1.slice(0, -1); return m1 + m2; });
+  s = s.replace(/(\\*)([@#\^~\[\]\{\}\(\)])/g,  function(a, m1, m2){if ((m1.length % 2) === 1) m1 = m1.slice(0, -1); return m1 + m2; })
 ```
 
 <a href="#rmcom" id="user-content-rmcom">**remove\_comments(str)**</a>
@@ -418,17 +418,17 @@ _кот|котами (а не котами|кот)_
 
 Пример использования
 ```javascript
-let spin = o.utils.spinner_start('Processing... %s', ['|', '/', '—', '\\',]);
-o.utils.spinner_stop(spin, 'Processing... Done\n');
+let spin = o.utils.spinner_start('Processing... %s', ['|', '/', '—', '\\',])
+o.utils.spinner_stop(spin, 'Processing... Done\n')
 
-let spin = o.utils.spinner_start('Checking... %s', ['◢', '◣', '◤', '◥',]);
-o.utils.spinner_stop(spin, 'Checking... OK\n');
+let spin = o.utils.spinner_start('Checking... %s', ['◢', '◣', '◤', '◥',])
+o.utils.spinner_stop(spin, 'Checking... OK\n')
 
-o.spin = o.utils.spinner_start('Loading... %s', ['...', '..', '.', '',], 400);
-o.utils.spinner_stop(o.spin);
+o.spin = o.utils.spinner_start('Loading... %s', ['...', '..', '.', '',], 400)
+o.utils.spinner_stop(o.spin)
 
-o.spin = o.utils.spinner_start('%s Loading...', ['🌒', '🌓', '🌔', '🌕',]);
-o.utils.spinner_stop(o.spin, '🌑 Loading...\n');
+o.spin = o.utils.spinner_start('%s Loading...', ['🌒', '🌓', '🌔', '🌕',])
+o.utils.spinner_stop(o.spin, '🌑 Loading...\n')
 ```
 
 #### Модуль htmlclean
@@ -442,7 +442,7 @@ _Для лучших результатов рекомендуется испо�
 
 Тестовый пример:
 ```javascript
-const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean;
+const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
 
 const dirtyHtml = String.raw`
     <h1>     
@@ -452,10 +452,10 @@ const dirtyHtml = String.raw`
         </p>
     <b>болд <i> болд-курсив </i> </b> <i> курсив <u> курсив-подчёркивание </u> </i> <u> подчёркивание </u>
 
-`;
+`
 
-let r = htmlclean(dirtyHtml);
-console.log(r);
+let r = htmlclean(dirtyHtml)
+console.log(r)
 
 /*
 
@@ -497,15 +497,14 @@ node nodereplacer.js **_-ключ1_** ...
 
 Пример использования:
 ```javascript
-const pb = require(o.utilspath).progressbar(o.arr.length, 1);
-pb.start();
+const pb = require(o.utilspath).progressbar(o.arr.length, 1)
+pb.start()
 
-for (let i = 0; i < arr.length; i++)
-{
-        pb.stat = i;
+for (let i = 0; i < arr.length; i++) {
+  pb.stat = i
 }
 
-pb.end();
+pb.end()
 ```
 Второй аргумент в _**progressbar**_ можно опустить, в этом случае будет использовано значение по умолчанию - 0.
 
@@ -515,20 +514,15 @@ pb.end();
 
 Пример использования:
 ```javascript
-function onstart()
-{
-
-        o.mem = require(o.utilspath + 'memory.js').mem(100);
-        o.mem.start();
-        o.byline();
-
+function onstart() {
+  o.mem = require(o.utilspath + 'memory.js').mem(100)
+  o.mem.start()
+  o.byline()
 }
 
-function onexit()
-{
-        o.mem.stop();
-        console.log('\nMemory Usage (max rss): ' + o.mem.get());
-
+function onexit() {
+  o.mem.stop()
+  console.log('\nMemory Usage (max rss): ' + o.mem.get())
 }
 ```
 Интервал измерений можно изменить на другой, в примере выше - 100 миллисекунд
@@ -545,10 +539,9 @@ function onexit()
 
 Чтобы сохранить разделители входного файла:
 ```javascript
-function onstart()
-{
-        o.eol_mode = 1;
-        o.byline();
+function onstart() {
+  o.eol_mode = 1
+  o.byline()
 }
 ```
 
@@ -558,58 +551,42 @@ function onstart()
 
 Пример:
 ```javascript
-s = null;
+s = null
 
+async function onexit_async () {
+  function processpage () {
+    try {
+      let title = document.getElementsByTagName('title')
+      return title[0].innerHTML
+    } catch (e) {
+      return e.message
+    }
+  }
 
-async function onexit_async()
-{
+  try {
+    const puppeteer = require('puppeteer')
+    console.log('\n')
+    let spin = o.utils.spinner_start('Processing... %s', ['|', '/', '—', '\\'])
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+    const page = await browser.newPage()
 
-        function processpage()
-        {
+    while (o.idata.next()) {
+      let v = o.idata.get()
+      await page.setContent(v, { waitUntil: 'domcontentloaded' })
+      let str = await page.evaluate(processpage)
+      o.idata.write(str)
+    }
 
-                try
-                {
-
-                        let title = document.getElementsByTagName('title');
-                        return  title[0].innerHTML;  
-
-                }
-                catch(e)
-                {
-                        return e.message;
-                }
-
-        }
-
-        try
-        {
-
-                const puppeteer = require('puppeteer');
-                console.log('\n');
-                let spin = o.utils.spinner_start('Processing... %s', ['|', '/', '—', '\\',]);
-                const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-                const page = await browser.newPage();
-
-                while (o.idata.next())
-                {
-                  let v = o.idata.get();
-                  await page.setContent(v, { waitUntil: 'domcontentloaded' });
-                  let str = await page.evaluate(processpage);
-                  o.idata.write(str);
-
-                }
-
-                browser.close();  
-                o.utils.spinner_stop(spin, 'Processing... Done\n');
-                o.et_show();
-
-        }
-        catch(e)
-        {
-                console.log(e.message);
-        }
-
+    browser.close()
+    o.utils.spinner_stop(spin, 'Processing... Done\n')
+    o.et_show()
+  } catch (e) {
+    console.log(e.message)
+  }
 }
+
 ```
 Пояснение к коду:
 

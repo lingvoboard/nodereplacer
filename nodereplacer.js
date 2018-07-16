@@ -414,7 +414,8 @@ function entirefile () {
   o.in_encoding = guessEncoding(o.inputfile)
   o.out_encoding = o.in_encoding
 
-  const Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile)
+    var Output = fs.openSync(o.outputfile, 'w')
 
   if (o.loop === 1) {
     try {
@@ -431,11 +432,12 @@ function entirefile () {
   if (o.stop !== undefined) {
     console.log()
     console.log(o.stop)
-    fs.closeSync(Output)
+    if (o.outputfile) fs.closeSync(Output)
     process.exit()
   }
 
-  fs.writeSync(Output, s + o.eol, null, o.out_encoding)
+  if (o.outputfile)
+    fs.writeSync(Output, s + o.eol, null, o.out_encoding)
 
   o.RunOnStart = false
   o.RunOnExit = true
@@ -443,9 +445,11 @@ function entirefile () {
 
   LISTJS.ProcessString(null, o)
 
-  for (let i = 0; i < o.res.length; i++) {
-    if (o.res[i] !== null) {
-      fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+  if (o.outputfile) {
+    for (let i = 0; i < o.res.length; i++) {
+      if (o.res[i] !== null) {
+        fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+      }
     }
   }
 
@@ -523,9 +527,11 @@ function byline () {
     crlfDelay: Infinity
   })
 
-  const Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile)
+    var Output = fs.openSync(o.outputfile, 'w')
 
-  fs.writeSync(Output, o.bom, null, o.out_encoding)
+  if (o.outputfile)
+    fs.writeSync(Output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -544,7 +550,7 @@ function byline () {
       if (o.stop !== undefined) {
         console.log()
         console.log(o.stop)
-        fs.closeSync(Output)
+        if (o.outputfile) fs.closeSync(Output)
         process.exit()
       }
 
@@ -581,7 +587,7 @@ function byline () {
 
       line = LISTJS.ProcessString(line, o)
 
-      if (line !== null) {
+      if (line !== null && o.outputfile) {
         fs.writeSync(Output, line + o.eol, null, o.out_encoding)
       }
     })
@@ -607,9 +613,11 @@ function byline () {
 
       LISTJS.ProcessString(null, o)
 
-      for (let i = 0; i < o.res.length; i++) {
-        if (o.res[i] !== null) {
-          fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+      if (o.outputfile) {
+        for (let i = 0; i < o.res.length; i++) {
+          if (o.res[i] !== null) {
+            fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+          }
         }
       }
 
@@ -798,7 +806,8 @@ function by_dsl_article () {
     crlfDelay: Infinity
   })
 
-  const output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile)
+    var output = fs.openSync(o.outputfile, 'w')
 
   let flag = 0
 
@@ -806,7 +815,8 @@ function by_dsl_article () {
   let art1 = []
   let lines = []
 
-  fs.writeSync(output, o.bom, null, o.out_encoding)
+  if (o.outputfile)
+    fs.writeSync(output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -824,7 +834,7 @@ function by_dsl_article () {
       if (o.stop !== undefined) {
         console.log()
         console.log(o.stop)
-        fs.closeSync(output)
+        if (o.outputfile) fs.closeSync(output)
         process.exit()
       }
 
@@ -893,9 +903,11 @@ function by_dsl_article () {
         s[1] = removecommentedpart(s[0])
 
         if (/^#/.test(s[1]) && flag === 0) {
-          fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
         } else if (/^\s*$/.test(s[1]) && flag === 0) {
-          fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
         } else if (s[1] === '' && flag !== 0) {
           art0.push(s[0])
           art1.push(s[1])
@@ -918,7 +930,8 @@ function by_dsl_article () {
             )
 
             if (res !== null) {
-              fs.writeSync(output, res + o.eol, null, o.out_encoding)
+              if (o.outputfile)
+                fs.writeSync(output, res + o.eol, null, o.out_encoding)
             }
           }
 
@@ -959,9 +972,11 @@ function by_dsl_article () {
         s[1] = removecommentedpart(s[0])
 
         if (/^#/.test(s[1]) && flag === 0) {
-          fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
         } else if (/^\s*$/.test(s[1]) && flag === 0) {
-          fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
         } else if (s[1] === '' && flag !== 0) {
           art0.push(s[0])
           art1.push(s[1])
@@ -984,7 +999,8 @@ function by_dsl_article () {
             )
 
             if (res !== null) {
-              fs.writeSync(output, res + o.eol, null, o.out_encoding)
+              if (o.outputfile)
+                fs.writeSync(output, res + o.eol, null, o.out_encoding)
             }
           }
 
@@ -1021,7 +1037,8 @@ function by_dsl_article () {
         const res = ProcessDSLArticle(art0, art1, o, articleCount, art_start)
 
         if (res !== null) {
-          fs.writeSync(output, res + o.eol, null, o.out_encoding)
+          if (o.outputfile)
+            fs.writeSync(output, res + o.eol, null, o.out_encoding)
         }
 
         art0.length = 0
@@ -1040,9 +1057,11 @@ function by_dsl_article () {
 
       LISTJS.ProcessString(null, o)
 
-      for (let i = 0; i < o.res.length; i++) {
-        if (o.res[i] !== null) {
-          fs.writeSync(output, o.res[i] + o.eol, null, o.out_encoding)
+      if (o.outputfile) {
+        for (let i = 0; i < o.res.length; i++) {
+          if (o.res[i] !== null) {
+            fs.writeSync(output, o.res[i] + o.eol, null, o.out_encoding)
+          }
         }
       }
 
@@ -1115,14 +1134,16 @@ function by_gls_article () {
     crlfDelay: Infinity
   })
 
-  const Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile)
+    var Output = fs.openSync(o.outputfile, 'w')
 
   let flag = 0
   let arr = []
   let hist = []
   let art_start = 1
 
-  fs.writeSync(Output, o.bom, null, o.out_encoding)
+  if (o.outputfile)
+    fs.writeSync(Output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -1140,7 +1161,7 @@ function by_gls_article () {
       if (o.stop !== undefined) {
         console.log()
         console.log(o.stop)
-        fs.closeSync(Output)
+        if (o.outputfile) fs.closeSync(Output)
         process.exit()
       }
 
@@ -1173,21 +1194,27 @@ function by_gls_article () {
             if (res !== null) {
               writeEmptylines = true
 
-              fs.writeSync(Output, res + o.eol, null, o.out_encoding)
-              fs.writeSync(Output, '\n', null, o.out_encoding)
+              if (o.outputfile) {
+                fs.writeSync(Output, res + o.eol, null, o.out_encoding)
+                fs.writeSync(Output, '\n', null, o.out_encoding)
+              }
             } else {
               writeEmptylines = false
             }
           } else {
-            for (let v of arr) {
-              fs.writeSync(Output, `${v}\n`, null, o.out_encoding)
+            if (o.outputfile) {
+              for (let v of arr) {
+                fs.writeSync(Output, `${v}\n`, null, o.out_encoding)
+              }
             }
 
             if (writeEmptylines) {
-              fs.writeSync(Output, '\n', null, o.out_encoding)
+              if (o.outputfile)
+                fs.writeSync(Output, '\n', null, o.out_encoding)
             }
 
-            // ~ fs.writeSync(Output, '\n', null, o.out_encoding);
+            // if (o.outputfile)
+            //   fs.writeSync(Output, '\n', null, o.out_encoding);
 
             if (o.loop === 1 && arr.length !== 0) {
               fs.writeFileSync(
@@ -1208,7 +1235,8 @@ function by_gls_article () {
           arr.push(line)
         }
       } else {
-        fs.writeSync(Output, `${line}\n`, null, o.out_encoding)
+        if (o.outputfile)
+          fs.writeSync(Output, `${line}\n`, null, o.out_encoding)
       }
     })
     .on('close', () => {
@@ -1218,12 +1246,14 @@ function by_gls_article () {
 
         const res = ProcessGLSArticle(arr, o, art_start)
 
-        if (res !== null) {
+        if (res !== null && o.outputfile) {
           fs.writeSync(Output, res + o.eol, null, o.out_encoding)
         }
       } else {
-        for (let v of arr) {
-          fs.writeSync(Output, `${v}` + o.eol, null, o.out_encoding)
+        if (o.outputfile) {
+          for (let v of arr) {
+            fs.writeSync(Output, `${v}` + o.eol, null, o.out_encoding)
+          }
         }
 
         if (o.loop === 1 && arr.length !== 0) {
@@ -1253,9 +1283,11 @@ function by_gls_article () {
 
       LISTJS.ProcessString(null, o)
 
-      for (let i = 0; i < o.res.length; i++) {
-        if (o.res[i] !== null) {
-          fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+      if (o.outputfile) {
+        for (let i = 0; i < o.res.length; i++) {
+          if (o.res[i] !== null) {
+            fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+          }
         }
       }
 
