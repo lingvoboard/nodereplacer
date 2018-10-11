@@ -1452,6 +1452,21 @@ function prepare (InputFileName, OutputFileName) {
 
 let pluginPath
 
+process['dev_argv'] = Object.create(null)
+
+process.argv = process.argv.filter(argv => {
+  if (/^--.*$/i.test(argv)) {
+    let m
+    if ((m = /^--(\w+)_([\w\-]+)$/i.exec(argv))) {
+      process['dev_argv'][m[1]] = m[2]
+    }
+
+    return false
+  } else {
+    return true
+  }
+})
+
 if (
   process.argv.length === 7 &&
   process.argv[2] === '-rs' &&
