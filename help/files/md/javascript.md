@@ -500,7 +500,7 @@ node nodereplacer.js **_-ключ1_** ...
 
 Код с помощью которого реализована эта возможность:
 
-```
+```javascript
 process['dev_argv'] = Object.create(null)
 
 process.argv = process.argv.filter(argv => {
@@ -519,7 +519,7 @@ process.argv = process.argv.filter(argv => {
 ```
 
 Пример использования:
-```
+```javascript
 //rep -rec5m test o --encoding_win1251
 if (o.dev_argv.encoding) {
   var html = iconvLite.decode(
