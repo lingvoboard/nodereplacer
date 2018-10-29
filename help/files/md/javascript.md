@@ -506,7 +506,7 @@ process['dev_argv'] = Object.create(null)
 process.argv = process.argv.filter(argv => {
   if (/^--.*$/i.test(argv)) {
     let m
-    if ((m = /^--(\w+)_([\w\-]+)$/i.exec(argv))) {
+    if ((m = /^--(\w+)=([\w\-]+)$/i.exec(argv))) {
       process['dev_argv'][m[1]] = m[2]
     }
 
@@ -520,7 +520,7 @@ process.argv = process.argv.filter(argv => {
 
 Пример использования:
 ```javascript
-//rep -rec5m test o --encoding_win1251
+//rep -rec5m test o --encoding=win1251
 if (o.dev_argv.encoding) {
   var html = iconvLite.decode(
     fs.readFileSync(arr[i].path),
