@@ -43,15 +43,11 @@ const _init_cheerio = function (html, options, isDocument) {
   }
 
   $.prototype.reptag = function (a, b) {
-    this.each(function () {
-      $(this)
-        .prepend(a)
-        .append(b)
-        .contents()
-        .unwrap()
+    this.each(function (i, elem) {
+      $(this).replaceWith(a + $(this).html() + b)
     })
   }
-
+  
   $.prototype.wrapAll = function (wrapper) {
     if (this[0]) {
       const wrapperDom = this.first()
