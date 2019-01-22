@@ -22,8 +22,6 @@ function onstart () {
 if (o.BigArr === undefined) {
   console.log('\nReading file:\n')
   o.BigArr = []
-
-  const path = require('path')
   o.out_path = path.dirname(o.outputfile) + path.sep
 }
 

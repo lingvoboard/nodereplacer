@@ -12,23 +12,41 @@ node nodereplacer.js -rd db.js input.txt output.txt
 */
 
 function onstart () {
-  o.BigArr = []
-  const path = require('path')
-  o.out_path = path.dirname(o.outputfile) + path.sep
 
-  fs.writeFileSync(o.out_path + 'temp.txt', '', {
-    encoding: 'utf8',
-    flag: 'w'
-  })
 
-  fs.writeFileSync(o.out_path + 'dub.txt', '', {
-    encoding: 'utf8',
-    flag: 'w'
-  })
+  if (process.argv.length === 5 && o.utils.fileExists(process.argv[3])) {
+    // node nodereplacer.js -db input.txt output.txt
+    o.inputfile = process.argv[3]
+    o.outputfile = process.argv[4]
 
-  o.temp = fs.openSync(o.out_path + 'temp.txt', 'r')
-  o.bytes = 0
-  o.by_dsl_article()
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    o.BigArr = []
+    o.out_path = path.dirname(o.outputfile) + path.sep
+
+    fs.writeFileSync(o.out_path + 'temp.txt', '', {
+      encoding: 'utf8',
+      flag: 'w'
+    })
+
+    fs.writeFileSync(o.out_path + 'dub.txt', '', {
+      encoding: 'utf8',
+      flag: 'w'
+    })
+
+    o.temp = fs.openSync(o.out_path + 'temp.txt', 'r')
+    o.bytes = 0
+
+    o.by_dsl_article()
+  } else {
+    console.log('Invalid command line.')
+    process.exit()
+  }
+
 }
 
 s = ''
