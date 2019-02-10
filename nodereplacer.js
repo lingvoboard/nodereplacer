@@ -39,6 +39,8 @@ node nodereplacer.js -sdu -tab1 input.idx output.txt
 node nodereplacer.js -sdu -tab2 input.dict.dz output.txt
 node nodereplacer.js -sdu -(tab3|tab4) input.dsl output.txt
 node nodereplacer.js -sdu -test=input.dz input_tab.txt output.txt
+node nodereplacer.js -htmldump 'regular expression' input.txt output.txt
+node nodereplacer.js -rd db.js input.txt output.txt
 */
 
 'use strict'
@@ -62,7 +64,6 @@ o.loop = 0
 o.utils = require(__dirname + '/files/rep_modules/utils/').utils()
 o.utilspath = __dirname + '/files/rep_modules/utils/'
 o.eol_mode = 0
-o.out_encoding = 'utf8'
 o.in_encoding = 'utf8'
 o.progress_bar = true
 o.progress_bar_title = ''
@@ -282,7 +283,7 @@ function guessEncoding (path) {
 
 function updateProgressBar () {
   if (!fileSize || !byteCount) return
-  let readPercent = Math.ceil(byteCount / fileSize * 100)
+  let readPercent = Math.ceil((byteCount / fileSize) * 100)
   if (readPercent > 100) readPercent = 100
   const barsNumber = Math.floor(readPercent / 2)
   const padsNumber = 50 - barsNumber
@@ -412,10 +413,10 @@ function entirefile () {
   if (o.repeat !== undefined) delete o.repeat
 
   o.in_encoding = guessEncoding(o.inputfile)
-  o.out_encoding = o.in_encoding
 
-  if (o.outputfile)
-    var Output = fs.openSync(o.outputfile, 'w')
+  if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
+
+  if (o.outputfile) var Output = fs.openSync(o.outputfile, 'w')
 
   if (o.loop === 1) {
     try {
@@ -436,8 +437,7 @@ function entirefile () {
     process.exit()
   }
 
-  if (o.outputfile)
-    fs.writeSync(Output, s + o.eol, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(Output, s + o.eol, null, o.out_encoding)
 
   o.RunOnStart = false
   o.RunOnExit = true
@@ -479,11 +479,9 @@ function entirefile () {
 }
 
 function byline () {
-
   fileSize = fs.statSync(o.inputfile)['size']
 
   o.loop++
-
 
   if (o.repeat !== undefined) delete o.repeat
 
@@ -494,9 +492,8 @@ function byline () {
   let lineCount = 0
   byteCount = 0
 
-
   o.in_encoding = guessEncoding(o.inputfile)
-  o.out_encoding = o.in_encoding
+  if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
 
   if (o.eol_mode > 0) {
     delete o.idata
@@ -516,7 +513,6 @@ function byline () {
     )
   }
 
-
   const fd = fs.openSync(o.inputfile, 'r')
 
   const reader = readline.createInterface({
@@ -527,11 +523,9 @@ function byline () {
     crlfDelay: Infinity
   })
 
-  if (o.outputfile)
-    var Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile) var Output = fs.openSync(o.outputfile, 'w')
 
-  if (o.outputfile)
-    fs.writeSync(Output, o.bom, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(Output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -543,7 +537,6 @@ function byline () {
       fs.unlinkSync(o.error_log_path)
     } catch (e) {}
   }
-
 
   reader
     .on('line', line => {
@@ -794,7 +787,7 @@ function by_dsl_article () {
   let articleCount = 0
 
   o.in_encoding = guessEncoding(o.inputfile)
-  o.out_encoding = o.in_encoding
+  if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
 
   fileSize = fs.statSync(o.inputfile)['size']
 
@@ -806,8 +799,7 @@ function by_dsl_article () {
     crlfDelay: Infinity
   })
 
-  if (o.outputfile)
-    var output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile) var output = fs.openSync(o.outputfile, 'w')
 
   let flag = 0
 
@@ -815,8 +807,7 @@ function by_dsl_article () {
   let art1 = []
   let lines = []
 
-  if (o.outputfile)
-    fs.writeSync(output, o.bom, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -1125,6 +1116,7 @@ function by_gls_article () {
   fileSize = fs.statSync(o.inputfile)['size']
 
   o.in_encoding = guessEncoding(o.inputfile)
+  o.out_encoding = 'utf8'
 
   const reader = readline.createInterface({
     input: fs.createReadStream(o.inputfile, o.in_encoding),
@@ -1134,16 +1126,14 @@ function by_gls_article () {
     crlfDelay: Infinity
   })
 
-  if (o.outputfile)
-    var Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile) var Output = fs.openSync(o.outputfile, 'w')
 
   let flag = 0
   let arr = []
   let hist = []
   let art_start = 1
 
-  if (o.outputfile)
-    fs.writeSync(Output, o.bom, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(Output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -1209,8 +1199,7 @@ function by_gls_article () {
             }
 
             if (writeEmptylines) {
-              if (o.outputfile)
-                fs.writeSync(Output, '\n', null, o.out_encoding)
+              if (o.outputfile) fs.writeSync(Output, '\n', null, o.out_encoding)
             }
 
             // if (o.outputfile)
@@ -1422,6 +1411,8 @@ function prepare (InputFileName, OutputFileName) {
       o.RunOnExitAsync = undefined
 
       LISTJS.ProcessString(null, o)
+
+      if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
 
       if (o.outputfile !== null) {
         fs.writeFileSync(o.outputfile, '', {
