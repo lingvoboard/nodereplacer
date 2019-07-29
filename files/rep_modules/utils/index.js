@@ -230,8 +230,25 @@ class utils_class {
     }
   }
 
-  openroundbrackets (h, cb) {
+    openroundbrackets (h, cb) {
     let bak = h
+
+    h = h
+      .replace(/\x00/g, ' ')
+      .replace(/\x03/g, ' ')
+      .replace(/(\\*)(\{|\})/g, function (a, m1, m2) {
+        if (m1.length % 2 === 1 && m2 === '{') {
+          return m1 + '\x00'
+        } else if (m1.length % 2 === 1 && m2 === '}') {
+          return m1 + '\x03'
+        } else {
+          return m1 + m2
+        }
+      })
+
+    function restore (txt) {
+      return txt.replace(/\x00/g, '{').replace(/\x03/g, '}')
+    }
 
     let errors = [0, 0, 0, 0, 0, 0, 0, 0, false]
 
@@ -293,6 +310,8 @@ class utils_class {
 
       if (m[2].length % 2 === 1) {
         count++
+        txt = restore(txt)
+        m[3] = restore(m[3])
         arr1.push([txt + m[3], count])
         altchk += txt + m[3]
         continue
@@ -300,6 +319,8 @@ class utils_class {
 
       if (m[3] === '}') {
         count++
+        txt = restore(txt)
+        m[3] = restore(m[3])
         arr1.push([txt + m[3], count])
         altchk += txt + m[3]
         errors[3] = 1
@@ -307,6 +328,8 @@ class utils_class {
         continue
       } else if (m[3] === ')') {
         count++
+        txt = restore(txt)
+        m[3] = restore(m[3])
         arr1.push([txt + m[3], count])
         altchk += txt + m[3]
         errors[1] = 1
@@ -323,11 +346,14 @@ class utils_class {
           ind = re.lastIndex
           txt += m2[1] + m2[2] + m2[3]
           count++
+          txt = restore(txt)
           arr1.push([txt, count])
           altchk += txt
           continue
         } else {
           count++
+          txt = restore(txt)
+          m[3] = restore(m[3])
           arr1.push([txt + m[3], count])
           altchk += txt + m[3]
           errors[2] = 1
@@ -345,15 +371,20 @@ class utils_class {
           ind = re.lastIndex
 
           count++
+          txt = restore(txt)
           arr1.push([txt, count])
           altchk += txt
 
           count++
+          m2[1] = restore(m2[1])
+          m2[2] = restore(m2[2])
           arr2.push([m2[1] + m2[2], count])
 
           continue
         } else {
           count++
+          txt = restore(txt)
+          m[3] = restore(m[3])
           arr1.push([txt + m[3], count])
           altchk += txt + m[3]
           errors[0] = 1
@@ -364,6 +395,8 @@ class utils_class {
     }
 
     h = h.substr(ind)
+
+    h = h.replace(/\x00/g, '{').replace(/\x03/g, '}')
 
     if (h.length > 0) {
       count++
@@ -456,7 +489,7 @@ class utils_class {
 
     return [arr5, errors]
   }
-
+  
   filter_gls_hw_list (s) {
     let ob = Object.create(null)
     let arr = s.split(/\|/)
