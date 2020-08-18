@@ -17,6 +17,12 @@
 `node --max_old_space_size=4096...`</br>
 Значение ключа может быть и другим, в приведённом примере 4096 означает 4 гигабайта.
 
+![warning.png](./../warning.png)
+Если **nodereplacer.js** запускается утилитами [**rush**](https://github.com/shenwei356/rush) и [**parallel**](https://www.gnu.org/software/parallel/), то необходимо использовать ключ **_--rush=yes_** или **_--parallel=yes_**</br>
+Пример:</br>
+`node nodereplacer.js --rush=yes -rd list.js input.txt output.txt`</br>
+`node nodereplacer.js --parallel=yes -rd list.js input.txt output.txt`
+
 ## Содержание раздела:
 
 1. [Системные требования](#Системные-требования)
