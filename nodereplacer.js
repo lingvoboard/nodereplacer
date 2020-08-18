@@ -48,6 +48,9 @@ const hrstart = process.hrtime()
 const fs = require('fs')
 const path = require('path')
 const readline = require('readline')
+const crypto = require('crypto')
+
+let mod_path
 
 let MEMORY_USAGE
 
@@ -362,10 +365,26 @@ function buildfunctionbody (InputFileName, cb) {
 
   checkDirectorySync(dir)
 
-  const Output = fs.openSync(
-    __dirname + '/files/rep_modules/main/index.js',
-    'w'
-  )
+  let Output
+
+  if (
+    process['dev_argv'].rush === 'yes' ||
+    process['dev_argv'].parallel === 'yes'
+  ) {
+
+    const hrTime = process.hrtime()
+
+    const id = crypto.randomBytes(16).toString('hex')
+
+    mod_path =
+      __dirname +
+      `/files/rep_modules/main/index_${hrTime[0] * 1000000 +
+        hrTime[1] / 1000}_${id}.js`
+
+    Output = fs.openSync(mod_path, 'w')
+  } else {
+    Output = fs.openSync(__dirname + '/files/rep_modules/main/index.js', 'w')
+  }
 
   reader
     .on('line', line => {
@@ -396,7 +415,14 @@ function buildfunctionbody (InputFileName, cb) {
     .on('close', () => {
       code += foot
       fs.writeSync(Output, code, null, 'utf8')
-      LISTJS = require(dir)
+      if (
+        process['dev_argv'].rush === 'yes' ||
+        process['dev_argv'].parallel === 'yes'
+      ) {
+        LISTJS = require(mod_path)
+      } else {
+        LISTJS = require(dir)
+      }
       cb()
     })
 }
@@ -677,7 +703,10 @@ function parseLine (line) {
     }
   }
 
-  let r = [[false, undefined, undefined], [false, undefined]]
+  let r = [
+    [false, undefined, undefined],
+    [false, undefined]
+  ]
 
   if (e) {
     r[0][0] = true
@@ -1528,4 +1557,19 @@ if (
 } else {
   console.log('Invalid command line.')
   process.exit()
+}
+
+function handleExit (signal) {
+  fs.unlinkSync(mod_path)
+  process.exit(0)
+}
+
+if (
+  process['dev_argv'].rush === 'yes' ||
+  process['dev_argv'].parallel === 'yes'
+) {
+  process.on('exit', handleExit)
+  // process.on('SIGINT', handleExit)
+  // process.on('SIGQUIT', handleExit)
+  // process.on('SIGTERM', handleExit)
 }
