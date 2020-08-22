@@ -97,6 +97,11 @@ node nodereplacer.js словарь.ifo
 [dictzip.exe](https://github.com/Tvangeste/dictzip-win32/releases) для **Windows** можно найти в архиве со скриптом.</br>
 Перенесите его папку `C:\Windows\System32\`
 
+Если требуется отключить сжатие используйте ключ **_--notpack=yes_**</br>
+Пример:</br>
+`node nodereplacer.js test.gls --notpack=yes
+`
+
 CREDITS: [vsemozhetbyt](https://gist.github.com/vsemozhetbyt)</br>
 Для написания плагина использовался [gls\_sd\_conv.js](https://gist.github.com/vsemozhetbyt/2b92014cd65e8fb3c3e5c0897a750e40) (версия после ревизии, которая была слелана [14.04.2017](https://gist.github.com/vsemozhetbyt/2b92014cd65e8fb3c3e5c0897a750e40/revisions))
 
