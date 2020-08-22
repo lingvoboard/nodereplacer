@@ -177,8 +177,16 @@ function readGLS () {
         } synonyms saved.\n`
       )
 
-      console.log('Trying to pack the .dict file by dictzip...\n')
-      packDICTfile()
+      if (process['dev_argv'].notpack !== 'yes') {
+        console.log(
+          `Trying to pack "${o.path.basename(
+            o.fpath,
+            '.gls'
+          )}.dict" by dictzip...\n`
+        )
+
+        packDICTfile()
+      }
     })
 }
 /******************************************************************************/
