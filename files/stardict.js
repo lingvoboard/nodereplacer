@@ -240,6 +240,12 @@ function writeSDDic () {
     })
   })
 
+  const idxGzipBuffer = require('zlib').gzipSync(
+    fs.readFileSync(o.fpath.replace(o.changeExtRE, '.idx'))
+  )
+
+  fs.writeFileSync(o.fpath.replace(o.changeExtRE, '.idx.gz'), idxGzipBuffer)
+
   o.outDic.pb.end()
 }
 /******************************************************************************/
@@ -293,6 +299,10 @@ function writeSDIfo () {
   `,
     'utf8'
   )
+
+  fs.closeSync(o.outDic.idxFile);
+  fs.unlinkSync(o.fpath.replace(o.changeExtRE, '.idx'));
+
 }
 /******************************************************************************/
 function sortSDDic (a, b) {
