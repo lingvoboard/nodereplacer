@@ -63,20 +63,11 @@ while ((tagMatchArr = allTagRe.exec(s))) {
   const adj = prevIdx === allTagRe.lastIndex - tag.length
   const trimmed = tagMatchArr[3] ? tagMatchArr[3] : trimOpeningTag(tag)
 
-  if (adj) {
-    allTagMapArr[allTagMapArr.length - 1].push([
-      tag,
-      trimmed,
-      closing,
-      allTagRe.lastIndex,
-      count,
-      -1
-    ])
-  } else {
-    allTagMapArr.push([[tag, trimmed, closing, allTagRe.lastIndex, count, -1]])
-  }
+  const statArr = [tag, trimmed, closing, allTagRe.lastIndex, ++count, -1, -1]
 
-  count++
+  if (adj) allTagMapArr[allTagMapArr.length - 1].push(statArr)
+  else allTagMapArr.push([statArr])
+
   prevIdx = allTagRe.lastIndex
 }
 
@@ -87,8 +78,9 @@ count = 0
 
 // get an array of all adjacent tags
 allTagMapArr.forEach(val => {
-  if (val.length === 1) allTagArr[count++] = val[0]
-  else {
+  if (val.length === 1) {
+    allTagArr[count++] = val[0]
+  } else {
     val.forEach(tag => {
       allTagArr[count++] = tag
       if (!allAdjArr[allAdjCount]) allAdjArr[allAdjCount] = []
@@ -103,11 +95,45 @@ const closingTagArr = allTagArr.filter(tag => tag[2])
 
 // sorting adjacent tags function
 const sortBlock = (adjArr, closing) => {
-  const sortDesc = (a, b) => b[1] - a[1]
   adjArr.forEach(block => {
-    const targetArr = block.filter(tag => tag[2] === closing)
+    if (!closing) {
+      const openingTagsInBlok = block.reduce((obj, tag, i) => {
+        if (!tag[2]) {
+          if (obj[tag[1]] === undefined) obj[tag[1]] = [i]
+          else obj[tag[1]].push(i)
+        }
+        return obj
+      }, Object.create(null))
 
-    if (targetArr.length > 1) {
+      const closingTagsInBlock = block.reduce((obj, tag, i) => {
+        if (tag[2]) {
+          if (obj[tag[1]] === undefined) obj[tag[1]] = [i]
+          else obj[tag[1]].push(i)
+        }
+        return obj
+      }, Object.create(null))
+
+      for (let i = 0; i < block.length; i++) {
+        const tag = block[i]
+        if (tag[2]) {
+          if (openingTagsInBlok[tag[1]] === undefined) tag[6] = 0
+          else {
+            if (openingTagsInBlok[tag[1]].some(idx => idx < i)) {
+              tag[6] = 2
+            } else tag[6] = 0
+          }
+        } else {
+          if (closingTagsInBlock[tag[1]] === undefined) tag[6] = 3
+          else {
+            if (closingTagsInBlock[tag[1]].some(idx => idx > i)) {
+              tag[6] = 1
+            } else tag[6] = 3
+          }
+        }
+      }
+    }
+
+    if (block.length > 1) {
       const newIdxArr = new Array(block.length)
       const min = block[0][4]
 
@@ -134,13 +160,23 @@ const sortBlock = (adjArr, closing) => {
 
           newIdxArr[i] = [tag, oppTagPos]
         } else {
-          newIdxArr[i] = [tag, closing ? 0 : count]
+          newIdxArr[i] = [tag, closing ? -1 : tag[5]]
         }
       }
 
-      newIdxArr.sort(sortDesc)
-      if (isChanged(newIdxArr.map(val => val[0]), block)) {
-        newIdxArr.forEach((arr, idx) => (arr[0][5] = idx + min))
+      newIdxArr.sort((a, b) => b[1] - a[1])
+      if (
+        isChanged(
+          newIdxArr
+            .map(val => val[0])
+            .sort((a, b) => a[5] - b[5])
+            .sort((a, b) => a[6] - b[6]),
+          block
+        )
+      ) {
+        newIdxArr.forEach(
+          (arr, idx) => (arr[0][5] = arr[0][5] === -1 ? idx + min : arr[0][5])
+        )
       }
     }
   })
@@ -150,23 +186,17 @@ sortBlock(allAdjArr, false)
 sortBlock(allAdjArr, true)
 
 // get slices to replace
-const slices = allAdjArr.filter(val => val[0][5] !== -1).map(val => {
-  const start = val[0][3] - val[0][0].length
-  const end = val[val.length - 1][3]
-  const ret = val
-    .sort((a, b) => a[5] - b[5])
-    .map(v => v[0])
-    .join('')
-  return [start, end, ret]
-})
+const slices = allAdjArr
+  .filter(val => val[0][5] !== -1)
+  .map(val => {
+    const start = val[0][3] - val[0][0].length
+    const end = val[val.length - 1][3]
+    const ret = val
+      .sort((a, b) => a[5] - b[5])
+      .sort((a, b) => a[6] - b[6])
+      .map(v => v[0])
+      .join('')
+    return [start, end, ret]
+  })
 
 s = replaceSlicesArr(s, slices)
-
-/*
-const testArr = allTagArr
-  .map(val => {
-    return [val[0], val[5] === -1 ? val[4] : val[5], val[5]]
-  })
-  .sort((a, b) => a[1] - b[1])
-*/
-
