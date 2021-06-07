@@ -3,80 +3,32 @@ const fs = require('fs')
 const readline = require('readline')
 
 const _init_cheerio = function (html, options, isDocument) {
-  function checkDocument (string) {
-    return /^\s*<(!doctype|html|head|body)\b/i.test(string)
-  }
-
   const cheerio = require('cheerio')
   let $
 
   if (typeof html === 'string') {
-    let dom
-    if (typeof isDocument === 'undefined') {
-      const htmlparser = require('htmlparser2')
-      dom = htmlparser.parseDOM(html, options)
+    if (options.normalizeWhitespace) {
+      html = _normalizeHTML(html)
+      options.normalizeWhitespace = false
+    }
+
+    if (
+      options._useHtmlParser2 ||
+      options.xml ||
+      typeof isDocument === 'undefined'
+    ) {
+      options._useHtmlParser2 = true
+      const htmlparser2 = require('htmlparser2')
+      let dom = htmlparser2.parseDocument(html, options)
       $ = cheerio.load(dom, options)
     } else {
-      const parse5 = require('parse5')
-      let parse
-
-      if (typeof isDocument === 'boolean') {
-        parse = isDocument ? parse5.parse : parse5.parseFragment
-      } else {
-        parse = checkDocument(html) ? parse5.parse : parse5.parseFragment
-      }
-      let root = parse(html, {
-        treeAdapter: parse5.treeAdapters.htmlparser2
-      })
-      dom = root.children
-      $ = cheerio.load(dom, options)
+      $ = cheerio.load(html, options, isDocument)
     }
   } else if (typeof html === 'object') $ = cheerio.load(html, options)
-
-  $.prototype.unwrap = function () {
-    this.parent()
-      .not('body')
-      .each(function () {
-        $(this).replaceWith(this.children)
-      })
-    return this
-  }
 
   $.prototype.reptag = function (a, b) {
     this.each(function (i, elem) {
       $(this).replaceWith(a + $(this).html() + b)
-    })
-  }
-  
-  $.prototype.wrapAll = function (wrapper) {
-    if (this[0]) {
-      const wrapperDom = this.first()
-        .before(wrapper)
-        .prev()
-      let elInsertLocation = wrapperDom[0],
-        j = 0
-
-      while (elInsertLocation && elInsertLocation.children) {
-        if (j >= elInsertLocation.children.length) break
-        if (elInsertLocation.children[j].type === 'tag') {
-          elInsertLocation = elInsertLocation.children[j]
-          j = 0
-        } else j++
-      }
-
-      $(elInsertLocation).append(this)
-    }
-
-    return this
-  }
-
-  $.prototype.wrapInner = function (structure) {
-    var func = typeof structure === 'function'
-    return this.each(function (index) {
-      const self = $(this)
-      const contents = self.contents()
-      const dom = func ? structure.call(this, index) : structure
-      contents.length ? contents.wrapAll(dom) : self.append(dom)
     })
   }
 
@@ -84,7 +36,9 @@ const _init_cheerio = function (html, options, isDocument) {
   // i.e. $('<div class="tospan">test</div>').changeTag('span')
   // ==> '<span class="tospan">test</span>'
   $.prototype.changeTag = function (tag) {
-    for (let i = this.length - 1; i >= 0; i--) { this[i].type === 'tag' && (this[i].name = tag) }
+    for (let i = this.length - 1; i >= 0; i--) {
+      this[i].type === 'tag' && (this[i].name = tag)
+    }
     return this
   }
 
@@ -105,40 +59,46 @@ const _flatten_options = function (options) {
   return options
 }
 
+const _normalizeHTML = function (str) {
+  const pattern1 = /[\t\n\v\f\r\x20\x85]+/g
+  return str.replace(pattern1, ' ')
+}
+
 class utils_class {
   constructor () {}
 
+  checkIfDocument (string) {
+    return /^\s*<(!doctype|html|head|body)\b/i.test(string)
+  }
+
   init_cheerio_old (html, options) {
     options = _flatten_options(options)
-    if (options.normalizeWhitespace && typeof html === 'string') {
-      html = this.normalizeHTML(html)
-      options.normalizeWhitespace = false
-    }
+    options._useHtmlParser2 = true
 
     return _init_cheerio(html, options)
   }
 
   init_cheerio_new (html, options, isDocument) {
     options = _flatten_options(options)
-    if (options.normalizeWhitespace && typeof html === 'string') {
-      html = this.normalizeHTML(html)
-      options.normalizeWhitespace = false
-    }
+    options.xml = false
 
     return _init_cheerio(
       html,
       options,
-      typeof isDocument === 'boolean' ? isDocument : null
+      typeof isDocument === 'boolean' ? isDocument : this.checkIfDocument(html)
     )
   }
 
-  init_cheerio (html, options) {
-    return this.init_cheerio_old(html, options)
+  init_cheerio (html, options, isDocument) {
+    if (options && options.xml) {
+      return this.init_cheerio_old(html, options)
+    } else {
+      return this.init_cheerio_new(html, { xml: false }, isDocument)
+    }
   }
 
   normalizeHTML (str) {
-    const pattern1 = /[\t\n\v\f\r\x20]+/g
-    return str.replace(pattern1, ' ')
+    return _normalizeHTML(str)
   }
 
   decodeHTML (str) {
@@ -222,15 +182,15 @@ class utils_class {
     }
   }
 
-  dirExists (filePath) {
+  dirExists (dirPath) {
     try {
-      return fs.statSync(filePath).isDirectory()
+      return fs.statSync(dirPath).isDirectory()
     } catch (err) {
       return false
     }
   }
 
-    openroundbrackets (h, cb) {
+  openroundbrackets (h, cb) {
     let bak = h
 
     h = h
@@ -489,7 +449,7 @@ class utils_class {
 
     return [arr5, errors]
   }
-  
+
   filter_gls_hw_list (s) {
     let ob = Object.create(null)
     let arr = s.split(/\|/)
@@ -584,7 +544,7 @@ module.exports = {
         const statPercent =
           stat === this.edge || stat > this.edge
             ? HUNDRED_PERCENT
-            : stat / this.edge * HUNDRED_PERCENT
+            : (stat / this.edge) * HUNDRED_PERCENT
 
         const barsNumber = Math.floor(statPercent / PB_SCALE)
         const padsNumber = PB_LENGTH - barsNumber

@@ -11,12 +11,11 @@ rep -rec5 "C:\Temp\Site" output
 */
 
 function onstart () {
-  const mime = require('mime')
-  const parse5Utils = require('parse5-utils')
-  const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
+  const iconvLite = require('iconv-lite')
+  const parse5 = require('parse5')
+  // const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
 
   if (process.argv.length === 5 && o.utils.dirExists(process.argv[3])) {
-    // node nodereplacer.js -rec5 "C:\Temp\Site" output
     o.inputfile = process.argv[3]
     o.outputfile = process.argv[4]
 
@@ -144,13 +143,13 @@ function onstart () {
     }
 
     for (let i = 0; i < arr.length; i++) {
-      let html = fs
-        .readFileSync(arr[i].path, 'utf8')
-        .toString()
-        .replace(/^\uFEFF/, '')
+      let html = process.dev_argv.encoding
+        ? iconvLite.decode(fs.readFileSync(arr[i].path), process.dev_argv.encoding)
+        : fs.readFileSync(arr[i].path, 'utf8').replace(/^\uFEFF/, '')
 
-      let fragment = parse5Utils.parse(html, true)
-      html = htmlclean(parse5Utils.serialize(fragment))
+      const fragment = parse5.parse(html)
+      // html = htmlclean(parse5.serialize(fragment))
+      html = o.utils.normalizeHTML(parse5.serialize(fragment))
 
       if (html.length) {
         // console.log('Written: ' + (i + 1) + ', Left: ' + (arr.length - (i + 1)));

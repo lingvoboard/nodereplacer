@@ -1,6 +1,6 @@
 {
   "name": "nodereplacer",
-  "version": "1.5.5",
+  "version": "1.6.0",
   "description": "dictionary conversion.",
   "author": {
     "name": "andreyefgs",
@@ -13,11 +13,9 @@
   ],
   "private": true,
   "dependencies": {
-    "sanitize-html": "latest",
-    "iconv-lite": "latest",
-    "cheerio": "1.0.0-rc.2",
-    "mime": "latest",
-    "parse5-utils": "latest",
+    "cheerio": "1.0.0-rc.9",
+    "iconv-lite": "^0.6.3",
+    "sanitize-html": "^2.4.0",
     "stringify-object": "latest"
   }
 }

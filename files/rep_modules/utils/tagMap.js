@@ -1,5 +1,5 @@
 'use strict'
-const parse5Utils = require('parse5-utils')
+const parse5 = require('parse5')
 const stringifyObject = require('stringify-object')
 const deepmerge = require('./deepmerge')
 
@@ -17,7 +17,28 @@ const _flatten_options = options => {
     : defaults
 }
 
-const hash = str => {
+const _flatten_nodes = (node, arr) => {
+  arr = arr || []
+
+  const children = Array.isArray(node) ? node : node.childNodes
+
+  if (!children) return arr
+
+  for (const child of children) {
+    arr.push(child)
+    _flatten_nodes(child, arr)
+  }
+
+  return arr
+}
+
+const _checkIfDocument = (string) => {
+  return /^\s*<(!doctype|html|head|body)\b/i.test(string)
+}
+
+
+
+const _hash = str => {
   let hash = 5381
   let i = str.length
 
@@ -37,7 +58,7 @@ module.exports = {
 
       let classes = ''
       for (let i = 0; i < arr[2].length; i++) {
-        classes += '.' + arr[2][i]
+        classes += arr[2][i].trim().length ? '.' + arr[2][i] : ''
       }
 
       return arr[0] + attribs + classes
@@ -65,10 +86,7 @@ module.exports = {
       this.mode = obj.mode
     }
 
-    const fragment = parse5Utils.parseFragment(str)
-    const nodeArr = parse5Utils.flatten(fragment)
     const options = this.options
-
     if (!options.map && !options.selectors && !options.entries) {
       throw new Error('wrong options')
     }
@@ -82,6 +100,10 @@ module.exports = {
     let tabClassList = Object.create(null)
     let classListArr = [[], []]
     let selectorArr = []
+
+    const nodeArr = _flatten_nodes(
+      parse5['parse' + (_checkIfDocument(str) ? '' : 'Fragment')](str)
+    )
 
     for (let node of nodeArr) {
       if (node.hasOwnProperty('tagName')) {
@@ -228,7 +250,7 @@ module.exports = {
           this.entriesMapObj = Object.create(null)
         }
 
-        const selectorHashArr = selectorArr.map(sel => hash(sel))
+        const selectorHashArr = selectorArr.map(sel => _hash(sel))
         if (!this.entriesMapObj[selectorArr.length]) {
           this.entriesMapObj[selectorArr.length] = []
         }
@@ -320,9 +342,9 @@ module.exports = {
         const lineNrArr = artLinesArr[i].map(val => val[0])
 
         const percent = this.count
-          ? Math.round(1e4 * lineNrArr.length / this.count) / 100
+          ? Math.round((1e4 * lineNrArr.length) / this.count) / 100
           : 100
-        const unit = this.mode === 'by_gls_article' ? 'article(s)' : 'line(s)'
+        const unit = this.mode === 'byline' ? 'line(s)' : 'article(s)'
 
         entriesMap[
           key +
@@ -342,7 +364,7 @@ module.exports = {
           : lineNrArr
       })
 
-      let selectorHashArr = selectorMapArr.map(sel => hash(sel))
+      let selectorHashArr = selectorMapArr.map(sel => _hash(sel))
       let duplicates = selectorHashArr.reduce(function (acc, el, i, arr) {
         let dup = arr.lastIndexOf(el)
         if (

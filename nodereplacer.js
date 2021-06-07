@@ -26,7 +26,8 @@ node nodereplacer.js -mgls input.txt output.txt
 
 /*
 [Ad hoc]
-node nodereplacer.js -retag (|-(gls|e|rt)) input.txt output.txt
+node nodereplacer.js -recm "path\to\folder" (|processor.js|"C:\Path\To\Processor.js") output
+node nodereplacer.js -retag (|-(gls|re|rt)) input.txt output.txt
 node nodereplacer.js -cut -(t|d|g|b)\d+ input.txt output.txt
 node nodereplacer.js -cut -(t|d|g)\d+% input.txt out.txt
 node nodereplacer.js -cut -(t|d|g)\d+%,\d+%... input.txt out.txt

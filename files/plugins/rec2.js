@@ -11,7 +11,6 @@ rep -rec2 "C:\Temp\Site" output
 */
 
 function onstart () {
-  const mime = require('mime')
   const sanitizeHtml = require('sanitize-html')
   const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
 
@@ -149,7 +148,7 @@ function onstart () {
         .toString()
         .replace(/^\uFEFF/, '')
 
-      let fragment = sanitizeHtml(html, {
+      const sanitizedHtml = sanitizeHtml(html, {
         parser: {
           lowerCaseTags: true
         },
@@ -157,7 +156,7 @@ function onstart () {
         allowedAttributes: false
       })
 
-      html = htmlclean(fragment)
+      html = htmlclean(sanitizedHtml).replace(/[\x85]+/g, ' ')
 
       if (html.length) {
         // console.log('Written: ' + (i + 1) + ', Left: ' + (arr.length - (i + 1)));

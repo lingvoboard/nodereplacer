@@ -6,14 +6,14 @@ rep -recc "C:\Temp\Site" output
 Назначение:
 Предназначен для рекурсивного слияния HTML-файлов находящихся в указанной папке.
 Страницы пишутся одной строкой в выходной файл.
-В качестве парсера используется модуль cheerio.
+В качестве парсера используется htmlparser2 из модуля cheerio.
 
 */
 
 function onstart () {
-  const mime = require('mime')
-  const cheerio = require('cheerio')
-  const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
+  const iconvLite = require('iconv-lite')
+  const cheerioHtmlparser2 = o.utils.init_cheerio_old
+  // const htmlclean = require(o.utilspath + 'htmlclean.js').htmlclean
 
   if (process.argv.length === 5 && o.utils.dirExists(process.argv[3])) {
     // node nodereplacer.js -recc "C:\Temp\Site" output
@@ -144,21 +144,23 @@ function onstart () {
     }
 
     for (let i = 0; i < arr.length; i++) {
-      let html = fs
-        .readFileSync(arr[i].path, 'utf8')
-        .toString()
-        .replace(/^\uFEFF/, '')
+      let html = process.dev_argv.encoding
+        ? iconvLite.decode(fs.readFileSync(arr[i].path), process.dev_argv.encoding)
+        : fs.readFileSync(arr[i].path, 'utf8').replace(/^\uFEFF/, '')
 
-      const $ = cheerio.load(html, {
-        decodeEntities: false,
-        normalizeWhitespace: true,
-        lowerCaseTags: true
+      const $ = cheerioHtmlparser2(html, {
+        // normalizeWhitespace: true, // default option in class constructor
+        // decodeEntities: false, // default option in class constructor
+        xmlMode: false,
+        recognizeCDATA: true
       })
 
-      html = htmlclean($.html())
+      // html = htmlclean($.html())
+      // html = o.utils.normalizeHTML($.html())
+      html = $.html()
 
       if (html.length) {
-        // console.log('Written: ' + (i + 1) + ', Left: ' + (arr.length - (i + 1)));
+        // console.log('Written: ' + (i + 1) + ', Left: ' + (arr.length - (i + 1)))
         fs.writeFileSync(o.outputfile, html + '\n', {
           encoding: 'utf8',
           flag: 'a'
