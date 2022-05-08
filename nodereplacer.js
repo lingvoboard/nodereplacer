@@ -343,6 +343,15 @@ function checkDirectorySync (directory) {
   }
 }
 
+function escape_odd_slash (s) {
+    s = s.replace(/(\\*)/g, function (a, m1) {
+      if (m1.length % 2 === 1) m1 = m1 + '\x5c'
+      return m1
+    })
+
+    return s
+}
+
 function buildfunctionbody (InputFileName, cb) {
   let m
   let code = ''
@@ -395,7 +404,7 @@ function buildfunctionbody (InputFileName, cb) {
         code += line + '\n'
       } else if ((m = /^(.+?)\t\|\t(.*)$/.exec(line))) {
         code += 's = s.replace('
-        code += '/' + escapeRegExp(m[1]) + '/g, ' + 'String.raw`' + m[2] + '`'
+        code += '/' + escapeRegExp(m[1]) + '/g, ' + 'String.raw`' + escape_odd_slash(m[2]) + '`'
         code += ');\n'
       } else if ((m = /^(.+?)\t\|(i?)\|\t(.*)$/.exec(line))) {
         code += 's = s.replace('
