@@ -13,9 +13,109 @@ function onstart () {
     }
 
     o.by_dsl_article()
+  } else if (
+    process.argv.length === 7 &&
+    o.utils.fileExists(process.argv[4]) &&
+    o.utils.fileExists(process.argv[5])
+  ) {
+    // node nodereplacer.js -m -(a|a1|a2|l|l1|l2|r|r1|r2) list input.txt output.txt
+    o.inputfile = process.argv[5]
+    o.outputfile = process.argv[6]
+
+    buildfunction(process.argv[4], 'm_list.js')
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    o.by_dsl_article()
   } else {
     console.log('Invalid command line.')
     process.exit()
+  }
+}
+
+function escapeRegExp (str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+}
+
+function escapeDQ (str) {
+  return str.replace(/"/g, '\\"')
+}
+
+function escapeSlash (str) {
+  str = str.replace(/^\//g, '\\/')
+
+  while (/[^\\]\//.test(str)) {
+    str = str.replace(/([^\\])\//g, '$1\\/')
+  }
+
+  return str
+}
+
+function escape_odd_slash (s) {
+  s = s.replace(/(\\*)/g, function (a, m1) {
+    if (m1.length % 2 === 1) m1 = m1 + '\x5c'
+    return m1
+  })
+
+  return s
+}
+
+function buildfunction (list, mod) {
+  if (o.utils.fileExists(list)) {
+    let encoding = o.utils.guessEncoding(list)
+
+    let arr = fs
+      .readFileSync(list, encoding)
+      .replace(/^\uFEFF/, '')
+      .toString()
+      .split('\n')
+
+    if (arr.length > 0) {
+      let m
+      let code = `'use strict'\nmodule.exports = {\nProcessString: function(s) {\n`
+      for (let i = 0; i < arr.length; i++) {
+        if (/^\/\//.test(arr[i]) === true) {
+          code += arr[i] + '\n'
+        } else if ((m = /^(.+?)\t\|\t(.*)$/.exec(arr[i]))) {
+          code += 's = s.replace('
+          code +=
+            '/' +
+            escapeRegExp(m[1]) +
+            '/g, ' +
+            'String.raw`' +
+            escape_odd_slash(m[2]) +
+            '`'
+          code += ');\n'
+        } else if ((m = /^(.+?)\t\|(i?)\|\t(.*)$/.exec(arr[i]))) {
+          code += 's = s.replace('
+          code +=
+            '/' +
+            escapeSlash(m[1]) +
+            '/umg' +
+            m[2] +
+            ', ' +
+            '"' +
+            escapeDQ(m[3]) +
+            '"'
+          code += ');\n'
+        } else {
+          code += arr[i] + '\n'
+        }
+      }
+
+      code += `\nreturn s\n}\n}\n`
+
+      let Output
+
+      let dir = __dirname + '/' + mod
+      Output = fs.openSync(dir, 'w')
+      fs.writeSync(Output, code, null, 'utf8')
+      o.RepListMod = require(dir)
+    }
   }
 }
 
@@ -230,18 +330,20 @@ function write (cmd) {
           }
         }
 
-        fs.writeSync(
-          output,
+        let art =
           '\t' +
-            '{{Arabic}}' +
-            n +
-            '{{/Arabic}}' +
-            '\n' +
-            o.BigArr[i][5][j].join('\n') +
-            '\n',
-          null,
-          o.out_encoding
-        )
+          '{{Arabic}}' +
+          n +
+          '{{/Arabic}}' +
+          '\n' +
+          o.BigArr[i][5][j].join('\n') +
+          '\n'
+
+        if (o.RepListMod !== undefined) {
+          art = o.RepListMod.ProcessString(art)
+        }
+
+        fs.writeSync(output, art, null, o.out_encoding)
       } else if (o.BigArr[i][5].length > 1 && /^-(l|l1|l2)$/i.test(cmd)) {
         for (let l = 0; l < o.BigArr[i][5][j].length; l++) {
           if (o.utils.remove_comments(o.BigArr[i][5][j][l]).length === 0) {
@@ -257,12 +359,14 @@ function write (cmd) {
             o.out_encoding
           )
         } else {
-          fs.writeSync(
-            output,
-            '\t' + '————————' + '\n' + o.BigArr[i][5][j].join('\n') + '\n',
-            null,
-            o.out_encoding
-          )
+          let art =
+            '\t' + '————————' + '\n' + o.BigArr[i][5][j].join('\n') + '\n'
+
+          if (o.RepListMod !== undefined) {
+            art = o.RepListMod.ProcessString(art)
+          }
+
+          fs.writeSync(output, art, null, o.out_encoding)
         }
       } else if (o.BigArr[i][5].length > 1 && /^-(r|r1|r2)$/i.test(cmd)) {
         const n = j + 1
@@ -273,18 +377,20 @@ function write (cmd) {
           }
         }
 
-        fs.writeSync(
-          output,
+        let art =
           '\t' +
-            '{{Roman}}' +
-            romanize(n) +
-            '{{/Roman}}' +
-            '\n' +
-            o.BigArr[i][5][j].join('\n') +
-            '\n',
-          null,
-          o.out_encoding
-        )
+          '{{Roman}}' +
+          romanize(n) +
+          '{{/Roman}}' +
+          '\n' +
+          o.BigArr[i][5][j].join('\n') +
+          '\n'
+
+        if (o.RepListMod !== undefined) {
+          art = o.RepListMod.ProcessString(art)
+        }
+
+        fs.writeSync(output, art, null, o.out_encoding)
       } else {
         fs.writeSync(
           output,
