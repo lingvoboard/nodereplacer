@@ -44,7 +44,7 @@
 5. [node nodereplacer.js (input.gls|input.ifo)](#5-node-nodereplacerjs-inputglsoutputifo)
 6. [node nodereplacer.js -ctags input.txt output.txt](#6-node-nodereplacerjs--ctags-inputtxt-outputtxt)
 7. [node nodereplacer.js -d input.txt output.txt](#7-node-nodereplacerjs--d-inputtxt-outputtxt)
-8. [node nodereplacer.js -m -(a|a1|a2|l|l1|l2|r|r1|r2) input.txt output.txt](#8-node-nodereplacerjs--m--aa1a2ll1l2rr1r2-inputtxt-outputtxt)
+8. [node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | (a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt](#8-node-nodereplacerjs--m--aa1a2ll1l2rr1r2-inputtxt-outputtxt)
 9. [node nodereplacer.js -pile input.txt output.txt](#9-node-nodereplacerjs--pile-inputtxt-outputtxt)
 10. [node nodereplacer.js -susp input.txt output.txt](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
 11. [node nodereplacer.js (-symb|-symb -f) input.txt output.txt](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
@@ -243,7 +243,7 @@ perro
         собака
 ```
 
-###### 8) node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | list.txt) input.txt output.txt
+###### 8) node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | (a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt
 Объединение в словаре разных статей с одинаковыми заголовками с предварительным удалением дубликатов статей.</br>
 Входной файл должен иметь словарную структуру.
 
