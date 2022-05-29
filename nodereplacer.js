@@ -10,7 +10,7 @@ node nodereplacer.js -rs list -[A-Za-z]{1,10} input.txt output.txt
 node nodereplacer.js (input.gls|output.ifo)
 node nodereplacer.js -ctags input.txt output.txt
 node nodereplacer.js -d input.txt output.txt
-node nodereplacer.js -m -(a|a1|a2|l|l1|l2|r|r1|r2) input.txt output.txt
+node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | (a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt
 node nodereplacer.js -pile input.txt output.txt
 node nodereplacer.js -susp input.txt output.txt
 node nodereplacer.js (-symb|-symb -f) input.txt output.txt
