@@ -27,13 +27,12 @@
 10. [Маркировка подвешенных ссылок (DSL).](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
 11. [Получение списка всех символов.](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
 12. [Сортировка.](#12-node-nodereplacerjs--sort--botxt---botxt-listtxt-inputtxt-outputtxt)
-13. [Пользовательская сортировка (DSL).](#13-node-nodereplacerjs--usort-usort--i-inputtxt-outputtxt)
-14. [Сортировка DSL тегов.](#14-node-nodereplacerjs--stags-inputtxt-outputtxt)
-15. [Внедрение картинок в HTML файл.](#15-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
-16. [Раскрытие круглых скобок в заголовках словарных исходников.](#16-node-nodereplacerjs--rb--dsl1dsl2dslm1dslm2glsglsm-inputtxt-outputtxt)
-17. [Получение списка HTML тегов.](#17-node-nodereplacerjs--t-inputtxt-outputtxt)
-18. [Выявление ошибок в словарях в формате DSL.](#18-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
-19. [Объединение статей в словарях в формате GLS.](#19-node-nodereplacerjs--mgls-inputtxt-outputtxt)
+13. [Сортировка DSL тегов.](#13-node-nodereplacerjs--stags-inputtxt-outputtxt)
+14. [Внедрение картинок в HTML файл.](#14-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
+15. [Раскрытие круглых скобок в заголовках словарных исходников.](#15-node-nodereplacerjs--rb--dsl1dsl2dslm1dslm2glsglsm-inputtxt-outputtxt)
+16. [Получение списка HTML тегов.](#16-node-nodereplacerjs--t-inputtxt-outputtxt)
+17. [Выявление ошибок в словарях в формате DSL.](#17-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
+18. [Объединение статей в словарях в формате GLS.](#18-node-nodereplacerjs--mgls-inputtxt-outputtxt)
 
 ## Варианты командной строки:
 
@@ -49,13 +48,12 @@
 10. [node nodereplacer.js -susp input.txt output.txt](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
 11. [node nodereplacer.js (-symb|-symb -f) input.txt output.txt](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
 12. [node nodereplacer.js -sort (-(b|o|txt) | -(b|o|txt) list.txt) input.txt output.txt](#12-node-nodereplacerjs--sort--botxt---botxt-listtxt-inputtxt-outputtxt)
-13. [node nodereplacer.js (-usort|-usort -i) input.txt output.txt](#13-node-nodereplacerjs--usort-usort--i-inputtxt-outputtxt)
-14. [node nodereplacer.js -stags input.txt output.txt](#14-node-nodereplacerjs--stags-inputtxt-outputtxt)
-15. [node nodereplacer.js (-base64 -i|-base64) input.txt output.txt](#15-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
-16. [node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt](#16-node-nodereplacerjs--rb--dsl1dsl2dslm1dslm2glsglsm-inputtxt-outputtxt)
-17. [node nodereplacer.js -t input.txt output.txt](#17-node-nodereplacerjs--t-inputtxt-outputtxt)
-18. [node nodereplacer.js (-chkdsl|-chkdsl -t) input.txt output.txt](#18-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
-19. [node nodereplacer.js -mgls input.txt output.txt](#19-node-nodereplacerjs--mgls-inputtxt-outputtxt)
+13. [node nodereplacer.js -stags input.txt output.txt](#13-node-nodereplacerjs--stags-inputtxt-outputtxt)
+14. [node nodereplacer.js (-base64 -i|-base64) input.txt output.txt](#14-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
+15. [node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt](#15-node-nodereplacerjs--rb--dsl1dsl2dslm1dslm2glsglsm-inputtxt-outputtxt)
+16. [node nodereplacer.js -t input.txt output.txt](#16-node-nodereplacerjs--t-inputtxt-outputtxt)
+17. [node nodereplacer.js (-chkdsl|-chkdsl -t) input.txt output.txt](#17-node-nodereplacerjs--chkdsl-chkdsl--t-inputtxt-outputtxt)
+18. [node nodereplacer.js -mgls input.txt output.txt](#18-node-nodereplacerjs--mgls-inputtxt-outputtxt)
 
 ## Назначение и использование:
 
@@ -718,57 +716,7 @@ dog
         перевод
 ```
 
-###### 13) node nodereplacer.js (-usort|-usort -i) input.txt output.txt
-Пользовательская сортировка.
-Входной файл должен иметь словарную структуру (в формате [DSL](#1)).</br>
-Файл с правилами сортировки **_sortRules.txt_** должен лежать в одной папке со скриптом. Его наличие опционально.
-
-Следующие символы скрипт из **_sortRules.txt_** удаляет:</br>
-`\x20\f\n\r\t\v\u00a0\u1680\u180e\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff`
-
-Статьи сортируются только по заголовкам и с сохранением оригинального порядка в блоке статей имеющих одинаковый заголовок. При сортировке тело статей не учитывается.
-
--**i** - _Чтобы скрипт не выделял статьи с заголовками, которые начинаются на заглавные буквы в отдельные блоки (сортировать с игнорированием регистра)._
-
-Пример (Обратная сортировка):
-
-Командная строка:</br>
-_node nodereplacer.js -**usort** -**i** input.txt output.txt_
-
-Содержание sortRules.txt:</br>
-zyxwvutsrqponmlkjihgfedcba
-
-_До_)
-```
-zebra
-        перевод
-dog
-        перевод
-pig
-        перевод
-```
-_После_)
-```
-zebra
-        перевод
-pig
-        перевод
-dog
-        перевод
-```
-Чтобы статьи у которых заголовки начинаются с буквы с диакритическим знаком не оказывались после статей заголовки которых начинаются на последнюю букву алфавита можно использовать **sortRules.txt** с таким содержанием:
-
-`aàâbcçdeéèêëfghiîïjklmnoôpqrstuùûüvwxyÿz`
-
-Для турецкого языка:
-
-`AaBbCcÇçDdEeFfGgĞğHhIıİiJjKkLlMmNnOoÖöPpRrSsŞşTtUuÜüVvYyZz`
-
-Скрипт должен правильно работать с многобайтными символами Юникода:
-
-![multibyte.png](./../multibyte.png)
-
-###### 14) node nodereplacer.js -stags input.txt output.txt
+###### 13) node nodereplacer.js -stags input.txt output.txt
 Сортировка DSL тегов.
 Входной файл должен иметь словарную структуру.</br>
 
@@ -795,7 +743,7 @@ _После_)
         [m1][c][com][p][i]гл.[/i][/p]; [p][i]сокр.[/i][/p]; [p][i]разг.[/i][/p][/com][/c][/m]  
         [m1][c][com][p][i]сокр.[/i][/p] от [lang id=1033]it was; [p][i]уст.[/i][/p]; [p][i]поэт.[/i][/p][/lang][/com][/c][/m]
 ```
-###### 15) node nodereplacer.js (-base64 -i|-base64) input.txt output.txt
+###### 14) node nodereplacer.js (-base64 -i|-base64) input.txt output.txt
 **а**) Внедрение картинок в HTML файл (-**_base64_** -**_i_**).</br>
 Наличие словарной структуры у входного файла не обязательно.</br>
 Картинки должны находиться в папке "res", а папка "res" в одной папке с входным файлом.</br>
@@ -842,7 +790,7 @@ height:100%;
 
 <div class=image title="input.png"></div>
 ```
-###### 16) node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt
+###### 15) node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt
 Раскрытие круглых скобок в заголовках словарных исходников.</br>
 Входной файл должен иметь словарную структуру.
 
@@ -993,17 +941,17 @@ _После_)
   При этом сохраняются заголовки, которые находятся в начале строки.
   Пример: до) кот|котами|кот => после) кот|котами (а не котами|кот)
 
-###### 17) node nodereplacer.js -t input.txt output.txt
+###### 16) node nodereplacer.js -t input.txt output.txt
 Получение списка HTML тэгов.</br>
 Наличие словарной структуры у входного файла не обязательно.
 
-###### 18) node nodereplacer.js (-chkdsl|-chkdsl -t) input.txt output.txt
+###### 17) node nodereplacer.js (-chkdsl|-chkdsl -t) input.txt output.txt
 Выявление ошибок в словарях в формате DSL.</br>
 Входной файл должен иметь словарную структуру.
 
 [Подробнее на отдельной странице](chkdsl.md).
 
-###### 19) node nodereplacer.js -mgls input.txt output.txt
+###### 18) node nodereplacer.js -mgls input.txt output.txt
 Объединение статей в словарях в формате GLS.</br>
 Входной файл должен быть в формате [GLS](#2).
 
