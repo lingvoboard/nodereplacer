@@ -1,10 +1,19 @@
-// Расширенная сортировка статей в DSL файле.
+//Расширенная сортировка статей в DSL файле.
+//И сортировка обычного списка.
+
+// node nodereplacer.js -sort -(b|o|txt) input.txt output.txt
+// node nodereplacer.js -sort -(b|o|txt) list.txt input.txt output.txt
 
 function onstart () {
+  o.sortRulesTab = Object.create(null)
+  o.sortRulesLength = 0
+  o.bigArr = []
 
-
-  if (process.argv.length === 6 && o.utils.fileExists(process.argv[4])) {
-    //node nodereplacer.js -sort -(b|o|bi|bie|oi|oie|bd|od|bdc|odc) input.txt output.txt
+  if (
+    process.argv.length === 6 &&
+    /^-(o|b|txt)$/.test(process.argv[3]) &&
+    o.utils.fileExists(process.argv[4])
+  ) {
     o.inputfile = process.argv[4]
     o.outputfile = process.argv[5]
 
@@ -13,867 +22,339 @@ function onstart () {
     } else {
       o.error_log_path = 'error.log'
     }
-    
+
+    read_sort_rules()
+
+    if (process.argv[3] === '-txt') {
+      o.byline()
+    } else {
+      o.by_dsl_article()
+    }
+  } else if (
+    process.argv.length === 7 &&
+    /^-(o|b|txt)$/.test(process.argv[3]) &&
+    o.utils.fileExists(process.argv[4]) &&
+    o.utils.fileExists(process.argv[5])
+  ) {
+    o.inputfile = process.argv[5]
+    o.outputfile = process.argv[6]
+
+    buildfunction(process.argv[4], 'sort_list.js')
+
+    if (o.outputfile !== null && path.isAbsolute(o.outputfile)) {
+      o.error_log_path = path.dirname(o.outputfile) + path.sep + 'error.log'
+    } else {
+      o.error_log_path = 'error.log'
+    }
+
+    read_sort_rules()
+
+    if (process.argv[3] === '-txt') {
+      o.byline()
+    } else {
+      o.by_dsl_article()
+    }
   } else {
     console.log('Invalid command line.')
     process.exit()
   }
-
-  o.latin_map = {
-    Á: 'A',
-    Ă: 'A',
-    Ắ: 'A',
-    Ặ: 'A',
-    Ằ: 'A',
-    Ẳ: 'A',
-    Ẵ: 'A',
-    Ǎ: 'A',
-    Â: 'A',
-    Ấ: 'A',
-    Ậ: 'A',
-    Ầ: 'A',
-    Ẩ: 'A',
-    Ẫ: 'A',
-    Ä: 'A',
-    Ǟ: 'A',
-    Ȧ: 'A',
-    Ǡ: 'A',
-    Ạ: 'A',
-    Ȁ: 'A',
-    À: 'A',
-    Ả: 'A',
-    Ȃ: 'A',
-    Ā: 'A',
-    Ą: 'A',
-    Å: 'A',
-    Ǻ: 'A',
-    Ḁ: 'A',
-    Ⱥ: 'A',
-    Ã: 'A',
-    Ꜳ: 'AA',
-    Æ: 'AE',
-    Ǽ: 'AE',
-    Ǣ: 'AE',
-    Ꜵ: 'AO',
-    Ꜷ: 'AU',
-    Ꜹ: 'AV',
-    Ꜻ: 'AV',
-    Ꜽ: 'AY',
-    Ḃ: 'B',
-    Ḅ: 'B',
-    Ɓ: 'B',
-    Ḇ: 'B',
-    Ƀ: 'B',
-    Ƃ: 'B',
-    Ć: 'C',
-    Č: 'C',
-    Ç: 'C',
-    Ḉ: 'C',
-    Ĉ: 'C',
-    Ċ: 'C',
-    Ƈ: 'C',
-    Ȼ: 'C',
-    Ď: 'D',
-    Ḑ: 'D',
-    Ḓ: 'D',
-    Ḋ: 'D',
-    Ḍ: 'D',
-    Ɗ: 'D',
-    Ḏ: 'D',
-    ǲ: 'D',
-    ǅ: 'D',
-    Đ: 'D',
-    Ƌ: 'D',
-    Ǳ: 'DZ',
-    Ǆ: 'DZ',
-    É: 'E',
-    Ĕ: 'E',
-    Ě: 'E',
-    Ȩ: 'E',
-    Ḝ: 'E',
-    Ê: 'E',
-    Ế: 'E',
-    Ệ: 'E',
-    Ề: 'E',
-    Ể: 'E',
-    Ễ: 'E',
-    Ḙ: 'E',
-    Ë: 'E',
-    Ė: 'E',
-    Ẹ: 'E',
-    Ȅ: 'E',
-    È: 'E',
-    Ẻ: 'E',
-    Ȇ: 'E',
-    Ē: 'E',
-    Ḗ: 'E',
-    Ḕ: 'E',
-    Ę: 'E',
-    Ɇ: 'E',
-    Ẽ: 'E',
-    Ḛ: 'E',
-    Ꝫ: 'ET',
-    Ḟ: 'F',
-    Ƒ: 'F',
-    Ǵ: 'G',
-    Ğ: 'G',
-    Ǧ: 'G',
-    Ģ: 'G',
-    Ĝ: 'G',
-    Ġ: 'G',
-    Ɠ: 'G',
-    Ḡ: 'G',
-    Ǥ: 'G',
-    Ḫ: 'H',
-    Ȟ: 'H',
-    Ḩ: 'H',
-    Ĥ: 'H',
-    Ⱨ: 'H',
-    Ḧ: 'H',
-    Ḣ: 'H',
-    Ḥ: 'H',
-    Ħ: 'H',
-    Í: 'I',
-    Ĭ: 'I',
-    Ǐ: 'I',
-    Î: 'I',
-    Ï: 'I',
-    Ḯ: 'I',
-    İ: 'I',
-    Ị: 'I',
-    Ȉ: 'I',
-    Ì: 'I',
-    Ỉ: 'I',
-    Ȋ: 'I',
-    Ī: 'I',
-    Į: 'I',
-    Ɨ: 'I',
-    Ĩ: 'I',
-    Ḭ: 'I',
-    Ꝺ: 'D',
-    Ꝼ: 'F',
-    Ᵹ: 'G',
-    Ꞃ: 'R',
-    Ꞅ: 'S',
-    Ꞇ: 'T',
-    Ꝭ: 'IS',
-    Ĵ: 'J',
-    Ɉ: 'J',
-    Ḱ: 'K',
-    Ǩ: 'K',
-    Ķ: 'K',
-    Ⱪ: 'K',
-    Ꝃ: 'K',
-    Ḳ: 'K',
-    Ƙ: 'K',
-    Ḵ: 'K',
-    Ꝁ: 'K',
-    Ꝅ: 'K',
-    Ĺ: 'L',
-    Ƚ: 'L',
-    Ľ: 'L',
-    Ļ: 'L',
-    Ḽ: 'L',
-    Ḷ: 'L',
-    Ḹ: 'L',
-    Ⱡ: 'L',
-    Ꝉ: 'L',
-    Ḻ: 'L',
-    Ŀ: 'L',
-    Ɫ: 'L',
-    ǈ: 'L',
-    Ł: 'L',
-    Ǉ: 'LJ',
-    Ḿ: 'M',
-    Ṁ: 'M',
-    Ṃ: 'M',
-    Ɱ: 'M',
-    Ń: 'N',
-    Ň: 'N',
-    Ņ: 'N',
-    Ṋ: 'N',
-    Ṅ: 'N',
-    Ṇ: 'N',
-    Ǹ: 'N',
-    Ɲ: 'N',
-    Ṉ: 'N',
-    Ƞ: 'N',
-    ǋ: 'N',
-    Ñ: 'N',
-    Ǌ: 'NJ',
-    Ó: 'O',
-    Ŏ: 'O',
-    Ǒ: 'O',
-    Ô: 'O',
-    Ố: 'O',
-    Ộ: 'O',
-    Ồ: 'O',
-    Ổ: 'O',
-    Ỗ: 'O',
-    Ö: 'O',
-    Ȫ: 'O',
-    Ȯ: 'O',
-    Ȱ: 'O',
-    Ọ: 'O',
-    Ő: 'O',
-    Ȍ: 'O',
-    Ò: 'O',
-    Ỏ: 'O',
-    Ơ: 'O',
-    Ớ: 'O',
-    Ợ: 'O',
-    Ờ: 'O',
-    Ở: 'O',
-    Ỡ: 'O',
-    Ȏ: 'O',
-    Ꝋ: 'O',
-    Ꝍ: 'O',
-    Ō: 'O',
-    Ṓ: 'O',
-    Ṑ: 'O',
-    Ɵ: 'O',
-    Ǫ: 'O',
-    Ǭ: 'O',
-    Ø: 'O',
-    Ǿ: 'O',
-    Õ: 'O',
-    Ṍ: 'O',
-    Ṏ: 'O',
-    Ȭ: 'O',
-    Ƣ: 'OI',
-    Ꝏ: 'OO',
-    Ɛ: 'E',
-    Ɔ: 'O',
-    Ȣ: 'OU',
-    Ṕ: 'P',
-    Ṗ: 'P',
-    Ꝓ: 'P',
-    Ƥ: 'P',
-    Ꝕ: 'P',
-    Ᵽ: 'P',
-    Ꝑ: 'P',
-    Ꝙ: 'Q',
-    Ꝗ: 'Q',
-    Ŕ: 'R',
-    Ř: 'R',
-    Ŗ: 'R',
-    Ṙ: 'R',
-    Ṛ: 'R',
-    Ṝ: 'R',
-    Ȑ: 'R',
-    Ȓ: 'R',
-    Ṟ: 'R',
-    Ɍ: 'R',
-    Ɽ: 'R',
-    Ꜿ: 'C',
-    Ǝ: 'E',
-    Ś: 'S',
-    Ṥ: 'S',
-    Š: 'S',
-    Ṧ: 'S',
-    Ş: 'S',
-    Ŝ: 'S',
-    Ș: 'S',
-    Ṡ: 'S',
-    Ṣ: 'S',
-    Ṩ: 'S',
-    Ť: 'T',
-    Ţ: 'T',
-    Ṱ: 'T',
-    Ț: 'T',
-    Ⱦ: 'T',
-    Ṫ: 'T',
-    Ṭ: 'T',
-    Ƭ: 'T',
-    Ṯ: 'T',
-    Ʈ: 'T',
-    Ŧ: 'T',
-    Ɐ: 'A',
-    Ꞁ: 'L',
-    Ɯ: 'M',
-    Ʌ: 'V',
-    Ꜩ: 'TZ',
-    Ú: 'U',
-    Ŭ: 'U',
-    Ǔ: 'U',
-    Û: 'U',
-    Ṷ: 'U',
-    Ü: 'U',
-    Ǘ: 'U',
-    Ǚ: 'U',
-    Ǜ: 'U',
-    Ǖ: 'U',
-    Ṳ: 'U',
-    Ụ: 'U',
-    Ű: 'U',
-    Ȕ: 'U',
-    Ù: 'U',
-    Ủ: 'U',
-    Ư: 'U',
-    Ứ: 'U',
-    Ự: 'U',
-    Ừ: 'U',
-    Ử: 'U',
-    Ữ: 'U',
-    Ȗ: 'U',
-    Ū: 'U',
-    Ṻ: 'U',
-    Ų: 'U',
-    Ů: 'U',
-    Ũ: 'U',
-    Ṹ: 'U',
-    Ṵ: 'U',
-    Ꝟ: 'V',
-    Ṿ: 'V',
-    Ʋ: 'V',
-    Ṽ: 'V',
-    Ꝡ: 'VY',
-    Ẃ: 'W',
-    Ŵ: 'W',
-    Ẅ: 'W',
-    Ẇ: 'W',
-    Ẉ: 'W',
-    Ẁ: 'W',
-    Ⱳ: 'W',
-    Ẍ: 'X',
-    Ẋ: 'X',
-    Ý: 'Y',
-    Ŷ: 'Y',
-    Ÿ: 'Y',
-    Ẏ: 'Y',
-    Ỵ: 'Y',
-    Ỳ: 'Y',
-    Ƴ: 'Y',
-    Ỷ: 'Y',
-    Ỿ: 'Y',
-    Ȳ: 'Y',
-    Ɏ: 'Y',
-    Ỹ: 'Y',
-    Ź: 'Z',
-    Ž: 'Z',
-    Ẑ: 'Z',
-    Ⱬ: 'Z',
-    Ż: 'Z',
-    Ẓ: 'Z',
-    Ȥ: 'Z',
-    Ẕ: 'Z',
-    Ƶ: 'Z',
-    Ĳ: 'IJ',
-    Œ: 'OE',
-    ᴀ: 'A',
-    ᴁ: 'AE',
-    ʙ: 'B',
-    ᴃ: 'B',
-    ᴄ: 'C',
-    ᴅ: 'D',
-    ᴇ: 'E',
-    ꜰ: 'F',
-    ɢ: 'G',
-    ʛ: 'G',
-    ʜ: 'H',
-    ɪ: 'I',
-    ʁ: 'R',
-    ᴊ: 'J',
-    ᴋ: 'K',
-    ʟ: 'L',
-    ᴌ: 'L',
-    ᴍ: 'M',
-    ɴ: 'N',
-    ᴏ: 'O',
-    ɶ: 'OE',
-    ᴐ: 'O',
-    ᴕ: 'OU',
-    ᴘ: 'P',
-    ʀ: 'R',
-    ᴎ: 'N',
-    ᴙ: 'R',
-    ꜱ: 'S',
-    ᴛ: 'T',
-    ⱻ: 'E',
-    ᴚ: 'R',
-    ᴜ: 'U',
-    ᴠ: 'V',
-    ᴡ: 'W',
-    ʏ: 'Y',
-    ᴢ: 'Z',
-    á: 'a',
-    ă: 'a',
-    ắ: 'a',
-    ặ: 'a',
-    ằ: 'a',
-    ẳ: 'a',
-    ẵ: 'a',
-    ǎ: 'a',
-    â: 'a',
-    ấ: 'a',
-    ậ: 'a',
-    ầ: 'a',
-    ẩ: 'a',
-    ẫ: 'a',
-    ä: 'a',
-    ǟ: 'a',
-    ȧ: 'a',
-    ǡ: 'a',
-    ạ: 'a',
-    ȁ: 'a',
-    à: 'a',
-    ả: 'a',
-    ȃ: 'a',
-    ā: 'a',
-    ą: 'a',
-    ᶏ: 'a',
-    ẚ: 'a',
-    å: 'a',
-    ǻ: 'a',
-    ḁ: 'a',
-    ⱥ: 'a',
-    ã: 'a',
-    ꜳ: 'aa',
-    æ: 'ae',
-    ǽ: 'ae',
-    ǣ: 'ae',
-    ꜵ: 'ao',
-    ꜷ: 'au',
-    ꜹ: 'av',
-    ꜻ: 'av',
-    ꜽ: 'ay',
-    ḃ: 'b',
-    ḅ: 'b',
-    ɓ: 'b',
-    ḇ: 'b',
-    ᵬ: 'b',
-    ᶀ: 'b',
-    ƀ: 'b',
-    ƃ: 'b',
-    ɵ: 'o',
-    ć: 'c',
-    č: 'c',
-    ç: 'c',
-    ḉ: 'c',
-    ĉ: 'c',
-    ɕ: 'c',
-    ċ: 'c',
-    ƈ: 'c',
-    ȼ: 'c',
-    ď: 'd',
-    ḑ: 'd',
-    ḓ: 'd',
-    ȡ: 'd',
-    ḋ: 'd',
-    ḍ: 'd',
-    ɗ: 'd',
-    ᶑ: 'd',
-    ḏ: 'd',
-    ᵭ: 'd',
-    ᶁ: 'd',
-    đ: 'd',
-    ɖ: 'd',
-    ƌ: 'd',
-    ı: 'i',
-    ȷ: 'j',
-    ɟ: 'j',
-    ʄ: 'j',
-    ǳ: 'dz',
-    ǆ: 'dz',
-    é: 'e',
-    ĕ: 'e',
-    ě: 'e',
-    ȩ: 'e',
-    ḝ: 'e',
-    ê: 'e',
-    ế: 'e',
-    ệ: 'e',
-    ề: 'e',
-    ể: 'e',
-    ễ: 'e',
-    ḙ: 'e',
-    ë: 'e',
-    ė: 'e',
-    ẹ: 'e',
-    ȅ: 'e',
-    è: 'e',
-    ẻ: 'e',
-    ȇ: 'e',
-    ē: 'e',
-    ḗ: 'e',
-    ḕ: 'e',
-    ⱸ: 'e',
-    ę: 'e',
-    ᶒ: 'e',
-    ɇ: 'e',
-    ẽ: 'e',
-    ḛ: 'e',
-    ꝫ: 'et',
-    ḟ: 'f',
-    ƒ: 'f',
-    ᵮ: 'f',
-    ᶂ: 'f',
-    ǵ: 'g',
-    ğ: 'g',
-    ǧ: 'g',
-    ģ: 'g',
-    ĝ: 'g',
-    ġ: 'g',
-    ɠ: 'g',
-    ḡ: 'g',
-    ᶃ: 'g',
-    ǥ: 'g',
-    ḫ: 'h',
-    ȟ: 'h',
-    ḩ: 'h',
-    ĥ: 'h',
-    ⱨ: 'h',
-    ḧ: 'h',
-    ḣ: 'h',
-    ḥ: 'h',
-    ɦ: 'h',
-    ẖ: 'h',
-    ħ: 'h',
-    ƕ: 'hv',
-    í: 'i',
-    ĭ: 'i',
-    ǐ: 'i',
-    î: 'i',
-    ï: 'i',
-    ḯ: 'i',
-    ị: 'i',
-    ȉ: 'i',
-    ì: 'i',
-    ỉ: 'i',
-    ȋ: 'i',
-    ī: 'i',
-    į: 'i',
-    ᶖ: 'i',
-    ɨ: 'i',
-    ĩ: 'i',
-    ḭ: 'i',
-    ꝺ: 'd',
-    ꝼ: 'f',
-    ᵹ: 'g',
-    ꞃ: 'r',
-    ꞅ: 's',
-    ꞇ: 't',
-    ꝭ: 'is',
-    ǰ: 'j',
-    ĵ: 'j',
-    ʝ: 'j',
-    ɉ: 'j',
-    ḱ: 'k',
-    ǩ: 'k',
-    ķ: 'k',
-    ⱪ: 'k',
-    ꝃ: 'k',
-    ḳ: 'k',
-    ƙ: 'k',
-    ḵ: 'k',
-    ᶄ: 'k',
-    ꝁ: 'k',
-    ꝅ: 'k',
-    ĺ: 'l',
-    ƚ: 'l',
-    ɬ: 'l',
-    ľ: 'l',
-    ļ: 'l',
-    ḽ: 'l',
-    ȴ: 'l',
-    ḷ: 'l',
-    ḹ: 'l',
-    ⱡ: 'l',
-    ꝉ: 'l',
-    ḻ: 'l',
-    ŀ: 'l',
-    ɫ: 'l',
-    ᶅ: 'l',
-    ɭ: 'l',
-    ł: 'l',
-    ǉ: 'lj',
-    ſ: 's',
-    ẜ: 's',
-    ẛ: 's',
-    ẝ: 's',
-    ḿ: 'm',
-    ṁ: 'm',
-    ṃ: 'm',
-    ɱ: 'm',
-    ᵯ: 'm',
-    ᶆ: 'm',
-    ń: 'n',
-    ň: 'n',
-    ņ: 'n',
-    ṋ: 'n',
-    ȵ: 'n',
-    ṅ: 'n',
-    ṇ: 'n',
-    ǹ: 'n',
-    ɲ: 'n',
-    ṉ: 'n',
-    ƞ: 'n',
-    ᵰ: 'n',
-    ᶇ: 'n',
-    ɳ: 'n',
-    ñ: 'n',
-    ǌ: 'nj',
-    ó: 'o',
-    ŏ: 'o',
-    ǒ: 'o',
-    ô: 'o',
-    ố: 'o',
-    ộ: 'o',
-    ồ: 'o',
-    ổ: 'o',
-    ỗ: 'o',
-    ö: 'o',
-    ȫ: 'o',
-    ȯ: 'o',
-    ȱ: 'o',
-    ọ: 'o',
-    ő: 'o',
-    ȍ: 'o',
-    ò: 'o',
-    ỏ: 'o',
-    ơ: 'o',
-    ớ: 'o',
-    ợ: 'o',
-    ờ: 'o',
-    ở: 'o',
-    ỡ: 'o',
-    ȏ: 'o',
-    ꝋ: 'o',
-    ꝍ: 'o',
-    ⱺ: 'o',
-    ō: 'o',
-    ṓ: 'o',
-    ṑ: 'o',
-    ǫ: 'o',
-    ǭ: 'o',
-    ø: 'o',
-    ǿ: 'o',
-    õ: 'o',
-    ṍ: 'o',
-    ṏ: 'o',
-    ȭ: 'o',
-    ƣ: 'oi',
-    ꝏ: 'oo',
-    ɛ: 'e',
-    ᶓ: 'e',
-    ɔ: 'o',
-    ᶗ: 'o',
-    ȣ: 'ou',
-    ṕ: 'p',
-    ṗ: 'p',
-    ꝓ: 'p',
-    ƥ: 'p',
-    ᵱ: 'p',
-    ᶈ: 'p',
-    ꝕ: 'p',
-    ᵽ: 'p',
-    ꝑ: 'p',
-    ꝙ: 'q',
-    ʠ: 'q',
-    ɋ: 'q',
-    ꝗ: 'q',
-    ŕ: 'r',
-    ř: 'r',
-    ŗ: 'r',
-    ṙ: 'r',
-    ṛ: 'r',
-    ṝ: 'r',
-    ȑ: 'r',
-    ɾ: 'r',
-    ᵳ: 'r',
-    ȓ: 'r',
-    ṟ: 'r',
-    ɼ: 'r',
-    ᵲ: 'r',
-    ᶉ: 'r',
-    ɍ: 'r',
-    ɽ: 'r',
-    ↄ: 'c',
-    ꜿ: 'c',
-    ɘ: 'e',
-    ɿ: 'r',
-    ś: 's',
-    ṥ: 's',
-    š: 's',
-    ṧ: 's',
-    ş: 's',
-    ŝ: 's',
-    ș: 's',
-    ṡ: 's',
-    ṣ: 's',
-    ṩ: 's',
-    ʂ: 's',
-    ᵴ: 's',
-    ᶊ: 's',
-    ȿ: 's',
-    ɡ: 'g',
-    ᴑ: 'o',
-    ᴓ: 'o',
-    ᴝ: 'u',
-    ť: 't',
-    ţ: 't',
-    ṱ: 't',
-    ț: 't',
-    ȶ: 't',
-    ẗ: 't',
-    ⱦ: 't',
-    ṫ: 't',
-    ṭ: 't',
-    ƭ: 't',
-    ṯ: 't',
-    ᵵ: 't',
-    ƫ: 't',
-    ʈ: 't',
-    ŧ: 't',
-    ᵺ: 'th',
-    ɐ: 'a',
-    ᴂ: 'ae',
-    ǝ: 'e',
-    ᵷ: 'g',
-    ɥ: 'h',
-    ʮ: 'h',
-    ʯ: 'h',
-    ᴉ: 'i',
-    ʞ: 'k',
-    ꞁ: 'l',
-    ɯ: 'm',
-    ɰ: 'm',
-    ᴔ: 'oe',
-    ɹ: 'r',
-    ɻ: 'r',
-    ɺ: 'r',
-    ⱹ: 'r',
-    ʇ: 't',
-    ʌ: 'v',
-    ʍ: 'w',
-    ʎ: 'y',
-    ꜩ: 'tz',
-    ú: 'u',
-    ŭ: 'u',
-    ǔ: 'u',
-    û: 'u',
-    ṷ: 'u',
-    ü: 'u',
-    ǘ: 'u',
-    ǚ: 'u',
-    ǜ: 'u',
-    ǖ: 'u',
-    ṳ: 'u',
-    ụ: 'u',
-    ű: 'u',
-    ȕ: 'u',
-    ù: 'u',
-    ủ: 'u',
-    ư: 'u',
-    ứ: 'u',
-    ự: 'u',
-    ừ: 'u',
-    ử: 'u',
-    ữ: 'u',
-    ȗ: 'u',
-    ū: 'u',
-    ṻ: 'u',
-    ų: 'u',
-    ᶙ: 'u',
-    ů: 'u',
-    ũ: 'u',
-    ṹ: 'u',
-    ṵ: 'u',
-    ᵫ: 'ue',
-    ꝸ: 'um',
-    ⱴ: 'v',
-    ꝟ: 'v',
-    ṿ: 'v',
-    ʋ: 'v',
-    ᶌ: 'v',
-    ⱱ: 'v',
-    ṽ: 'v',
-    ꝡ: 'vy',
-    ẃ: 'w',
-    ŵ: 'w',
-    ẅ: 'w',
-    ẇ: 'w',
-    ẉ: 'w',
-    ẁ: 'w',
-    ⱳ: 'w',
-    ẘ: 'w',
-    ẍ: 'x',
-    ẋ: 'x',
-    ᶍ: 'x',
-    ý: 'y',
-    ŷ: 'y',
-    ÿ: 'y',
-    ẏ: 'y',
-    ỵ: 'y',
-    ỳ: 'y',
-    ƴ: 'y',
-    ỷ: 'y',
-    ỿ: 'y',
-    ȳ: 'y',
-    ẙ: 'y',
-    ɏ: 'y',
-    ỹ: 'y',
-    ź: 'z',
-    ž: 'z',
-    ẑ: 'z',
-    ʑ: 'z',
-    ⱬ: 'z',
-    ż: 'z',
-    ẓ: 'z',
-    ȥ: 'z',
-    ẕ: 'z',
-    ᵶ: 'z',
-    ᶎ: 'z',
-    ʐ: 'z',
-    ƶ: 'z',
-    ɀ: 'z',
-    ﬀ: 'ff',
-    ﬃ: 'ffi',
-    ﬄ: 'ffl',
-    ﬁ: 'fi',
-    ﬂ: 'fl',
-    ĳ: 'ij',
-    œ: 'oe',
-    ﬆ: 'st',
-    ₐ: 'a',
-    ₑ: 'e',
-    ᵢ: 'i',
-    ⱼ: 'j',
-    ₒ: 'o',
-    ᵣ: 'r',
-    ᵤ: 'u',
-    ᵥ: 'v',
-    ₓ: 'x'
-  }
-
-  if (
-    /^-(b|bi|bie|o|oi|oie|bd|bd|od|bdc|odc)$/i.test(process.argv[3]) === false
-  ) {
-    o.stop = 'Invalid command line.'
-  }
-
-  o.by_dsl_article()
 }
 
-let hw = []
+function escapeRegExp (str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&')
+}
 
-for (let v of o.dsl[0]) {
-  let h1 = o.utils
-    .remove_comments(v)
-    .replace(/[\t ]{2, }/g, ' ')
-    .trim()
-  if (h1 === '') {
-    if (hw.length > 0) hw[hw.length - 1][1] += '\n' + v
+function escapeDQ (str) {
+  return str.replace(/"/g, '\\"')
+}
+
+function escapeSlash (str) {
+  str = str.replace(/^\//g, '\\/')
+
+  while (/[^\\]\//.test(str)) {
+    str = str.replace(/([^\\])\//g, '$1\\/')
+  }
+
+  return str
+}
+
+function read_sort_rules () {
+  let f = o.path + '/files/sortRules.txt'
+  if (o.utils.fileExists(f)) {
+    let encoding = o.utils.guessEncoding(f)
+    let arr = fs
+      .readFileSync(f, encoding)
+      .toString()
+      .replace(/^\uFEFF/, '')
+      .split('\n')
+    let sortRulesStr = arr.join('').replace(/\s/g, '')
+    let sortRulesArr = [...sortRulesStr]
+    for (let i = 0; i < sortRulesArr.length; i++) {
+      if (o.sortRulesTab[sortRulesArr[i]] === undefined) {
+        o.sortRulesTab[sortRulesArr[i]] = i
+        o.sortRulesLength++
+      }
+    }
+
+    console.log(
+      `\nsortRules.txt contains ${o.sortRulesLength} acceptable symbol(s)\n`
+    )
   } else {
-    hw.push([h1, v])
+    console.log('\nsortRules.txt not found\n')
   }
 }
 
-for (let v of hw) {
-  o.arr.push([o.arr.length, v[0], o.dsl[1], v[1]])
+function escape_odd_slash (s) {
+  s = s.replace(/(\\*)/g, function (a, m1) {
+    if (m1.length % 2 === 1) m1 = m1 + '\x5c'
+    return m1
+  })
+
+  return s
 }
 
-s = null
+function buildfunction (list, mod) {
+  if (o.utils.fileExists(list)) {
+    let encoding = o.utils.guessEncoding(list)
+
+    let arr = fs
+      .readFileSync(list, encoding)
+      .replace(/^\uFEFF/, '')
+      .toString()
+      .split('\n')
+
+    if (arr.length > 0) {
+      let m
+      let code = `'use strict'\nmodule.exports = {\nProcessString: function(s) {\n`
+      for (let i = 0; i < arr.length; i++) {
+        if (/^\/\//.test(arr[i]) === true) {
+          code += arr[i] + '\n'
+        } else if ((m = /^(.+?)\t\|\t(.*)$/.exec(arr[i]))) {
+          code += 's = s.replace('
+          code +=
+            '/' +
+            escapeRegExp(m[1]) +
+            '/g, ' +
+            'String.raw`' +
+            escape_odd_slash(m[2]) +
+            '`'
+          code += ');\n'
+        } else if ((m = /^(.+?)\t\|(i?)\|\t(.*)$/.exec(arr[i]))) {
+          code += 's = s.replace('
+          code +=
+            '/' +
+            escapeSlash(m[1]) +
+            '/umg' +
+            m[2] +
+            ', ' +
+            '"' +
+            escapeDQ(m[3]) +
+            '"'
+          code += ');\n'
+        } else {
+          code += arr[i] + '\n'
+        }
+      }
+
+      code += `\nreturn s\n}\n}\n`
+
+      let Output
+
+      let dir = __dirname + '/' + mod
+      Output = fs.openSync(dir, 'w')
+      fs.writeSync(Output, code, null, 'utf8')
+      o.RepListMod = require(dir)
+    }
+  }
+}
+
+function DSLcustomSORT (art1, art2) {
+  let word1 = art1[0]
+  let word2 = art2[0]
+
+  if (o.RepListMod) {
+    let word1_bak = word1
+    let word2_bak = word2
+    word1 = o.RepListMod.ProcessString(word1)
+    word2 = o.RepListMod.ProcessString(word2)
+
+    if (word1.length === 0) word1 = word1_bak
+    if (word2.length === 0) word2 = word2_bak
+  }
+
+  let body1 = art1[1]
+  let body2 = art2[1]
+
+  let index1 = art1[2]
+  let index2 = art2[2]
+
+  let arr1 = [...word1]
+  let arr2 = [...word2]
+
+  // Массивы для создания бинарных чисел.
+  let bin1 = []
+  let bin2 = []
+
+  // Массивы с символами выравниваются по длине.
+  // После обрезки, к примеру, ["d", "o", "g", "s"] и ["d", "o", "g"] превратятся в ["d", "o", "g"] и ["d", "o", "g"]
+  // Если содержание массивов окажется идентичным, то будет учитываться длина слов.
+  if (arr1.length > arr2.length) arr1.splice(arr2.length)
+
+  if (arr2.length > arr2.length) arr2.splice(arr1.length)
+
+  function compare_symb (a, b) {
+    // Если положение символов относительно друг друга задано в правилах (sortRulesStr)
+    if (o.sortRulesTab[a] !== undefined && o.sortRulesTab[b] !== undefined) {
+      a = o.sortRulesTab[a]
+      b = o.sortRulesTab[b]
+
+      if (a > b) {
+        bin1.push(1)
+        bin2.push(0)
+      } else if (b > a) {
+        bin1.push(0)
+        bin2.push(1)
+      } else {
+        bin1.push(0)
+        bin2.push(0)
+      }
+      //Далее обрабатываются символы положение которых относительно друг друга не задано в правилах (sortRulesStr)
+    } else {
+      if (a.codePointAt(0) > b.codePointAt(0)) {
+        bin1.push(1)
+        bin2.push(0)
+      } else if (b.codePointAt(0) > a.codePointAt(0)) {
+        bin1.push(0)
+        bin2.push(1)
+      } else {
+        bin1.push(0)
+        bin2.push(0)
+      }
+    }
+  }
+
+  // Здесь происходит последовательное сравнение элементов из двух массивов имеющих одинаковый индекс.
+  // И на основе этого сравнения создаются два бинарных числа.
+  // К примеру, по умолчанию pig и dog дадут 100 и 010
+  for (let i = 0; i < arr1.length; i++) {
+    compare_symb(arr1[i], arr2[i])
+  }
+
+  // Бинарные числа конвертируются в десятичные.
+  let int1 = parseInt(bin1.join(''), 2)
+  let int2 = parseInt(bin2.join(''), 2)
+
+  // Если числа одинаковые, то сравнивается длина слов.
+  if (int1 === int2) {
+    // Если и длина одинаковая
+    if (word1.length === word2.length) {
+      //И использован ключ -o, то в блоке статей имеющих одинаковый заголовок сохраненяется оригинальный порядок .
+      if (process.argv[3] === '-o') {
+        return index1 < index2 ? -1 : 1
+      } else {
+        //Если -b, то статьи сортируются  по заголовкам с учетом содержимого тела карточки.
+
+        return body1 < body2 ? -1 : 1
+      }
+    } else {
+      return word1.length < word2.length ? -1 : 1
+    }
+  } else {
+    return int1 < int2 ? -1 : 1
+  }
+}
+
+function TXTcustomSORT (line1, line2) {
+  if (o.RepListMod) {
+    let line1_bak = line1
+    let line2_bak = line2
+    line1 = o.RepListMod.ProcessString(line1)
+    line2 = o.RepListMod.ProcessString(line2)
+
+    if (line1.length === 0) line1 = line1_bak
+    if (line2.length === 0) line2 = line2_bak
+  }
+
+  let arr1 = [...line1]
+  let arr2 = [...line2]
+
+  // Массивы для создания бинарных чисел.
+  let bin1 = []
+  let bin2 = []
+
+  // Массивы с символами выравниваются по длине.
+  // После обрезки, к примеру, ["d", "o", "g", "s"] и ["d", "o", "g"] превратятся в ["d", "o", "g"] и ["d", "o", "g"]
+  // Если содержание массивов окажется идентичным, то будет учитываться длина слов.
+  if (arr1.length > arr2.length) arr1.splice(arr2.length)
+
+  if (arr2.length > arr2.length) arr2.splice(arr1.length)
+
+  function compare_symb (a, b) {
+    // Если положение символов относительно друг друга задано в правилах (sortRulesStr)
+    if (o.sortRulesTab[a] !== undefined && o.sortRulesTab[b] !== undefined) {
+      a = o.sortRulesTab[a]
+      b = o.sortRulesTab[b]
+
+      if (a > b) {
+        bin1.push(1)
+        bin2.push(0)
+      } else if (b > a) {
+        bin1.push(0)
+        bin2.push(1)
+      } else {
+        bin1.push(0)
+        bin2.push(0)
+      }
+      //Далее обрабатываются символы положение которых относительно друг друга не задано в правилах (sortRulesStr)
+    } else {
+      if (a.codePointAt(0) > b.codePointAt(0)) {
+        bin1.push(1)
+        bin2.push(0)
+      } else if (b.codePointAt(0) > a.codePointAt(0)) {
+        bin1.push(0)
+        bin2.push(1)
+      } else {
+        bin1.push(0)
+        bin2.push(0)
+      }
+    }
+  }
+
+  // Здесь происходит последовательное сравнение элементов из двух массивов имеющих одинаковый индекс.
+  // И на основе этого сравнения создаются два бинарных числа.
+  // К примеру, по умолчанию pig и dog дадут 100 и 010
+  for (let i = 0; i < arr1.length; i++) {
+    compare_symb(arr1[i], arr2[i])
+  }
+
+  // Бинарные числа конвертируются в десятичные.
+  let int1 = parseInt(bin1.join(''), 2)
+  let int2 = parseInt(bin2.join(''), 2)
+
+  return int1 - int2
+}
+
+function sort_and_write () {
+  if (process.argv[3] === '-txt') {
+    o.bigArr.sort(TXTcustomSORT)
+
+    for (let v of o.bigArr) {
+      fs.writeFileSync(o.outputfile, v + '\n', {
+        encoding: o.out_encoding,
+        flag: 'a'
+      })
+    }
+  } else {
+    o.bigArr.sort(DSLcustomSORT)
+
+    for (let v of o.bigArr) {
+      fs.writeFileSync(o.outputfile, v[3] + '\n' + v[1] + '\n', {
+        encoding: o.out_encoding,
+        flag: 'a'
+      })
+    }
+  }
+}
 
 function removeDiacriticsLite (str) {
   return str.replace(/[^A-Za-z0-9\[\] ]/g, function (a) {
@@ -881,127 +362,46 @@ function removeDiacriticsLite (str) {
   })
 }
 
-function strip (s) {
-  if (/^-(bdc|odc)$/.test(process.argv[3])) s = s.toLowerCase()
-
-  s = removeDiacriticsLite(s)
-
-  return s
-}
-
-function remove_rb (s) {
-  s = s.replace(/\x00/g, ' ').replace(/(\\*)(\(|\))/g, function (a, m1, m2) {
-    if (m1.length % 2 === 0 && m2 === '(') {
-      m2 = '\x00' + m2
-    } else if (m1.length % 2 === 0 && m2 === ')') {
-      m2 = '\x00' + m2
-    }
-
-    return m1 + m2
-  })
-
-  s = s
-    .replace(/(\x00\([^\x00]*?\x00\))/g, function (a, m1) {
-      return ''
-    })
-    .replace(/\x00/g, '')
-
-  return s
-}
-
 function clearhw (str) {
   let bak = str
-
-  if (process.argv[3] === '-bie' || process.argv[3] === '-oie') {
-    str = o.utils.remove_comments(str)
-    str = o.utils.remove_odd_slash(str)
-    str = o.utils.remove_scb(str)
-    str = remove_rb(str)
-    str = str.replace(/[«»"„“”‘’…]/g, '')
-    str = str.replace(/[.]{3}/g, '')
-    str = str.replace(/ё/g, 'е')
-    str = str.replace(/Ё/g, 'Е')
-    str = str.toLowerCase()
-  } else {
-    str = o.utils.remove_odd_slash(str)
-    str = o.utils.remove_scb(str)
-  }
-
+  str = o.utils.remove_odd_slash(str)
+  str = o.utils.remove_scb(str)
   if (str.length === 0) str = bak
-
   return str.trim()
 }
 
-function SortFunctionB (a, b) {
-  if (a[1] === b[1]) {
-    return a[2] < b[2] ? -1 : 1
-  } else {
-    return a[1] < b[1] ? -1 : 1
+if (process.argv[3] === '-txt') {
+  //TEXT
+
+  o.bigArr.push(s)
+} else {
+  //DSL
+  let hw = []
+
+  for (let v of o.dsl[0]) {
+    let h1 = o.utils
+      .remove_comments(v)
+      .replace(/[\t ]{2, }/g, ' ')
+      .trim()
+
+    if (h1 === '') {
+      //Обработка многострочного комментария
+
+      if (hw.length > 0) hw[hw.length - 1][1] += '\n' + v
+    } else {
+      h1 = clearhw(h1)
+      //h1 - содержит очищенный заголовок, v - оригинальный заголовок
+      hw.push([h1, v])
+    }
+  }
+
+  for (let v of hw) {
+    o.bigArr.push([v[0], o.dsl[1], o.bigArr.length, v[1]])
   }
 }
 
-function SortFunctionO (a, b) {
-  if (a[1] === b[1]) {
-    return a[0] < b[0] ? -1 : 1
-  } else {
-    return a[1] < b[1] ? -1 : 1
-  }
-}
-
-function SortFunctionBI (a, b) {
-  if (clearhw(a[1]) === clearhw(b[1])) {
-    return a[2] < b[2] ? -1 : 1
-  } else {
-    return clearhw(a[1]) < clearhw(b[1]) ? -1 : 1
-  }
-}
-
-function SortFunctionBD (a, b) {
-  if (strip(a[1]) === strip(b[1])) {
-    return a[2] < b[2] ? -1 : 1
-  } else {
-    return strip(a[1]) < strip(b[1]) ? -1 : 1
-  }
-}
-
-function SortFunctionOI (a, b) {
-  if (clearhw(a[1]) === clearhw(b[1])) {
-    return a[0] < b[0] ? -1 : 1
-  } else {
-    return clearhw(a[1]) < clearhw(b[1]) ? -1 : 1
-  }
-}
-
-function SortFunctionOD (a, b) {
-  if (strip(a[1]) === strip(b[1])) {
-    return a[0] < b[0] ? -1 : 1
-  } else {
-    return strip(a[1]) < strip(b[1]) ? -1 : 1
-  }
-}
+s = null
 
 function onexit () {
-  if (process.argv[3] === '-b') {
-    o.arr.sort(SortFunctionB)
-  } else if (process.argv[3] === '-bi') {
-    o.arr.sort(SortFunctionBI)
-  } else if (process.argv[3] === '-bie') {
-    o.arr.sort(SortFunctionBI)
-  } else if (process.argv[3] === '-o') {
-    o.arr.sort(SortFunctionO)
-  } else if (process.argv[3] === '-oi') {
-    o.arr.sort(SortFunctionOI)
-  } else if (process.argv[3] === '-oie') {
-    o.arr.sort(SortFunctionOI)
-  } else if (/^-(bd|bdc)$/.test(process.argv[3])) {
-    o.arr.sort(SortFunctionBD)
-  } else if (/^-(od|odc)$/.test(process.argv[3])) {
-    o.arr.sort(SortFunctionOD)
-  }
-
-  const output = fs.openSync(o.outputfile, 'a')
-
-  for (let v of o.arr) {
-    fs.writeSync(output, v[3] + '\n' + v[2] + '\n', null, o.out_encoding)
-  }
+  sort_and_write()
 }
