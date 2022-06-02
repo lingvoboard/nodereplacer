@@ -26,7 +26,7 @@
 9. [Складывание заголовков в стопы (DSL).](#9-node-nodereplacerjs--pile-inputtxt-outputtxt)
 10. [Маркировка подвешенных ссылок (DSL).](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
 11. [Получение списка всех символов.](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
-12. [Сортировка (DSL).](#12-node-nodereplacerjs--sort--bobibieoioiebdodbdcodc-inputtxt-outputtxt)
+12. [Сортировка.](#12-node-nodereplacerjs--sort--botxt---botxt-listtxt-inputtxt-outputtxt)
 13. [Пользовательская сортировка (DSL).](#13-node-nodereplacerjs--usort-usort--i-inputtxt-outputtxt)
 14. [Сортировка DSL тегов.](#14-node-nodereplacerjs--stags-inputtxt-outputtxt)
 15. [Внедрение картинок в HTML файл.](#15-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
@@ -44,11 +44,11 @@
 5. [node nodereplacer.js (input.gls|input.ifo)](#5-node-nodereplacerjs-inputglsoutputifo)
 6. [node nodereplacer.js -ctags input.txt output.txt](#6-node-nodereplacerjs--ctags-inputtxt-outputtxt)
 7. [node nodereplacer.js -d input.txt output.txt](#7-node-nodereplacerjs--d-inputtxt-outputtxt)
-8. [node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | (a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt](#8-node-nodereplacerjs--m--aa1a2ll1l2rr1r2--aa1a2ll1l2rr1r2-listtxt-inputtxt-outputtxt)
+8. [node nodereplacer.js -m (-(a|a1|a2|l|l1|l2|r|r1|r2) | -(a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt](#8-node-nodereplacerjs--m--aa1a2ll1l2rr1r2--aa1a2ll1l2rr1r2-listtxt-inputtxt-outputtxt)
 9. [node nodereplacer.js -pile input.txt output.txt](#9-node-nodereplacerjs--pile-inputtxt-outputtxt)
 10. [node nodereplacer.js -susp input.txt output.txt](#10-node-nodereplacerjs--susp-inputtxt-outputtxt)
 11. [node nodereplacer.js (-symb|-symb -f) input.txt output.txt](#11-node-nodereplacerjs--symb-symb--f-inputtxt-outputtxt)
-12. [node nodereplacer.js -sort -(b|o|bi|bie|oi|oie|bd|od|bdc|odc) input.txt output.txt](#12-node-nodereplacerjs--sort--bobibieoioiebdodbdcodc-inputtxt-outputtxt)
+12. [node nodereplacer.js -sort (-(b|o|txt) | -(b|o|txt) list.txt) input.txt output.txt](#12-node-nodereplacerjs--sort--botxt---botxt-listtxt-inputtxt-outputtxt)
 13. [node nodereplacer.js (-usort|-usort -i) input.txt output.txt](#13-node-nodereplacerjs--usort-usort--i-inputtxt-outputtxt)
 14. [node nodereplacer.js -stags input.txt output.txt](#14-node-nodereplacerjs--stags-inputtxt-outputtxt)
 15. [node nodereplacer.js (-base64 -i|-base64) input.txt output.txt](#15-node-nodereplacerjs--base64--i-base64-inputtxt-outputtxt)
@@ -243,7 +243,7 @@ perro
         собака
 ```
 
-###### 8) node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | (a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt
+###### 8) node nodereplacer.js -m (-(a|a1|a2|l|l1|l2|r|r1|r2) | -(a|a1|a2|l|l1|l2|r|r1|r2) list.txt) input.txt output.txt
 Объединение в словаре разных статей с одинаковыми заголовками с предварительным удалением дубликатов статей.</br>
 Входной файл должен иметь словарную структуру.
 
