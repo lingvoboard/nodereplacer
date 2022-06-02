@@ -14,8 +14,7 @@ node nodereplacer.js -m -((a|a1|a2|l|l1|l2|r|r1|r2) | (a|a1|a2|l|l1|l2|r|r1|r2) 
 node nodereplacer.js -pile input.txt output.txt
 node nodereplacer.js -susp input.txt output.txt
 node nodereplacer.js (-symb|-symb -f) input.txt output.txt
-node nodereplacer.js -sort -(b|o|bi|bie|oi|oie|bd|od|bdc|odc) input.txt output.txt
-node nodereplacer.js (-usort|-usort -i) input.txt output.txt
+node nodereplacer.js -sort (-(b|o|txt) | -(b|o|txt) list.txt) input.txt output.txt
 node nodereplacer.js -stags input.txt output.txt
 node nodereplacer.js (-base64|-base64 -i) input.txt output.txt
 node nodereplacer.js -rb -(dsl1|dsl2|dslm1|dslm2|gls|glsm) input.txt output.txt
