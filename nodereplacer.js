@@ -343,12 +343,12 @@ function checkDirectorySync (directory) {
 }
 
 function escape_odd_slash (s) {
-  s = s.replace(/(\\*)/g, function (a, m1) {
-    if (m1.length % 2 === 1) m1 = m1 + '\x5c'
-    return m1
-  })
+    s = s.replace(/(\\*)/g, function (a, m1) {
+      if (m1.length % 2 === 1) m1 = m1 + '\x5c'
+      return m1
+    })
 
-  return s
+    return s
 }
 
 function buildfunctionbody (InputFileName, cb) {
@@ -380,6 +380,7 @@ function buildfunctionbody (InputFileName, cb) {
     process['dev_argv'].rush === 'yes' ||
     process['dev_argv'].parallel === 'yes'
   ) {
+
     const hrTime = process.hrtime()
 
     const id = crypto.randomBytes(16).toString('hex')
@@ -402,13 +403,7 @@ function buildfunctionbody (InputFileName, cb) {
         code += line + '\n'
       } else if ((m = /^(.+?)\t\|\t(.*)$/.exec(line))) {
         code += 's = s.replace('
-        code +=
-          '/' +
-          escapeRegExp(m[1]) +
-          '/g, ' +
-          'String.raw`' +
-          escape_odd_slash(m[2]) +
-          '`'
+        code += '/' + escapeRegExp(m[1]) + '/g, ' + 'String.raw`' + escape_odd_slash(m[2]) + '`'
         code += ');\n'
       } else if ((m = /^(.+?)\t\|(i?)\|\t(.*)$/.exec(line))) {
         code += 's = s.replace('
@@ -693,6 +688,57 @@ function byline () {
     })
 }
 
+function parseLine (line) {
+  let m
+  let re = /([^]*?)(\\*)(\{\{|\}\})/y
+  let e
+  let l
+
+  while ((m = re.exec(line))) {
+    if (m[2].length % 2 === 1) {
+      continue
+    }
+
+    if (m[3] === '}}') {
+      l = [false, re.lastIndex]
+      if (!e) {
+        e = [true, re.lastIndex]
+      }
+    } else {
+      l = [true, re.lastIndex]
+      if (!e) {
+        e = [false, re.lastIndex]
+      }
+    }
+  }
+
+  let r = [
+    [false, undefined, undefined],
+    [false, undefined]
+  ]
+
+  if (e) {
+    r[0][0] = true
+    r[0][1] = e[0]
+    r[0][2] = e[1]
+  }
+
+  if (l && l[0]) {
+    r[1][0] = l[0]
+    r[1][1] = l[1]
+  }
+
+  // Описание ответа:
+  // r[0][0] - информация о наличие закрытие тега {{
+  // r[0][1] - если true, то тег закрылся нормально. Нет - значит через {{
+  // r[0][2] - позиция закрывающего относительно начала строки
+
+  // r[1][0] - закончилась ли строка открывающим тегом
+  // r[1][1] - если да, то передаётся и позиция этого тега
+
+  return r
+}
+
 function ProcessDSLArticle (art0, art1, o, art_num, art_start) {
   let hw1 = []
   let info = [0, 0, 0]
@@ -768,7 +814,11 @@ function by_dsl_article () {
   o.RunOnExit = false
   o.RunOnExitAsync = undefined
 
+  let commLines = []
+
   let lineCount = 0
+
+  let art_start = 0
 
   byteCount = 0
 
@@ -793,6 +843,7 @@ function by_dsl_article () {
 
   let art0 = []
   let art1 = []
+  let lines = []
 
   if (o.outputfile) fs.writeSync(output, o.bom, null, o.out_encoding)
 
@@ -822,75 +873,197 @@ function by_dsl_article () {
 
       if (lineCount === 1) line = line.replace(/^\uFEFF/, '')
 
-      let s = []
-      s[0] = line
-      s[1] = removecommentedpart(s[0])
+      let r = parseLine(line)
 
-      if (/^#/.test(line) && flag === 0) {
-        if (o.outputfile)
-          fs.writeSync(output, `${s[0]}${o.eol}`, null, o.out_encoding)
-      } else if (/^\s*$/.test(s[1]) && flag === 0) {
-        if (o.outputfile)
-          fs.writeSync(output, `${s[0]}${o.eol}`, null, o.out_encoding)
-      } else if (s[1] === '' && flag !== 0) {
-        art0.push(s[0])
-        art1.push(s[1])
+      // Описание ответа:
+      // r[0][0] - информация о наличие закрытие тега {{
+      // r[0][1] - если true, то тег закрылся нормально. Нет - значит через {{
+      // r[0][2] - позиция закрывающего относительно начала строки
 
-        if (flag === 2) flag++
-      } else if (
-        (/^[^\t ].*$/.test(s[1]) && flag !== 1) ||
-        (/^[\t ].*[^\t ].*$/.test(s[1]) && (art1.length === 0 || flag === 3))
-      ) {
-        if (art0.length > 0) {
-          articleCount++
-          o.count = articleCount
-          o.art_start = lineCount - art0.length
+      // r[1][0] - закончилась ли строка открывающим тегом
+      // r[1][1] - если да, то передаётся и позиция этого тега
 
-          const res = ProcessDSLArticle(
-            art0,
-            art1,
-            o,
-            articleCount,
-            o.art_start
-          )
+      if (commLines.length > 0) {
+        if (r[0][0] && !r[0][1] && r[1][0]) {
+          // {{ ... {{
 
-          if (res !== null) {
-            if (o.outputfile)
-              fs.writeSync(output, res + o.eol, null, o.out_encoding)
+          lines.push(...commLines)
+          commLines.length = 0
+          commLines.push([lineCount, line])
+        } else if (r[0][0] && !r[0][1] && !r[1][0]) {
+          // {{ ...
+
+          lines.push(...commLines)
+          commLines.length = 0
+          lines.push([lineCount, line])
+        } else if (r[0][0] && r[0][1] && !r[1][0]) {
+          // }} ...
+
+          commLines.push([lineCount, line])
+          lines.push(commLines.shift())
+          while (commLines.length > 0) {
+            lines[lines.length - 1][1] += '\n' + commLines.shift()[1]
           }
-        }
+        } else if (r[0][0] && r[0][1] && r[1][0]) {
+          // }} ... {{
 
-        art0.length = 0
-        art1.length = 0
+          while (commLines.length > 1) {
+            let last = commLines.pop()
+            commLines[commLines.length - 1][1] += '\n' + last[1]
+          }
 
-        art0.push(s[0])
-        art1.push(s[1])
-
-        if (/^[^\t ].*$/.test(s[1])) {
-          flag = 1
+          commLines.push([lineCount, line])
         } else {
-          flag = 2
+          commLines.push([lineCount, line])
         }
       } else {
-        art0.push(s[0])
-        art1.push(s[1])
-
-        if (/^[^\t ].*$/.test(s[1])) {
-          flag = 1
+        if (r[1][0]) {
+          commLines.push([lineCount, line])
         } else {
-          flag = 2
+          lines.push([lineCount, line])
+        }
+      }
+
+      while (lines.length) {
+        let s = []
+        let l = lines.shift()
+        let n = l[0]
+        s[0] = l[1]
+        s[1] = removecommentedpart(s[0])
+
+        if (/^#/.test(s[1]) && flag === 0) {
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+        } else if (/^\s*$/.test(s[1]) && flag === 0) {
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+        } else if (s[1] === '' && flag !== 0) {
+          art0.push(s[0])
+          art1.push(s[1])
+          if (flag === 2) flag++
+        } else if (
+          (/^[^\t ].*$/.test(s[1]) && flag !== 1) ||
+          (/^[\t ].*[^\t ].*$/.test(s[1]) && (art1.length === 0 || flag === 3))
+        ) {
+          if (art0.length > 0) {
+            articleCount++
+            o.count = articleCount
+            o.art_start = art_start
+
+            const res = ProcessDSLArticle(
+              art0,
+              art1,
+              o,
+              articleCount,
+              art_start
+            )
+
+            if (res !== null) {
+              if (o.outputfile)
+                fs.writeSync(output, res + o.eol, null, o.out_encoding)
+            }
+          }
+
+          art_start = n
+
+          art0.length = 0
+          art1.length = 0
+
+          art0.push(s[0])
+          art1.push(s[1])
+
+          if (/^[^\t ].*$/.test(s[1])) {
+            flag = 1
+          } else {
+            flag = 2
+          }
+        } else {
+          art0.push(s[0])
+          art1.push(s[1])
+
+          if (/^[^\t ].*$/.test(s[1])) {
+            flag = 1
+          } else {
+            flag = 2
+          }
         }
       }
     })
     .on('close', () => {
-      lineCount++
+      lines.push(...commLines)
+      commLines.length = 0
+
+      while (lines.length) {
+        let s = []
+        let l = lines.shift()
+        let n = l[0]
+        s[0] = l[1]
+        s[1] = removecommentedpart(s[0])
+
+        if (/^#/.test(s[1]) && flag === 0) {
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+        } else if (/^\s*$/.test(s[1]) && flag === 0) {
+          if (o.outputfile)
+            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+        } else if (s[1] === '' && flag !== 0) {
+          art0.push(s[0])
+          art1.push(s[1])
+          if (flag === 2) flag++
+        } else if (
+          (/^[^\t ].*$/.test(s[1]) && flag !== 1) ||
+          (/^[\t ].*[^\t ].*$/.test(s[1]) && (art1.length === 0 || flag === 3))
+        ) {
+          if (art0.length > 0) {
+            articleCount++
+            o.count = articleCount
+            o.art_start = art_start
+
+            const res = ProcessDSLArticle(
+              art0,
+              art1,
+              o,
+              articleCount,
+              art_start
+            )
+
+            if (res !== null) {
+              if (o.outputfile)
+                fs.writeSync(output, res + o.eol, null, o.out_encoding)
+            }
+          }
+
+          art_start = n
+
+          art0.length = 0
+          art1.length = 0
+
+          art0.push(s[0])
+          art1.push(s[1])
+
+          if (/^[^\t ].*$/.test(s[1])) {
+            flag = 1
+          } else {
+            flag = 2
+          }
+        } else {
+          art0.push(s[0])
+          art1.push(s[1])
+
+          if (/^[^\t ].*$/.test(s[1])) {
+            flag = 1
+          } else {
+            flag = 2
+          }
+        }
+      }
 
       if (art0.length > 0) {
         articleCount++
         o.count = articleCount
-        o.art_start = lineCount - art0.length
+        o.art_start = art_start
 
-        const res = ProcessDSLArticle(art0, art1, o, articleCount, o.art_start)
+        const res = ProcessDSLArticle(art0, art1, o, articleCount, art_start)
 
         if (res !== null) {
           if (o.outputfile)
