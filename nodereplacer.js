@@ -268,6 +268,10 @@ let byteCount = 0
 let fileSize = 0
 let errorCount = 0
 
+function remove_linebreaks(str) {
+    return str.replace( /[\r\n]+/gm, "")
+}
+
 function guessEncoding (path) {
   const BOM_0 = 0xff
   const BOM_1 = 0xfe
@@ -370,6 +374,7 @@ function buildfunctionbody (InputFileName, cb) {
     crlfDelay: Infinity
   })
 
+
   let dir = __dirname + '/files/rep_modules/main'
 
   checkDirectorySync(dir)
@@ -398,6 +403,7 @@ function buildfunctionbody (InputFileName, cb) {
   reader
     .on('line', line => {
       line = line.replace(/^\uFEFF/, '')
+      line = remove_linebreaks(line)
 
       if (/^\/\//.test(line) === true) {
         code += line + '\n'
@@ -582,6 +588,8 @@ function byline () {
         process.exit()
       }
 
+      line = remove_linebreaks(line)
+
       lineCount++
 
       if (o.eol_mode > 0) {
@@ -740,6 +748,8 @@ function parseLine (line) {
 }
 
 function ProcessDSLArticle (art0, art1, o, art_num, art_start) {
+
+
   let hw1 = []
   let info = [0, 0, 0]
   // [0] - счётчик заголовков, [1] - счётчик непустых строк в теле статьи
@@ -794,6 +804,7 @@ function ProcessDSLArticle (art0, art1, o, art_num, art_start) {
     o.dsl.push(body.join('\n'))
     o.dsl.push(hw1)
     o.dsl.push(body)
+
 
     if (process.argv[2] === '-rs') {
       artstr = symbrep(artstr, o)
@@ -866,6 +877,8 @@ function by_dsl_article () {
         if (o.outputfile) fs.closeSync(output)
         process.exit()
       }
+
+      line = remove_linebreaks(line)
 
       lineCount++
 
@@ -1192,6 +1205,8 @@ function by_gls_article () {
         if (o.outputfile) fs.closeSync(Output)
         process.exit()
       }
+
+      line = remove_linebreaks(line)
 
       lineCount++
 

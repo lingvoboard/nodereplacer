@@ -1,3 +1,59 @@
+'use strict'
+const fs = require('fs')
+const path = require('path')
+const readline = require('readline')
+
+module.exports = {
+ProcessString: function(s, o) {
+
+
+if (o.RunOnStart == true) {
+
+  if (typeof(onstart) === "function") {
+    onstart()
+    return true
+  }
+
+return false
+
+}
+
+if (o.RunOnExit == true)
+{
+
+  if (typeof(onexit) === "function") {
+    onexit()
+  }
+
+return
+
+}
+
+
+if (o.RunOnExitAsync === 'check') {
+
+  if (typeof(onexit_async) === "function") {
+    return true
+  }
+
+
+return false
+
+}
+
+
+if (o.RunOnExitAsync === 'run') {
+
+  if (typeof(onexit_async) === "function") {
+    onexit_async()
+  }
+
+
+return
+
+}
+
+
 // Выявление ошибок в словарях в формате DSL.
 // Код плагина синхронизирован с chkdsl.js v1.1.5
 
@@ -2922,3 +2978,10 @@ https://en.wikipedia.org/wiki/C0_Controls_and_Basic_Latin
 https://en.wikipedia.org/wiki/C1_Controls_and_Latin-1_Supplement
 
 */
+
+
+return s
+
+}
+
+}
