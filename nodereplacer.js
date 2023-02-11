@@ -262,14 +262,14 @@ class offset_eol {
   }
 }
 
-let LISTJS
+let LISTJS, ASYNC_LISTJS
 
 let byteCount = 0
 let fileSize = 0
 let errorCount = 0
 
-function remove_linebreaks(str) {
-    return str.replace( /[\r\n]+/gm, "")
+function remove_linebreaks (str) {
+  return str.replace(/[\r\n]+/gm, '')
 }
 
 function guessEncoding (path) {
@@ -347,22 +347,24 @@ function checkDirectorySync (directory) {
 }
 
 function escape_odd_slash (s) {
-    s = s.replace(/(\\*)/g, function (a, m1) {
-      if (m1.length % 2 === 1) m1 = m1 + '\x5c'
-      return m1
-    })
+  s = s.replace(/(\\*)/g, function (a, m1) {
+    if (m1.length % 2 === 1) m1 = m1 + '\x5c'
+    return m1
+  })
 
-    return s
+  return s
 }
 
 function buildfunctionbody (InputFileName, cb) {
   let m
   let code = ''
+  let async_code = ''
 
   const head = fs.readFileSync(__dirname + '/files/head.js', 'utf8').toString()
+  const async_head = fs
+    .readFileSync(__dirname + '/files/async_head.js', 'utf8')
+    .toString()
   const foot = fs.readFileSync(__dirname + '/files/foot.js', 'utf8').toString()
-
-  code += head
 
   let encoding = guessEncoding(InputFileName)
 
@@ -374,18 +376,16 @@ function buildfunctionbody (InputFileName, cb) {
     crlfDelay: Infinity
   })
 
-
   let dir = __dirname + '/files/rep_modules/main'
 
   checkDirectorySync(dir)
 
-  let Output
+  let sync_output, async_output
 
   if (
     process['dev_argv'].rush === 'yes' ||
     process['dev_argv'].parallel === 'yes'
   ) {
-
     const hrTime = process.hrtime()
 
     const id = crypto.randomBytes(16).toString('hex')
@@ -395,9 +395,16 @@ function buildfunctionbody (InputFileName, cb) {
       `/files/rep_modules/main/index_${hrTime[0] * 1000000 +
         hrTime[1] / 1000}_${id}.js`
 
-    Output = fs.openSync(mod_path, 'w')
+    sync_output = fs.openSync(mod_path, 'w')
   } else {
-    Output = fs.openSync(__dirname + '/files/rep_modules/main/index.js', 'w')
+    sync_output = fs.openSync(
+      __dirname + '/files/rep_modules/main/index.js',
+      'w'
+    )
+    async_output = fs.openSync(
+      __dirname + '/files/rep_modules/main/index_async.js',
+      'w'
+    )
   }
 
   reader
@@ -409,7 +416,13 @@ function buildfunctionbody (InputFileName, cb) {
         code += line + '\n'
       } else if ((m = /^(.+?)\t\|\t(.*)$/.exec(line))) {
         code += 's = s.replace('
-        code += '/' + escapeRegExp(m[1]) + '/g, ' + 'String.raw`' + escape_odd_slash(m[2]) + '`'
+        code +=
+          '/' +
+          escapeRegExp(m[1]) +
+          '/g, ' +
+          'String.raw`' +
+          escape_odd_slash(m[2]) +
+          '`'
         code += ');\n'
       } else if ((m = /^(.+?)\t\|(i?)\|\t(.*)$/.exec(line))) {
         code += 's = s.replace('
@@ -428,15 +441,22 @@ function buildfunctionbody (InputFileName, cb) {
       }
     })
     .on('close', () => {
-      code += foot
-      fs.writeSync(Output, code, null, 'utf8')
+      async_code = `${async_head}${code}${foot}`
+      code = `${head}${code}${foot}`
+      fs.writeSync(sync_output, code, null, 'utf8')
+      fs.writeSync(async_output, async_code, null, 'utf8')
       if (
         process['dev_argv'].rush === 'yes' ||
         process['dev_argv'].parallel === 'yes'
       ) {
         LISTJS = require(mod_path)
       } else {
-        LISTJS = require(dir)
+        if (o.mode === 'async_byline') {
+          ASYNC_LISTJS = require(`${dir}/index_async.js`)
+        } else {
+          LISTJS = require(dir)
+        }
+
       }
       cb()
     })
@@ -457,7 +477,7 @@ function entirefile () {
 
   if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
 
-  if (o.outputfile) var Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile) var output = fs.openSync(o.outputfile, 'w')
 
   if (o.loop === 1) {
     try {
@@ -474,11 +494,11 @@ function entirefile () {
   if (o.stop !== undefined) {
     console.log()
     console.log(o.stop)
-    if (o.outputfile) fs.closeSync(Output)
+    if (o.outputfile) fs.closeSync(output)
     process.exit()
   }
 
-  if (o.outputfile) fs.writeSync(Output, s + o.eol, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(output, s + o.eol, null, o.out_encoding)
 
   o.RunOnStart = false
   o.RunOnExit = true
@@ -489,7 +509,7 @@ function entirefile () {
   if (o.outputfile) {
     for (let i = 0; i < o.res.length; i++) {
       if (o.res[i] !== null) {
-        fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+        fs.writeSync(output, o.res[i] + o.eol, null, o.out_encoding)
       }
     }
   }
@@ -516,6 +536,152 @@ function entirefile () {
 
   if (o.repeat === 'byline') {
     o.byline()
+  }
+}
+
+class LinesReader {
+  constructor (inputFilePath, options) {
+    options = options || {}
+
+    if (!options.highWaterMark) options.highWaterMark = 64 * 1024
+
+    if (!options.encoding || options.encoding !== 'utf16le') {
+      options.encoding = 'utf8'
+    }
+
+    this.options = options
+
+    this.chunksAsync = fs.createReadStream(inputFilePath, {
+      encoding: this.options.encoding,
+      highWaterMark: this.options.highWaterMark
+    })
+  }
+
+  async * chunksToLines () {
+    let previous = ''
+
+    for await (const chunk of this.chunksAsync) {
+      const lines = (previous === '' ? chunk : `${previous}${chunk}`).split(
+        /(?<=\r?\n|\r(?!\n))/u
+      )
+
+      previous = lines[lines.length - 1].endsWith('\n') ? '' : lines.pop()
+
+      yield lines
+    }
+
+    if (previous !== '') {
+      yield [previous]
+    }
+  }
+}
+
+async function async_byline () {
+
+
+  try {
+    fileSize = fs.statSync(o.inputfile)['size']
+
+    o.loop++
+
+    if (o.repeat !== undefined) delete o.repeat
+
+    o.RunOnExit = false
+    o.RunOnStart = false
+    o.RunOnExitAsync = undefined
+
+    let lineCount = 0
+    byteCount = 0
+
+    o.in_encoding = guessEncoding(o.inputfile)
+    if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
+
+    const reader = new LinesReader(o.inputfile, {
+      encoding: o.in_encoding
+    })
+
+    if (o.outputfile) var output = fs.openSync(o.outputfile, 'w')
+
+    if (o.outputfile) fs.writeSync(output, o.bom, null, o.out_encoding)
+
+    if (o.progress_bar) {
+      process.stdout.write(o.progress_bar_title)
+      var pbAsync = require(o.utilspath).progressbar(
+        fs.statSync(o.inputfile)['size']
+      )
+      pbAsync.start(100)
+    }
+
+    if (o.loop === 1) {
+      try {
+        fs.unlinkSync(o.error_log_path)
+      } catch (e) {}
+    }
+
+    for await (let lines of reader.chunksToLines()) {
+      for (let i = 0; i < lines.length; i++) {
+        if (o.stop !== undefined) {
+          console.log()
+          console.log(o.stop)
+          if (o.outputfile) fs.closeSync(output)
+          process.exit()
+        }
+
+        lineCount++
+
+        if (lineCount === 1) lines[i] = lines[i].replace(/^\uFEFF/, '')
+
+        o.count = lineCount
+
+        let found = lines[i].match(/^(.*?)([\r\n]+)?$/)
+        if (found[2] === undefined) found[2] = ''
+        o.line = [found[1], found[2]]
+      
+        lines[i] = await ASYNC_LISTJS.ProcessString(o.line[0], o) + o.eol
+      
+      }
+
+      const chunkToWrite = lines.join('')
+
+      if (o.progress_bar)
+        pbAsync.stat += Buffer.byteLength(chunkToWrite, o.out_encoding)
+
+      fs.writeSync(output, chunkToWrite, null, o.out_encoding)
+    }
+
+    if (o.progress_bar) pbAsync.end()
+
+    o.RunOnStart = false
+    o.RunOnExit = true
+    o.RunOnExitAsync = undefined
+
+    await ASYNC_LISTJS.ProcessString(null, o)
+
+    if (o.outputfile) {
+      for (let i = 0; i < o.res.length; i++) {
+        if (o.res[i] !== null) {
+          fs.writeSync(output, o.res[i] + o.eol, null, o.out_encoding)
+        }
+      }
+    }
+
+    if (o.log.length > 0) console.log(`\n\n${o.log.join('\n')}`)
+
+    if (!o.repeat) {
+      if (!o.repeat && o.et_auto) {
+        o.et_show()
+      }
+    } else {
+      if (o.progress_bar) console.log('\n\n')
+    }
+
+    if (o.repeat === 'async_byline') {
+      o.async_byline()
+      return
+    }
+  } catch (err) {
+    if (o.progress_bar) pbAsync.end()
+    console.log(err.message)
   }
 }
 
@@ -564,9 +730,9 @@ function byline () {
     crlfDelay: Infinity
   })
 
-  if (o.outputfile) var Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile) var output = fs.openSync(o.outputfile, 'w')
 
-  if (o.outputfile) fs.writeSync(Output, o.bom, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -584,7 +750,7 @@ function byline () {
       if (o.stop !== undefined) {
         console.log()
         console.log(o.stop)
-        if (o.outputfile) fs.closeSync(Output)
+        if (o.outputfile) fs.closeSync(output)
         process.exit()
       }
 
@@ -624,7 +790,7 @@ function byline () {
       line = LISTJS.ProcessString(line, o)
 
       if (line !== null && o.outputfile) {
-        fs.writeSync(Output, line + o.eol, null, o.out_encoding)
+        fs.writeSync(output, line + o.eol, null, o.out_encoding)
       }
     })
     .on('close', () => {
@@ -652,7 +818,7 @@ function byline () {
       if (o.outputfile) {
         for (let i = 0; i < o.res.length; i++) {
           if (o.res[i] !== null) {
-            fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+            fs.writeSync(output, o.res[i] + o.eol, null, o.out_encoding)
           }
         }
       }
@@ -748,8 +914,6 @@ function parseLine (line) {
 }
 
 function ProcessDSLArticle (art0, art1, o, art_num, art_start) {
-
-
   let hw1 = []
   let info = [0, 0, 0]
   // [0] - счётчик заголовков, [1] - счётчик непустых строк в теле статьи
@@ -800,11 +964,9 @@ function ProcessDSLArticle (art0, art1, o, art_num, art_start) {
     o.dsl = []
 
     o.dsl.push(hw0)
-    // o.dsl.push(body.join("\n").replace(/\n$/, ""));
     o.dsl.push(body.join('\n'))
     o.dsl.push(hw1)
     o.dsl.push(body)
-
 
     if (process.argv[2] === '-rs') {
       artstr = symbrep(artstr, o)
@@ -946,10 +1108,10 @@ function by_dsl_article () {
 
         if (/^#/.test(s[1]) && flag === 0) {
           if (o.outputfile)
-            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+            fs.writeSync(output, `${s[0]}${o.eol}`, null, o.out_encoding)
         } else if (/^\s*$/.test(s[1]) && flag === 0) {
           if (o.outputfile)
-            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+            fs.writeSync(output, `${s[0]}${o.eol}`, null, o.out_encoding)
         } else if (s[1] === '' && flag !== 0) {
           art0.push(s[0])
           art1.push(s[1])
@@ -1015,10 +1177,10 @@ function by_dsl_article () {
 
         if (/^#/.test(s[1]) && flag === 0) {
           if (o.outputfile)
-            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+            fs.writeSync(output, `${s[0]}${o.eol}`, null, o.out_encoding)
         } else if (/^\s*$/.test(s[1]) && flag === 0) {
           if (o.outputfile)
-            fs.writeSync(output, `${s[0]}\n`, null, o.out_encoding)
+            fs.writeSync(output, `${s[0]}${o.eol}`, null, o.out_encoding)
         } else if (s[1] === '' && flag !== 0) {
           art0.push(s[0])
           art1.push(s[1])
@@ -1177,14 +1339,14 @@ function by_gls_article () {
     crlfDelay: Infinity
   })
 
-  if (o.outputfile) var Output = fs.openSync(o.outputfile, 'w')
+  if (o.outputfile) var output = fs.openSync(o.outputfile, 'w')
 
   let flag = 0
   let arr = []
   let hist = []
   let art_start = 1
 
-  if (o.outputfile) fs.writeSync(Output, o.bom, null, o.out_encoding)
+  if (o.outputfile) fs.writeSync(output, o.bom, null, o.out_encoding)
 
   if (o.progress_bar) {
     process.stdout.write(o.progress_bar_title)
@@ -1202,7 +1364,7 @@ function by_gls_article () {
       if (o.stop !== undefined) {
         console.log()
         console.log(o.stop)
-        if (o.outputfile) fs.closeSync(Output)
+        if (o.outputfile) fs.closeSync(output)
         process.exit()
       }
 
@@ -1238,8 +1400,8 @@ function by_gls_article () {
               writeEmptylines = true
 
               if (o.outputfile) {
-                fs.writeSync(Output, res + o.eol, null, o.out_encoding)
-                fs.writeSync(Output, '\n', null, o.out_encoding)
+                fs.writeSync(output, res + o.eol, null, o.out_encoding)
+                fs.writeSync(output, '\n', null, o.out_encoding)
               }
             } else {
               writeEmptylines = false
@@ -1247,16 +1409,16 @@ function by_gls_article () {
           } else {
             if (o.outputfile) {
               for (let v of arr) {
-                fs.writeSync(Output, `${v}\n`, null, o.out_encoding)
+                fs.writeSync(output, `${v}\n`, null, o.out_encoding)
               }
             }
 
             if (writeEmptylines) {
-              if (o.outputfile) fs.writeSync(Output, '\n', null, o.out_encoding)
+              if (o.outputfile) fs.writeSync(output, '\n', null, o.out_encoding)
             }
 
             // if (o.outputfile)
-            //   fs.writeSync(Output, '\n', null, o.out_encoding);
+            //   fs.writeSync(output, '\n', null, o.out_encoding);
 
             if (o.loop === 1 && arr.length !== 0) {
               fs.writeFileSync(
@@ -1278,7 +1440,7 @@ function by_gls_article () {
         }
       } else {
         if (o.outputfile)
-          fs.writeSync(Output, `${line}\n`, null, o.out_encoding)
+          fs.writeSync(output, `${line}\n`, null, o.out_encoding)
       }
     })
     .on('close', () => {
@@ -1289,12 +1451,12 @@ function by_gls_article () {
         const res = ProcessGLSArticle(arr, o, art_start)
 
         if (res !== null && o.outputfile) {
-          fs.writeSync(Output, res + o.eol, null, o.out_encoding)
+          fs.writeSync(output, res + o.eol, null, o.out_encoding)
         }
       } else {
         if (o.outputfile) {
           for (let v of arr) {
-            fs.writeSync(Output, `${v}` + o.eol, null, o.out_encoding)
+            fs.writeSync(output, `${v}` + o.eol, null, o.out_encoding)
           }
         }
 
@@ -1328,7 +1490,7 @@ function by_gls_article () {
       if (o.outputfile) {
         for (let i = 0; i < o.res.length; i++) {
           if (o.res[i] !== null) {
-            fs.writeSync(Output, o.res[i] + o.eol, null, o.out_encoding)
+            fs.writeSync(output, o.res[i] + o.eol, null, o.out_encoding)
           }
         }
       }
@@ -1404,15 +1566,21 @@ function symbrep (s) {
   return s
 }
 
-function prepare (InputFileName, OutputFileName) {
+async function prepare (InputFileName, OutputFileName) {
   o.res = []
   o.inputfile = InputFileName
   o.outputfile = OutputFileName
   o.path = __dirname
   o.eol = '\n'
 
-  o.byline = () => {
-    byline()
+  if (process['dev_argv'].async === 'yes') {
+    o.async_byline = () => {
+      async_byline()
+    }
+  } else {
+    o.byline = () => {
+      byline()
+    }
   }
 
   o.by_gls_article = () => {
@@ -1438,7 +1606,13 @@ function prepare (InputFileName, OutputFileName) {
   o.RunOnExitAsync = 'check'
 
   {
-    const res = LISTJS.ProcessString(null, o)
+    let res
+    if (o.mode === 'async_byline') {
+      res = await ASYNC_LISTJS.ProcessString(null, o)
+    } else {
+      res = LISTJS.ProcessString(null, o)
+    }
+
     if (res === true) {
       o.eol_mode = 2
       o.et_auto = false
@@ -1449,7 +1623,13 @@ function prepare (InputFileName, OutputFileName) {
   o.RunOnStart = true
   o.RunOnExitAsync = undefined
 
-  const res = LISTJS.ProcessString(null, o)
+  let res
+
+  if (o.mode === 'async_byline') {
+    res = await ASYNC_LISTJS.ProcessString(null, o)
+  } else {
+    res = LISTJS.ProcessString(null, o)
+  }
 
   if (res !== true) {
     if (o.inputfile === null || o.outputfile === null) {
@@ -1457,13 +1637,21 @@ function prepare (InputFileName, OutputFileName) {
       o.RunOnStart = false
       o.RunOnExitAsync = undefined
 
-      LISTJS.ProcessString(null, o)
+      if (o.mode === 'async_byline') {
+        await ASYNC_LISTJS.ProcessString(null, o)
+      } else {
+        LISTJS.ProcessString(null, o)
+      }
 
       o.RunOnStart = false
       o.RunOnExit = true
       o.RunOnExitAsync = undefined
 
-      LISTJS.ProcessString(null, o)
+      if (o.mode === 'async_byline') {
+        await ASYNC_LISTJS.ProcessString(null, o)
+      } else {
+        LISTJS.ProcessString(null, o)
+      }
 
       if (o.out_encoding === undefined) o.out_encoding = o.in_encoding
 
@@ -1486,6 +1674,8 @@ function prepare (InputFileName, OutputFileName) {
       o.entirefile()
     } else if (o.mode === 'byline') {
       o.byline()
+    } else if (o.mode === 'async_byline') {
+      o.async_byline()
     } else if (o.mode === 'by_gls_article') {
       o.by_gls_article()
     } else {
@@ -1529,7 +1719,13 @@ if (
   fileExists(process.argv[4])
 ) {
   // node nodereplacer.js (-rt|-rd) list input.txt output.txt
+
   o.mode = process.argv[2] === '-rt' ? 'byline' : o.mode
+  if (o.mode === 'byline' && process['dev_argv'].async === 'yes') {
+    delete process['dev_argv'].rush
+    delete process['dev_argv'].parallel
+    o.mode = 'async_byline'
+  }
   buildfunctionbody(process.argv[3], () => {
     prepare(process.argv[4], process.argv[5])
   })
