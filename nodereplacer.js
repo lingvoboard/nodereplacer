@@ -637,16 +637,18 @@ async function async_byline () {
         if (found[2] === undefined) found[2] = ''
         o.line = [found[1], found[2]]
       
-        lines[i] = await ASYNC_LISTJS.ProcessString(o.line[0], o) + o.eol
-      
+        let res = await ASYNC_LISTJS.ProcessString(o.line[0], o) + o.eol
+
+        if (res !== null && o.outputfile) {
+          fs.writeSync(output, res, null, o.out_encoding)
+        }
+
+
+        if (o.progress_bar)
+          pbAsync.stat += Buffer.byteLength(res, o.out_encoding)
+
       }
 
-      const chunkToWrite = lines.join('')
-
-      if (o.progress_bar)
-        pbAsync.stat += Buffer.byteLength(chunkToWrite, o.out_encoding)
-
-      fs.writeSync(output, chunkToWrite, null, o.out_encoding)
     }
 
     if (o.progress_bar) pbAsync.end()
