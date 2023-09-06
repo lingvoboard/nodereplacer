@@ -1,5 +1,4 @@
 // Выявление ошибок в словарях в формате DSL.
-// Код плагина синхронизирован с chkdsl.js v1.1.5
 
 function onstart () {
   o.byteCount = 0
@@ -573,6 +572,70 @@ function onstart () {
     0
   ]
 
+  o.Messages['61'] = [
+    'Ошибка',
+    'Неверное количество параметров для тега ref',
+    0
+  ]
+  o.Messages['62'] = [
+    'Ошибка',
+    'Недопустимый символ в значении параметра тега: "%s"',
+    0,
+    'Недопустимый символ в значении параметра тега'
+  ]
+  o.Messages['63'] = [
+    'Ошибка',
+    'Неверный формат строки параметров тега: "%s"',
+    0,
+    'Неверный формат строки параметров тега'
+  ]
+  o.Messages['64'] = [
+    'Ошибка',
+    'Незакрытые кавычки в строке параметров тега: "%s"',
+    0,
+    'Незакрытые кавычки в строке параметров тега'
+  ]
+  o.Messages['65'] = [
+    'Ошибка',
+    'Не задано значение параметра тега: "%s"',
+    0,
+    'Не задано значение параметра тега'
+  ]
+  o.Messages['66'] = [
+    'Ошибка',
+    'Ссылка на карточку недопустима внутри имени тега',
+    0
+  ]
+  o.Messages['67'] = ['Ошибка', 'Отсутствует тег открытия ссылки "<<"', 0]
+  o.Messages['68'] = ['Ошибка', 'Отсутствует тег закрытия ссылки ">>"', 0]
+  o.Messages['69'] = [
+    'Ошибка',
+    'Директива препроцессора должна начинаться с новой строки',
+    0
+  ]
+  o.Messages['70'] = ['Ошибка', 'Отсутствует символ начала имени тега "["', 0]
+  o.Messages['71'] = [
+    'Предупреждение',
+    'Неэкранированный символ тильды в URL',
+    0
+  ]
+  o.Messages['72'] = [
+    'Предупреждение',
+    'Команда клонирования заголовка в ссылке',
+    0
+  ]
+  o.Messages['73'] = ['Ошибка', 'Тильда в заголовке должна быть экранирована', 0]
+  o.Messages['74'] = ['Предупреждение', 'Неработоспособный URL', 0]
+  o.Messages['75'] = [
+    'Ошибка',
+    'Неверное количество параметров для тега url',
+    0
+  ]
+
+  o.Messages['76'] = ['Предупреждение', 'Ссылка длиннее 1024 символов не поддерживается в Lingvo', 0]
+  o.Messages['77'] = ['Ошибка', 'Заголовок длиннее 246 символов недопустим', 0]
+
+
   o.CommentMap = Object.create(null)
   // Для обычных записей
   // [[номер строки, смещение], [номер строки, смещение]]
@@ -664,7 +727,7 @@ function onstart () {
 function updateProgressBar () {
   if (!o.fileSize || !o.byteCount) return
 
-  const readPercent = Math.ceil(o.byteCount / o.fileSize * 100)
+  const readPercent = Math.ceil((o.byteCount / o.fileSize) * 100)
 
   if (readPercent > 100) readPercent = 100
 
@@ -676,6 +739,41 @@ function updateProgressBar () {
   process.stdout.write(
     `${'█'.repeat(barsNumber)}${' '.repeat(padsNumber)} ${readPercent}%`
   )
+}
+
+function remove_e_backslashes (b) {
+  b = b.replace(/(\\*)/g, (c, m1) => {
+    if (m1.length % 2 === 1) {
+      m1 = '\\'
+    } else {
+      m1 = ''
+    }
+    return m1
+  })
+
+  return b
+}
+
+function replace_sb_after_one_slash (s, mode) {
+  if (mode === 'replace') {
+    s = s.replace(/\x00/g, ' ')
+    s = s.replace(/\x01/g, ' ')
+    s = s.replace(/\x02/g, ' ')
+    s = s.replace(/(\\+)([\[\]])/g, function (a, m1, m2) {
+      if (m1.length % 2 === 1) {
+        if (m2 === '[') {
+          return '\x00' + '\x01'
+        } else if (m2 === ']') {
+          return '\x00' + '\x02'
+        }
+      }
+    })
+  } else {
+    s = s.replace(/\x00\x01/g, '\x5c[')
+    s = s.replace(/\x00\x02/g, '\x5c]')
+  }
+
+  return s
 }
 
 function parseLine (line) {
@@ -702,7 +800,10 @@ function parseLine (line) {
     }
   }
 
-  let r = [[false, undefined, undefined], [false, undefined]]
+  let r = [
+    [false, undefined, undefined],
+    [false, undefined]
+  ]
 
   if (e) {
     r[0][0] = true
@@ -743,7 +844,6 @@ function makeCommentMap () {
 
   reader
     .on('line', line => {
-
       line = remove_linebreaks(line)
 
       lineCount++
@@ -830,30 +930,6 @@ function chk_headword (s) {
       res[0] = true
       res[1] = 'lang'
       res[2] = [[22, '']]
-    } else if (/^\[ref dict=[^\"].*[^\"]\]$/.test(s)) {
-      res[0] = true
-      res[1] = 'ref'
-      res[2] = [[40, '']]
-    } else if ((m = /^\[ref dict=\"(.+)\"\]$/.exec(s))) {
-      if (/^[^\x00-\x7F]+$/.test(m[1])) {
-        res[0] = true
-        res[1] = 'ref'
-        res[2] = [[39, m[1]]]
-      } else {
-        if (/^\[ref dict=\".*\".*\"\]$/.test(s)) {
-          res[0] = true
-          res[1] = 'ref'
-          res[2] = [[41, '']]
-        } else {
-          res[0] = true
-          res[1] = 'ref'
-          res[2] = []
-        }
-      }
-    } else if (/^\[ref dict=\"\"\]$/.test(s)) {
-      res[0] = true
-      res[1] = 'ref'
-      res[2] = [[42, '']]
     } else if ((m = /^\[c (.+)\]$/.exec(s))) {
       if (o.Colors[m[1]] === undefined) {
         res[0] = true
@@ -864,6 +940,10 @@ function chk_headword (s) {
         res[1] = 'c'
         res[2] = []
       }
+    } else if (/^\[ref .*(target|dict)=.*\]$/.test(s)) {
+      res = check_ref_with_param(s, true)
+    } else if (/^\[url .*(target)=.*\]$/.test(s)) {
+      res = check_url_with_param(s, true)
     } else if (s === '[lang]') {
       res[0] = true
       res[1] = 'lang'
@@ -899,7 +979,7 @@ function chk_headword (s) {
       res[1] = 17
     }
 
-    if (/\//.test(tag)) {
+    if (/\[\//.test(tag)) {
       if (tags[name][0].length > 0) {
         if (tags[name][0][tags[name][0].length - 1][1] === 1) {
           if (name !== 'm') {
@@ -952,7 +1032,7 @@ function chk_headword (s) {
       TSRefUrl = undefined
     }
 
-    if (/\//.test(tag)) {
+    if (/\[\//.test(tag)) {
       InsideIndexZone.pop()
 
       if (tags[name][0].length > 0) {
@@ -1026,7 +1106,7 @@ function chk_headword (s) {
       TSRefUrl = undefined
     }
 
-    if (/\//.test(tag)) {
+    if (/\[\//.test(tag)) {
       InsideSubSupZone = undefined
 
       if (tags[name][0].length > 0) {
@@ -1066,7 +1146,7 @@ function chk_headword (s) {
   let TSRefUrlFunction = function (name, tag, k) {
     let res = [false, undefined]
 
-    if (/(\/|^>>$)/.test(tag)) {
+    if (/(\[\/|^>>$)/.test(tag)) {
       TSRefUrl = undefined
 
       if (tags[name][0].length > 0) {
@@ -1121,7 +1201,7 @@ function chk_headword (s) {
 
   let m
   let ind = 0
-  let re = /([^]*?)(\\*)(\[|\]|<<|>>)/y
+  let re = /([^]*?)(\\*)(\[|\]|<<|>>|~)/y
   let pos = 0
 
   while ((m = re.exec(s))) {
@@ -1133,16 +1213,21 @@ function chk_headword (s) {
 
     let tag
 
+    if (m[3] === '~' && m[2] % 2 === 0) {
+      return [true, 73]
+    }
+
     if (m[3] === '[' || m[3] === ']') {
       if (m[3] === '[') {
         let rs = s.substr(ind)
-
+        rs = replace_sb_after_one_slash(rs, 'replace')
         let re2 = /([^]*?)(\\*)(\]|\[)/y
         let m2 = re2.exec(rs)
         if (m2 && m2[2].length % 2 === 0 && m2[3] === ']') {
           re.lastIndex += re2.lastIndex
           ind = re.lastIndex
           tag = m[3] + m2[1] + m2[2] + m2[3]
+          tag = replace_sb_after_one_slash(tag, 'return')
         } else {
           return [true, 13]
         }
@@ -1157,16 +1242,19 @@ function chk_headword (s) {
 
     let res = get_Tag_and_Check(tag)
 
+
     if (!res[0] || tags[res[1]] === undefined) {
       return [true, 12]
     }
 
     let name = res[1]
 
+
     let last = res[2].pop()
 
+
     if (last && last.length > 0) {
-      return [true, last[0]]
+      return [true, last[0], last[1]]
     }
 
     let funcres = tags[name][1](name, tag, pos - 1)
@@ -1291,7 +1379,266 @@ function check_long_word (s) {
   return s
 }
 
+function check_url_with_param (tag, headword) {
+
+  tag = o.utils.remove_comments(tag)
+
+  let res = []
+  res[0] = true
+  res[1] = 'url'
+  res[2] = []
+
+  let check_url_target = function (p) {
+    if (/^[a-z]*\s[a-z]*$/i.test(p)) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[63, `target=${p}`]]
+    } else if (/(?<!\\)<<.*(?<!\\)>>/.test(remove_e_backslashes(p))) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[66, '']]
+    } else if (
+      /(?<!\\)<</.test(remove_e_backslashes(p)) &&
+      !/(?<!\\)>>/.test(remove_e_backslashes(p))
+    ) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[68, '']]
+    } else if (
+      /(?<!\\)>>/.test(remove_e_backslashes(p)) &&
+      !/(?<!\\)<</.test(remove_e_backslashes(p))
+    ) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[67, '']]
+    } else if (
+      /^\".*[^\"]$/.test(p.replace(/^\\/, '')) ||
+      /^[^\"].*\"$/.test(p.replace(/^\\/, ''))
+    ) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[64, `target=${p}`]]
+    } else if (p.length === 0 || /^\\?\"\\?\"$/.test(p)) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[65, `target=${p}`]]
+    } else if (
+      /[^a-z]/i.test(p) &&
+      /^[^\"].*[^\"]$/.test(p.replace(/^\\/, ''))
+    ) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[62, `target=${p}`]]
+    } else if (/^\".*\".*\"$/.test(p.replace(/^\\/, ''))) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[62, `target=${p}`]]
+    } else if (/(?<!\\)[\[\]]/.test(p)) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[62, `target=${p}`]]
+    } else if (/(?<!\\)#/.test(remove_e_backslashes(p))) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[69, '']]
+    } else if (/(?<!\\)~/.test(remove_e_backslashes(p))) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[71, '']]
+    } else if (!/^(|\\\"|\")(www\.|https?\:\/\/|mailto\:)/.test(p)) {
+      res[0] = true
+      res[1] = 'url'
+      res[2] = [[74, '']]
+    } else  {
+
+      let lnk = p.replace(/^\\?\"(.*)\\?\"$/, '$1')
+
+      if (lnk.length > 1024) {
+        res[0] = true
+        res[1] = 'url'
+        res[2] = [[76, '']]
+      }
+
+    }
+  }
+
+  tag = tag.slice(4)
+  tag = tag.slice(0, tag.length - 1)
+
+  let arr1 = tag.split(/ +(target=)/)
+
+  arr1.shift()
+
+  let arr2 = []
+
+  for (let i = 0; i < arr1.length; i++) {
+    if ((i + 1) % 2 === 0) {
+      arr2.push([arr1[i - 1].slice(0, arr1[i - 1].length - 1), arr1[i]])
+    }
+  }
+
+  if (arr2.length > 1) {
+    res[0] = true
+    res[1] = 'url'
+    res[2] = [[75, '']]
+    return res
+  }
+
+  for (let v of arr2) {
+    check_url_target(v[1].trim())
+  }
+
+  return res
+}
+
+function check_ref_with_param (tag, headword) {
+
+  tag = o.utils.remove_comments(tag)
+
+  let res = []
+  res[0] = true
+  res[1] = 'ref'
+  res[2] = []
+
+  let check_dict = function (p) {
+    if (p.trim() === '' || /^\\?\"\"\\?$/.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[42, '']]
+    } else if (/^\\?[^\"].*[^\"]\\?$/.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[40, '']]
+    } else if (!/^[\x00-\x7F]+$/.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[39, p]]
+    } else if (/^\".*\".*\"$/.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[41, '']]
+    }
+  }
+
+  let check_target = function (p) {
+
+
+    if (/(?<!\\)#/.test(remove_e_backslashes(p))) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[69, '']]
+    } else if (/(?<!\\)~/.test(remove_e_backslashes(p))) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[72, '']]
+    } else if (/^[a-z]*\s[a-z]*$/i.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[63, `target=${p}`]]
+    } else if (
+      /[^a-z]/i.test(p) &&
+      /^[^\"].*[^\"]$/.test(p.replace(/^\\/, ''))
+    ) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[62, `target=${p}`]]
+    } else if (
+      /^\".*[^\"]$/.test(p.replace(/^\\/, '')) ||
+      /^[^\"].*\"$/.test(p.replace(/^\\/, ''))
+    ) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[64, `target=${p}`]]
+    } else if (p.length === 0 || /^\\?\"\\?\"$/.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[65, `target=${p}`]]
+    } else if (/^\".*\".*\"$/.test(p.replace(/^\\/, ''))) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[62, `target=${p}`]]
+    } else if (/(?<!\\)[\[\]]/.test(p)) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[62, `target=${p}`]]
+    } else if (/(?<!\\)<<.*(?<!\\)>>/.test(remove_e_backslashes(p))) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[66, '']]
+    } else if (
+      /(?<!\\)<</.test(remove_e_backslashes(p)) &&
+      !/(?<!\\)>>/.test(remove_e_backslashes(p))
+    ) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[68, '']]
+    } else if (
+      /(?<!\\)>>/.test(remove_e_backslashes(p)) &&
+      !/(?<!\\)<</.test(remove_e_backslashes(p))
+    ) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[67, '']]
+    } else if (p.replace(/^\\?\"(.*)\\?\"$/, '$1').length > 246) {
+      res[0] = true
+      res[1] = 'ref'
+      res[2] = [[77, '']]
+    } else {
+      if (!/ dict=/.test(tag) && !headword) {
+        let lnk = p.replace(/[\t ]{2,}/g, ' ')
+
+        lnk = lnk.replace(/^\\?\"(.*)\\?\"$/, '$1')
+
+        lnk = o.utils.remove_odd_slash(lnk, true)
+
+        if (lnk.length === 0 || o.HeadWords1[lnk] === undefined) {
+          res[0] = true
+          res[1] = 'ref'
+          res[2] = [[4, lnk]]
+        }
+      }
+    }
+  }
+
+  tag = tag.slice(4)
+  tag = tag.slice(0, tag.length - 1)
+
+  let arr1 = tag.split(/ +(dict=|target=)/)
+  arr1.shift()
+
+  let arr2 = []
+
+  for (let i = 0; i < arr1.length; i++) {
+    if ((i + 1) % 2 === 0) {
+      arr2.push([arr1[i - 1].slice(0, arr1[i - 1].length - 1), arr1[i]])
+    }
+  }
+
+  if (arr2.length > 2) {
+    res[0] = true
+    res[1] = 'ref'
+    res[2] = [[61, '']]
+    return res
+  } else if (arr2.length === 2 && arr2[0][0] === arr2[1][0]) {
+    res[0] = true
+    res[1] = 'ref'
+    res[2] = [[61, '']]
+    return res
+  }
+
+  for (let v of arr2) {
+    if (v[0] === 'dict') {
+      check_dict(v[1].trim())
+    } else if (v[0] === 'target') {
+      check_target(v[1].trim())
+    }
+  }
+
+  return res
+}
+
 function chk_normal (s, isThisSubEntry) {
+
   o.ArticleCountGlobal++
 
   let TSRefUrl
@@ -1348,30 +1695,6 @@ function chk_normal (s, isThisSubEntry) {
       res[0] = true
       res[1] = 'lang'
       res[2] = [[22, '']]
-    } else if (/^\[ref dict=[^\"].*[^\"]\]$/.test(s)) {
-      res[0] = true
-      res[1] = 'ref'
-      res[2] = [[40, '']]
-    } else if ((m = /^\[ref dict=\"(.+)\"\]$/.exec(s))) {
-      if (/^[^\x00-\x7F]+$/.test(m[1])) {
-        res[0] = true
-        res[1] = 'ref'
-        res[2] = [[39, m[1]]]
-      } else {
-        if (/^\[ref dict=\".*\".*\"\]$/.test(s)) {
-          res[0] = true
-          res[1] = 'ref'
-          res[2] = [[41, '']]
-        } else {
-          res[0] = true
-          res[1] = 'ref'
-          res[2] = []
-        }
-      }
-    } else if (/^\[ref dict=\"\"\]$/.test(s)) {
-      res[0] = true
-      res[1] = 'ref'
-      res[2] = [[42, '']]
     } else if ((m = /^\[c (.+)\]$/.exec(s))) {
       if (o.Colors[m[1]] === undefined) {
         res[0] = true
@@ -1382,6 +1705,10 @@ function chk_normal (s, isThisSubEntry) {
         res[1] = 'c'
         res[2] = []
       }
+    } else if (/^\[ref .*(target|dict)=.*\]$/.test(s)) {
+      res = check_ref_with_param(s, false)
+    } else if (/^\[url .*(target)=.*\]$/.test(s)) {
+      res = check_url_with_param(s, false)
     } else if (s === '[lang]') {
       res[0] = true
       res[1] = 'lang'
@@ -1410,7 +1737,7 @@ function chk_normal (s, isThisSubEntry) {
       Article[k][2].push([17, tag])
     }
 
-    if (/\//.test(tag)) {
+    if (/\[\//.test(tag)) {
       if (tags[name][0].length > 0) {
         if (tags[name][0][tags[name][0].length - 1][1] === 1) {
           if (name !== 'm') Article[k][2].push([8, tag])
@@ -1478,7 +1805,7 @@ function chk_normal (s, isThisSubEntry) {
       TSRefUrl = undefined
     }
 
-    if (/\//.test(tag)) {
+    if (/\[\//.test(tag)) {
       InsideIndexZone.pop()
 
       if (tags[name][0].length > 0) {
@@ -1517,7 +1844,7 @@ function chk_normal (s, isThisSubEntry) {
       TSRefUrl = undefined
     }
 
-    if (/\//.test(tag)) {
+    if (/\[\//.test(tag)) {
       InsideSubSupZone = undefined
 
       if (tags[name][0].length > 0) {
@@ -1548,7 +1875,7 @@ function chk_normal (s, isThisSubEntry) {
   }
 
   let TSRefUrlFunction = function (name, tag, k) {
-    if (/(\/|^>>$)/.test(tag)) {
+    if (/(\[\/|^>>$)/.test(tag)) {
       TSRefUrl = undefined
 
       if (tags[name][0].length > 0) {
@@ -1688,6 +2015,7 @@ function chk_normal (s, isThisSubEntry) {
     }
 
     if (m[3] === '@') {
+
       NotEmptyCard = true
 
       let rs = s.substr(ind)
@@ -1769,15 +2097,16 @@ function chk_normal (s, isThisSubEntry) {
     if (m[3] === '[' || m[3] === ']') {
       if (m[3] === '[') {
         let rs = s.substr(ind)
-
+        rs = replace_sb_after_one_slash(rs, 'replace')
         let re2 = /([^]*?)(\\*)(\]|\[)/y
         let m2 = re2.exec(rs)
         if (m2 && m2[2].length % 2 === 0 && m2[3] === ']') {
           re.lastIndex += re2.lastIndex
           ind = re.lastIndex
           tag = m[3] + m2[1] + m2[2] + m2[3]
+          tag = replace_sb_after_one_slash(tag, 'return')
         } else {
-          txt += m[3]
+          txt += replace_sb_after_one_slash(m[3], 'return')
           Article[pos++] = [0, txt, [[13, '']]]
           NotEmptyCard = true
           continue
@@ -1893,10 +2222,21 @@ function ProcessDSLArticle (art0, art1, art_num) {
 
   // [0] - счётчик заголовков, [1] - счётчик непустых строк в теле статьи, [2] - начало первой непустой строки в теле статьи.
   // [3] - счётчик ошибки №38
-  let info = [0, 0, 0, 0]
+  // [4] - счётчик ошибки №44
+  let info = [0, 0, 0, 0, 0]
 
   for (let i = 0; i < art1.length; i++) {
-    if (/^#/.test(art1[i])) {
+   
+
+    if (/(?<!\\)@/.test(remove_e_backslashes(art1[i]))) {
+     
+        if (!/^[\x20\t]+@/.test(art1[i])) {
+          info[4]++
+          art0[i] += '{{=' + o.Messages[44][0] + ': ' + o.Messages[44][1] + '}}'
+          o.Messages[44][2]++
+        }
+
+    } else if (/^#/.test(art1[i])) {
       info[3]++
       art0[i] += '{{=' + o.Messages[38][0] + ': ' + o.Messages[38][1] + '}}'
       o.Messages[38][2]++
@@ -1925,7 +2265,7 @@ function ProcessDSLArticle (art0, art1, art_num) {
     }
   }
 
-  if (info[3] === 0 && info[0] > 0 && info[1] > 0) {
+  if (info[3] === 0 && info[4] === 0 && info[0] > 0 && info[1] > 0) {
     hw0 = art0.slice(0, info[2])
     body0 = art0.slice(info[2])
   }
@@ -1957,7 +2297,7 @@ function ProcessDSLArticle (art0, art1, art_num) {
               '{{=' +
               o.Messages[tagchkres[1]][0] +
               ': ' +
-              o.Messages[tagchkres[1]][1] +
+              o.Messages[tagchkres[1]][1].replace(/%s/, tagchkres[2]) +
               '}}'
             o.Messages[tagchkres[1]][2]++
           } else {
@@ -2098,8 +2438,8 @@ function ProcessDSLArticle (art0, art1, art_num) {
   return res
 }
 
-function remove_linebreaks(str) {
-    return str.replace( /[\r\n]+/gm, "")
+function remove_linebreaks (str) {
+  return str.replace(/[\r\n]+/gm, '')
 }
 
 function by_dls_article () {
@@ -2143,7 +2483,6 @@ function by_dls_article () {
 
   reader
     .on('line', line => {
-
       line = remove_linebreaks(line)
 
       lineCount++
@@ -2636,6 +2975,7 @@ function ExtractHeadwords (art) {
               // [6] - неэкранированный #
               // [7] - Заголовок целиком состоит из альтернативной части
               // [8] - имеются ли ошибки (true/false)
+              // [9] - В заголовке имеется неэкранированная тильда
 
               let ret = [true, undefined, i]
 
@@ -2784,7 +3124,6 @@ function readheadwords () {
 
   reader
     .on('line', line => {
-
       line = remove_linebreaks(line)
 
       lineCount++
